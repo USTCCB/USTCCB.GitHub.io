@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>527 CB的主页</title>
 <link rel="stylesheet" type="text/css" href="css/stylesheet.css" />
-<link rel="icon" href="images/logo.png" sizes="35*35">
+<link rel="icon" href="images/logo.png" sizes="35x35">
 <style type="text/css">
 #apDiv1 {
 	position: absolute;
@@ -12,25 +12,20 @@
 	height: 30px;
 	z-index: 1;
 	left: 50%;
-	top:87vh;
+	top: 87vh;
 }
 </style>
 <script src="js/jquery.js"></script>
 <script>
-function scrollTo(ele, speed){
-	if(!speed) speed = 800;
-	if(!ele){
-		$("html,body").animate({scrollTop:0},speed);
-	}else{
-		$("html,body").animate({scrollTop:$(ele).offset().top},speed);
-	}
+function scrollTo(ele, speed = 800) {
+	$("html,body").animate({scrollTop: $(ele || 'html').offset().top}, speed);
 	return false;
 }
 </script>
 </head>
 
-<body style="margin:0%;">
-<!-- /线条随鼠标移动--> 
+<body style="margin:0;">
+<!-- Background animation -->
 <canvas id="c_n" style="position:fixed;top:0;left:0;z-index:-1;opacity:0.5;"></canvas>
 <script>
 (function(){
@@ -59,14 +54,9 @@ function scrollTo(ele, speed){
         particles.forEach(function(p, i){
             p.x += p.xa;
             p.y += p.ya;
-
-            // Bounce the particles off the edges
             p.xa *= (p.x > width || p.x < 0) ? -1 : 1;
             p.ya *= (p.y > height || p.y < 0) ? -1 : 1;
-
             ctx.fillRect(p.x, p.y, 1, 1);
-
-            // Link particles if close enough
             for (var j = i + 1; j < particles.length; j++) {
                 var other = particles[j], distX = p.x - other.x, distY = p.y - other.y, dist = distX * distX + distY * distY;
                 if (dist < other.max) {
@@ -92,17 +82,13 @@ function scrollTo(ele, speed){
     draw();
 })();
 </script>
-<!-- /线条随鼠标移动--> 
-
-<!-- /失去焦点Title变化 --> 
+<!-- Title change on focus loss -->
 <script>
 document.addEventListener('visibilitychange', function() {
     document.title = document.hidden ? '(oﾟvﾟ)ノ Hi( •̀ ω •́ )AnranWu的主页' : '( •̀ ω •́ )AnranWu的主页';
 });
 </script>
-<!-- /失去焦点Title变化 -->
-
-<!-- /看板娘-->
+<!-- Virtual character -->
 <script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
 <script>
 L2Dwidget.init({
@@ -127,31 +113,26 @@ L2Dwidget.init({
     }
 });
 </script>
-<!-- /看板娘-->
 
-	<div id="header">
-        <img src="images/homePage.png" width="100%" height="100%"/>
+<a id="gotomain"></a>
+<div id="main">
+    <div id="catalogue">
+        <ul>
+            <li class="catalogue-li" style="background-color:rgba(237,228,254,0.7); font-family:'方正粗黑宋简体';"><a href="index.html">我的主页</a></li>
+            <li class="catalogue-li"><a href="myBlogs.html">我的博客</a></li>
+            <li class="catalogue-li"><a href="myAlbum.html">我的相册</a></li>
+            <li class="catalogue-li"><a href="myDairy.html">我的日记</a></li>
+            <li class="catalogue-li"><a href="myTimetable.html">我的课表</a></li>
+        </ul>
     </div>
-    <div id="apDiv1">
-        	<img src="images/下拉.png" width="34" height="29" style="cursor:pointer;" onclick="scrollTo('#gotomain',800);"/>
-    </div>
-	<a id="gotomain"></a>
-    <div id="main">
-        <div id="catalogue">
-         	<ul>
-            	<li class="catalogue-li" style="background-color:rgba(237,228,254,0.7); font-family:'方正粗黑宋简体';"><a href="index.html">我的主页</a></li>
-              	<li class="catalogue-li"><a href="myBlogs.html">我的博客</a></li>
-               	<li class="catalogue-li"><a href="myAlbum.html">我的相册</a></li>
-              	<li class="catalogue-li"><a href="myDairy.html">我的日记</a></li>
-               	<li class="catalogue-li"><a href="myTimetable.html">我的课表</a></li>
-          	</ul>
-       	</div>
-        <div id="main-show">
-          	<div id="main-head">
-              	<p>&nbsp;</p>
-             
-               	<p>&nbsp;</p>
-               	<p>&nbsp;</p>
-          	</div>
-            
-          	
+    <div id="main-show">
+        <p>你好，我是CB，一个步行者。</p>
+        <p>&nbsp;</p>
+        <hr>
+        
+    </div> 
+</div>
+
+<!-- Footer removed since images were requested to be deleted -->
+</body>
+</html>

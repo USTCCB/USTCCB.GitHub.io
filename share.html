@@ -212,10 +212,11 @@
     <script>
         const GITHUB_CONFIG = {
             owner: 'USTCCB',
-            repo: '2005',
-            path: 'README.md',
-            token: atob('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')
+            repo: 'USTCCB.GitHub.io',
+            path: 'share',
+            token: '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'
         };
+        
 
         async function uploadToGitHub(file, content) {
             const timestamp = Date.now();
@@ -223,6 +224,8 @@
             const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${path}`;
 
             try {
+                console.log('Uploading to:', url);
+                
                 const response = await fetch(url, {
                     method: 'PUT',
                     headers: {
@@ -236,11 +239,16 @@
                     })
                 });
 
-                if (!response.ok) throw new Error('Upload failed');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Upload error details:', errorData);
+                    throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
+                }
+                
                 return await response.json();
             } catch (error) {
                 console.error('Upload error:', error);
-                showNotification('上传失败');
+                showNotification('上传失败: ' + error.message);
                 throw error;
             }
         }

@@ -210,15 +210,13 @@
     <div class="notification" id="notification"></div>
 
     <script>
-        // 在 script 标签开始处添加 GitHub 配置
         const GITHUB_CONFIG = {
-            owner: 'chenbin3625', // 你的 GitHub 用户名
-            repo: 'share',       // 你要使用的仓库名
-            path: 'files',       // 文件存储的路径
-            token: atob('Z2hwX2FtTWNFUjRZSVZNUFAwUGtFekloMDZZdUhOaG5XNTFFZ05ITw==') // Token 编码后的值
+            owner: 'USTCCB',
+            repo: '2005',
+            path: 'README.md',
+            token: atob('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')
         };
 
-        // 添加 GitHub API 函数
         async function uploadToGitHub(file, content) {
             const timestamp = Date.now();
             const path = `${GITHUB_CONFIG.path}/${timestamp}_${file.name || 'text.txt'}`;
@@ -242,11 +240,11 @@
                 return await response.json();
             } catch (error) {
                 console.error('Upload error:', error);
+                showNotification('上传失败');
                 throw error;
             }
         }
 
-        // 切换标签
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
@@ -255,7 +253,6 @@
             document.getElementById('fileShare').style.display = tab === 'file' ? 'block' : 'none';
         }
 
-        // 获取文件图标
         function getFileIcon(filename) {
             const ext = filename.split('.').pop().toLowerCase();
             const icons = {
@@ -274,7 +271,6 @@
             return icons[ext] || icons.default;
         }
 
-        // 修改 saveText 函数
         async function saveText() {
             const text = document.querySelector('.input-area').value;
             if (!text) {
@@ -284,10 +280,7 @@
 
             try {
                 showNotification('正在保存...');
-                const result = await uploadToGitHub(
-                    { name: `text_${Date.now()}.txt` },
-                    text
-                );
+                const result = await uploadToGitHub({ name: `text_${Date.now()}.txt` }, text);
                 document.querySelector('.input-area').value = '';
                 showNotification('保存成功');
                 await updateFileList();
@@ -296,7 +289,6 @@
             }
         }
 
-        // 处理文件选择
         function handleFileSelect(event) {
             const file = event.target.files[0];
             if (file) {
@@ -310,7 +302,6 @@
             }
         }
 
-        // 修改 saveFile 函数
         async function saveFile() {
             const file = document.getElementById('fileInput').files[0];
             if (!file) {
@@ -338,7 +329,6 @@
             }
         }
 
-        // 修改 updateFileList 函数
         async function updateFileList() {
             const fileList = document.getElementById('fileList');
             fileList.innerHTML = '<div style="text-align: center;">加载中...</div>';
@@ -399,7 +389,6 @@
             }
         }
 
-        // 复制到剪贴板
         function copyToClipboard(text) {
             const textarea = document.createElement('textarea');
             textarea.value = text;
@@ -409,7 +398,6 @@
             document.body.removeChild(textarea);
         }
 
-        // 显示通知
         function showNotification(message) {
             const notification = document.getElementById('notification');
             notification.textContent = message;
@@ -420,12 +408,10 @@
             }, 2000);
         }
 
-        // 初始化
         document.addEventListener('DOMContentLoaded', () => {
             updateFileList();
         });
 
-        // 添加拖拽上传功能
         const dropZone = document.querySelector('.file-upload');
 
         dropZone.addEventListener('dragover', (e) => {
@@ -453,4 +439,4 @@
         });
     </script>
 </body>
-</html> 
+</html>

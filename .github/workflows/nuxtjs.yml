@@ -36,9 +36,11 @@ jobs:
 
       # 提交并推送到目标仓库
       - name: Push to target repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd target-repo
           git add .
           git commit -m "Sync files from source repository"
           git branch -M main
-          git push -u origin main
+          git push -u https://${GITHUB_TOKEN}@github.com/USTCCB/USTCCB.GitHub.io.git main

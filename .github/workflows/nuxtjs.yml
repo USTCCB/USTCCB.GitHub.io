@@ -18,16 +18,27 @@ jobs:
           ref: master  # 选择分支
           path: source-repo
 
-      # 将文件拷贝到目标仓库（你的仓库）
-      - name: Copy files
+      # 初始化目标仓库为 Git 仓库
+      - name: Prepare target repository
         run: |
           mkdir target-repo
-          mv source-repo/前端源码/version5.0/* target-repo/
+          cd target-repo
+          git init
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git remote add origin https://github.com/USTCCB/USTCCB.GitHub.io.git
+          cd ..
+
+      # 将文件从源仓库复制到目标仓库
+      - name: Copy files
+        run: |
+          cp -r source-repo/前端源码/version5.0/* target-repo/
 
       # 提交并推送到目标仓库
       - name: Push to target repository
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          repository: USTCCB/USTCCB.GitHub.io
-          branch: main
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd target-repo
+          git add .
+          git commit -m "Sync files from source repository"
+          git branch -M main
+          git push -u origin main

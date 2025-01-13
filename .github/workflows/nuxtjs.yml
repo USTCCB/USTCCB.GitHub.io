@@ -1,0 +1,33 @@
+name: Sync Repository
+
+on:
+  workflow_dispatch: # 手动触发
+  schedule:          # 或者定期同步，比如每天凌晨同步
+    - cron: '0 0 * * *'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 克隆别人的仓库
+      - name: Clone source repository
+        uses: actions/checkout@v3
+        with:
+          repository: USTCCB/RainbowLight
+          ref: master  # 选择分支
+          path: source-repo
+
+      # 将文件拷贝到目标仓库（你的仓库）
+      - name: Copy files
+        run: |
+          mkdir target-repo
+          mv source-repo/前端源码/version5.0/* target-repo/
+
+      # 提交并推送到目标仓库
+      - name: Push to target repository
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          repository: USTCCB/USTCCB.GitHub.io
+          branch: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}

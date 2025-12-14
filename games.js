@@ -38,6 +38,25 @@ function updateScore() {
     }
 }
 
+function showModal(title, message, restartAction) {
+    const modal = document.getElementById('game-modal');
+    document.getElementById('modal-title').innerText = title;
+    document.getElementById('modal-message').innerText = message;
+    modal.classList.remove('hidden');
+    
+    // Store the restart action for the "Play Again" button
+    window.currentRestartAction = restartAction;
+}
+
+function closeModal() {
+    document.getElementById('game-modal').classList.add('hidden');
+}
+
+function closeModalAndRestart() {
+    closeModal();
+    if (window.currentRestartAction) window.currentRestartAction();
+}
+
 function gameLoop() {
     direction = nextDirection;
     const head = { ...snake[0] };
@@ -52,14 +71,14 @@ function gameLoop() {
     // Check collision with walls
     if (head.x < 0 || head.x >= canvas.width / gridSize || head.y < 0 || head.y >= canvas.height / gridSize) {
         clearInterval(gameInterval);
-        alert('游戏结束! 撞墙了。');
+        showModal('游戏结束', `撞墙了! 最终得分: ${score}`, startSnake);
         return;
     }
 
     // Check collision with self
     if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
         clearInterval(gameInterval);
-        alert('游戏结束! 撞到自己了。');
+        showModal('游戏结束', `撞到自己了! 最终得分: ${score}`, startSnake);
         return;
     }
 
@@ -134,12 +153,14 @@ function handleCellClick(e) {
     if (checkWin()) {
         tttStatus.innerText = `🎉 玩家 ${currentPlayer} 获胜!`;
         gameActive = false;
+        showModal('游戏结束', `🎉 玩家 ${currentPlayer} 获胜!`, resetTTT);
         return;
     }
 
     if (!tttState.includes(null)) {
         tttStatus.innerText = '🤝 平局!';
         gameActive = false;
+        showModal('游戏结束', '🤝 平局!', resetTTT);
         return;
     }
 

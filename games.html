@@ -162,6 +162,18 @@
                 </div>
             </div>
 
+            <!-- Game Over Modal -->
+            <div id="game-modal" class="game-modal hidden">
+                <div class="modal-content">
+                    <h2 id="modal-title">游戏结束!</h2>
+                    <p id="modal-message">你的得分: 0</p>
+                    <div class="modal-buttons">
+                        <button class="game-btn" onclick="closeModalAndRestart()">再玩一次</button>
+                        <button class="game-btn secondary" onclick="closeModal()">关闭</button>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 

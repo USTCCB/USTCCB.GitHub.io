@@ -97,8 +97,18 @@
             <!-- Recent Updates / Widget Section -->
             <section class="widgets-section">
                 <div class="widget">
-                    <h3><i class="fa-solid fa-quote-left"></i> 今日一言</h3>
+                    <h3 id="greeting-title"><i class="fa-solid fa-sun"></i> 早安</h3>
                     <p id="daily-quote" class="quote-text">加载中...</p>
+                </div>
+                <div class="widget">
+                    <h3><i class="fa-solid fa-cloud-sun"></i> 天气 (Demo)</h3>
+                    <div style="display:flex; align-items:center; gap:15px; margin-top:10px;">
+                        <i class="fa-solid fa-cloud-rain" style="font-size: 2.5rem; color: #cbd5e1;"></i>
+                        <div>
+                            <span style="font-size: 1.5rem; font-weight:700;">24°C</span>
+                            <p style="color:var(--text-muted); font-size:0.9rem;">合肥, 多云转雨</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="widget">
                     <h3><i class="fa-regular fa-clock"></i> 现在时间</h3>
@@ -114,6 +124,20 @@
         function updateClock() {
             const now = new Date();
             document.getElementById('clock').innerText = now.toLocaleTimeString();
+            
+            // Update Greeting based on hour
+            const hour = now.getHours();
+            const greetingTitle = document.getElementById('greeting-title');
+            let greeting = '你好';
+            let icon = 'fa-sun';
+            
+            if (hour < 6) { greeting = '夜深了'; icon = 'fa-moon'; }
+            else if (hour < 11) { greeting = '早安'; icon = 'fa-coffee'; }
+            else if (hour < 14) { greeting = '中午好'; icon = 'fa-sun'; }
+            else if (hour < 19) { greeting = '下午好'; icon = 'fa-mug-hot'; }
+            else { greeting = '晚上好'; icon = 'fa-moon'; }
+            
+            greetingTitle.innerHTML = `<i class="fa-solid ${icon}"></i> ${greeting}`;
         }
         setInterval(updateClock, 1000);
         updateClock();

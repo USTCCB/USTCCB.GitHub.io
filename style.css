@@ -417,3 +417,60 @@ textarea {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.9em;
 }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.main-content {
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* Game Modal Styles */
+.game-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+.game-modal.hidden { display: none; }
+.modal-content {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    min-width: 300px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    animation: fadeIn 0.3s ease-out;
+}
+.modal-content h2 { margin-bottom: 10px; color: #fff; }
+.modal-content p { margin-bottom: 20px; color: #cbd5e1; }
+.modal-buttons { display: flex; gap: 10px; justify-content: center; }
+.game-btn.secondary { background: #334155; }
+.game-btn.secondary:hover { background: #475569; }

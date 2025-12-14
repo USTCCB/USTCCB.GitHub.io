@@ -1,396 +1,137 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>CB的课表</title>
-<link rel="stylesheet" type="text/css" href="css/stylesheet.css" />
-<link rel="icon" href="images/logo.png" sizes="35*35">
-
-<style>
-            .target {
-				width:500px;
-				height:300px;
-				overflow:hidden;
-				position:relative;
-				margin:0 auto;
-			}
-			.target img {
-				margin:0 auto;
-			}
-        #格言 {
-	font-family: "楷体";
-	font-size: 18px;
-}
-</style>
-<script src="js/jquery.js"></script>
-<script>
-function scrollTo(ele, speed){
-	if(!speed) speed = 800;
-	if(!ele){
-		$("html,body").animate({scrollTop:0},speed);
-	}else{
-		$("html,body").animate({scrollTop:$(ele).offset().top},speed);
-	}
-	return false;
-}
-</script>
-</head>
-
-<body style="margin:0%; text-align:center;">
-<!-- /线条随鼠标移动--> 
-<script>
-	!function(){
-	
-	function n(n,e,t){
-	
-	return n.getAttribute(e)||t
-	
-	}
-	
-	function e(n){
-	
-	return document.getElementsByTagName(n)
-	
-	}
-	
-	function t(){
-	
-	var t=e("script"),o=t.length,i=t[o-1];
-	
-	return{
-	
-	l:o,z:n(i,"zIndex",-1),o:n(i,"opacity",.5),c:n(i,"color","0,0,0"),n:n(i,"count",99)
-	
-	}
-	
-	}
-	
-	function o(){
-	
-	a=m.width=window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth,
-	
-	c=m.height=window.innerHeight||document.documentElement.clientHeight||document.body.clientHeight
-	
-	}
-	
-	function i(){
-	
-	r.clearRect(0,0,a,c);
-	
-	var n,e,t,o,m,l;
-	
-	s.forEach(function(i,x){
-	
-	for(i.x+=i.xa,i.y+=i.ya,i.xa*=i.x>a||i.x<0?-1:1,i.ya*=i.y>c||i.y<0?-1:1,r.fillRect(i.x-.5,i.y-.5,1,1),e=x+1;e<u.length;e++)n=u[e],
-	
-	null!==n.x&&null!==n.y&&(o=i.x-n.x,m=i.y-n.y,
-	
-	l=o*o+m*m,l<n.max&&(n===y&&l>=n.max/2&&(i.x-=.03*o,i.y-=.03*m),
-	
-	t=(n.max-l)/n.max,r.beginPath(),r.lineWidth=t/2,r.strokeStyle="rgba("+d.c+","+(t+.2)+")",r.moveTo(i.x,i.y),r.lineTo(n.x,n.y),r.stroke()))
-	
-	}),
-	
-	x(i)
-	
-	}
-	
-	var a,c,u,m=document.createElement("canvas"),
-	
-	d=t(),l="c_n"+d.l,r=m.getContext("2d"),
-	
-	x=window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame||
-	
-	function(n){
-	
-	window.setTimeout(n,1e3/45)
-	
-	},
-	
-	w=Math.random,y={x:null,y:null,max:2e4};m.id=l,m.style.cssText="position:fixed;top:0;left:0;z-index:"+d.z+";opacity:"+d.o,e("body")[0].appendChild(m),o(),window.onresize=o,
-	
-	window.onmousemove=function(n){
-	
-	n=n||window.event,y.x=n.clientX,y.y=n.clientY
-	
-	},
-	
-	window.onmouseout=function(){
-	
-	y.x=null,y.y=null
-	
-	};
-	
-	for(var s=[],f=0;d.n>f;f++){
-	
-	var h=w()*a,g=w()*c,v=2*w()-1,p=2*w()-1;s.push({x:h,y:g,xa:v,ya:p,max:6e3})
-	
-	}
-	
-	u=s.concat([y]),
-	
-	setTimeout(function(){i()},100)
-	
-	}();
-</script>
-<!-- /线条随鼠标移动--> 
-
-<!-- /失去焦点Title变化 --> 
-<script>
-     	document.addEventListener('visibilitychange', function() 
-		{
-			var isHidden = document.hidden;
-			if (isHidden) 
-			{
-				document.title = '(oﾟvﾟ)ノ Hi( •̀ ω •́ )AnranWu的主页';
-			} 
-			else 
-			{
-				document.title = '( •̀ ω •́ )AnranWu的主页';
-			}
-     	});
-	</script> 
-<!-- /失去焦点Title变化 -->
-
-<!-- /看板娘-->
-<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
-<script>
-    L2Dwidget.init({
-        "model": {
-            //jsonpath控制显示那个小萝莉模型，下面这个就是我觉得最可爱的小萝莉模型，替换时后面名字也要替换掉
-            jsonPath: "https://unpkg.com/live2d-widget-model-koharu@1.0.5/assets/koharu.model.json",
-            "scale": 1
-        },
-        "display": {
-            "position": "left", //看板娘的表现位置
-            "width": 80,  //小萝莉的宽度
-            "height": 160, //小萝莉的高度
-            "hOffset": 0,
-            "vOffset": -20
-        },
-        "mobile": {
-            "show": true,
-            "scale": 0.5
-        },
-        "react": {
-            "opacityDefault": 0.7,
-            "opacityOnHover": 0.2
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Timetable - USTCCB</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .table-container {
+            background: var(--card-bg);
+            border: var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            overflow-x: auto;
         }
-    });
-</script>
-<!-- /看板娘-->
-<a id="gotomain"></a>
-	<div class="other-header" style="background-image:url(images/页首图片/叶子.jpg);">
-        <p>我的课表</p>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        th, td {
+            padding: 16px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        th {
+            font-weight: 600;
+            color: var(--primary-color);
+            background: rgba(0,0,0,0.2);
+        }
+        tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+        .period-col {
+            font-weight: 600;
+            color: var(--text-muted);
+            width: 80px;
+        }
+        .course {
+            background: rgba(99, 102, 241, 0.15);
+            color: #e0e7ff;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        .course.empty {
+            background: transparent;
+            border: none;
+        }
+        .course-highlight {
+            background: rgba(236, 72, 153, 0.15);
+            color: #fce7f3;
+            border-color: rgba(236, 72, 153, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-glow"></div>
+    
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-code-branch"></i>
+                <span>USTCCB</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-house"></i> 首页</a></li>
+                <li><a href="ai-chat.html"><i class="fa-solid fa-robot"></i> AI 助手</a></li>
+                <li><a href="myBlogs.html"><i class="fa-solid fa-pen-nib"></i> 博客</a></li>
+                <li><a href="myAlbum.html"><i class="fa-solid fa-images"></i> 相册</a></li>
+                <li><a href="games.html"><i class="fa-solid fa-gamepad"></i> 游戏实验室</a></li>
+                <li class="active"><a href="myTimetable.html"><i class="fa-solid fa-calendar-days"></i> 课表</a></li>
+                <li><a href="myDairy.html"><i class="fa-solid fa-book"></i> 日记</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-header">
+                <h1>我的课表 📅</h1>
+                <p>“他们试图埋了你，但你要知道，你是种子。”</p>
+            </header>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>节次</th>
+                            <th>周一</th>
+                            <th>周二</th>
+                            <th>周三</th>
+                            <th>周四</th>
+                            <th>周五</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="period-col">1-2</td>
+                            <td><div class="course">高等数学</div></td>
+                            <td><div class="course empty"></div></td>
+                            <td><div class="course">大学英语</div></td>
+                            <td><div class="course empty"></div></td>
+                            <td><div class="course course-highlight">数据结构</div></td>
+                        </tr>
+                        <tr>
+                            <td class="period-col">3-4</td>
+                            <td><div class="course empty"></div></td>
+                            <td><div class="course">线性代数</div></td>
+                            <td><div class="course empty"></div></td>
+                            <td><div class="course">计算机网络</div></td>
+                            <td><div class="course empty"></div></td>
+                        </tr>
+                        <tr>
+                            <td class="period-col">5-6</td>
+                            <td><div class="course course-highlight">体育</div></td>
+                            <td><div class="course empty"></div></td>
+                            <td><div class="course">操作系统</div></td>
+                            <td><div class="course empty"></div></td>
+                            <td><div class="course empty"></div></td>
+                        </tr>
+                        <tr>
+                            <td class="period-col">7-8</td>
+                            <td><div class="course empty"></div></td>
+                            <td><div class="course empty"></div></td>
+                            <td><div class="course empty"></div></td>
+                            <td><div class="course">算法导论</div></td>
+                            <td><div class="course">形势与政策</div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
     </div>
-    
-    <div id="main">
-        <div id="catalogue">
-         	<ul>
-            	<li class="catalogue-li"><a href="index.html">我的主页</a></li>
-              	<li class="catalogue-li"><a href="myBlogs.html">我的博客</a></li>
-               	<li class="catalogue-li"><a href="myAlbum.html">我的相册</a></li>
-              	<li class="catalogue-li"><a href="myDairy.html">我的日记</a></li>
-               	<li class="catalogue-li" style="background-color:rgba(237,228,254,0.7); font-family:'方正粗黑宋简体';"><a href="myTimetable.html">我的课表</a></li>
-          	</ul>
-            
-       	</div>
-
-        <div id="main-show">
-        <table width="80%" border="1"  background="images/猫咪咪.jpg" style="background-repeat:no-repeat;">
-    <caption id="geyan">
-<br />
-
-<br />
-“他们试图埋了你，但你要知道，你是种子。”<br />
-<br />
-    </caption>
-    <tr>
-      <th height="80" scope="col"><div align="center"></div></th>
-      <th height="80" scope="col"><div align="center" class="表格抬头">节次</div></th>
-      <th height="80" scope="col"><div align="center" class="表格抬头">星期一</div></th>
-      <th height="80" scope="col"><div align="center" class="表格抬头">星期二</div></th>
-      <th height="80" scope="col"><div align="center" class="表格抬头">星期三</div></th>
-      <th height="80" scope="col"><div align="center" class="表格抬头">星期四</div></th>
-      <th height="80" scope="col"><div align="center" class="表格抬头">星期五</div></th>
-      <th height="80" scope="col"><div align="center" class="表格抬头">星期六</div></th>
-      <th height="80" scope="col"><div align="center" class="表格抬头">星期日</div></th>
-    </tr>
-    <tr>
-      <td width="9%" rowspan="5" class="表格抬头"><div align="center">上午</div></td>
-      <td width="7%" height="0" class="表格抬头"><div align="center">1</div></td>
-      <td><div align="center"></div></td>
-      <td width="12%" rowspan="3" class="课表内容"><div align="center"></div>        
-      <div align="center"></div>        <div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%" rowspan="4" class="课表内容"><div align="center"></div>        
-      <div align="center"></div>        <div align="center"></div>        <div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-    </tr>
-    <tr>
-      <td width="7%" height="0" class="表格抬头"><div align="center">2</div></td>
-      <td><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-    </tr>
-    <tr>
-      <td width="7%" height="0" class="表格抬头"><div align="center">3</div></td>
-      <td><div align="center"></div></td>
-      <td width="12%" rowspan="3" class="课表内容"><div align="center"></div>        
-      <div align="center"></div>        <div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-    </tr>
-    <tr>
-      <td width="7%" height="0" class="表格抬头"><div align="center">4</div></td>
-      <td rowspan="2"><div align="center" class="课表内容"></div>        
-      <div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-    </tr>
-    <tr>
-      <td width="7%" height="0" class="表格抬头"><div align="center">5</div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-    </tr>
-    <tr>
-      <td width="9%" rowspan="4" class="表格抬头"><div align="center">下午</div></td>
-      <td width="7%" height="0" class="表格抬头"><div align="center">6</div></td>
-      <td rowspan="2" class="课表内容"><div align="center"></div>        <div align="center"></div></td>
-      <td width="12%" rowspan="2" class="课表内容"><div align="center"></div>        <div align="center"></div></td>
-      <td width="12%" rowspan="2" class="课表内容"><div align="center"></div>        <div align="center"></div></td>
-      <td width="12%" rowspan="3" class="课表内容"><div align="center"></div>        
-      <div align="center"></div>        <div align="center"></div></td>
-      <td width="12%" rowspan="4" class="课表内容"><div align="center"></div>        
-      <div align="center"></div>        <div align="center"></div>        <div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-    </tr>
-    <tr>
-      <td width="7%" height="0" class="表格抬头"><div align="center">7</div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-    </tr>
-    <tr>
-      <td width="7%" height="0" class="表格抬头"><div align="center">8</div></td>
-      <td><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-    </tr>
-    <tr>
-      <td width="7%" height="0" class="表格抬头"><div align="center">9</div></td>
-      <td><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-    </tr>
-    <tr>
-      <td width="9%" rowspan="5" class="表格抬头"><div align="center">晚上</div>        
-      <div align="center"></div>        <div align="center"></div>        <div align="center"></div></td>
-      <td width="7%" height="0" class="表格抬头"><div align="center">10</div></td>
-      <td><div align="center"></div></td>
-      <td width="12%" rowspan="3" class="课表内容"><div align="center"></div>        
-      <div align="center"></div>        <div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-    </tr>
-    <tr>
-      <td width="7%" height="0" class="表格抬头"><div align="center">11</div></td>
-      <td><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-    </tr>
-    <tr>
-      <td width="7%" height="0" class="表格抬头"><div align="center">12</div></td>
-      <td><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-    </tr>
-   
-    <tr>
-      <td width="7%" height="0" class="表格抬头"><div align="center">13</div></td>
-      <td><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-      <td width="12%"><div align="center"></div></td>
-    </tr>
-    
-  </table>
-  <table width="100%" height="98" border="0">
-    <tr>
-      <th scope="col">&nbsp;</th>
-    </tr>
-  </table>
-        </div>  
-               
-	</div>
-    <div style="width:100%;">
-    	<div style="float:left;">
-        </div>
-        
-     	<div style="float:right"><img src="images/backToTop.png" width="50%" onclick="scrollTo('#gotomain',800);" style="cursor:pointer;"/>
-        </div>   
-   	</div>    
-    <div id="footer">
-      	<img src="images/foot.png"  width="100%" height="100%"/>
-        <p id="yewei" style="text-align:center; font-family:'华文新魏';">[ 埋骨何须桑梓地，人生无处不青山 ]</p>    
-            <p style="text-align:center; font-family:'华文新魏';">Made by AnranWu</p>  
-</div>
-<SCRIPT language=javascript>
-	<!--
-	var timer1;
-	
-	var txt=new Array(17);
-		txt[0]="[ 明日之我，胸中有丘壑，立马振山河。 ]";
-		txt[1]="[ 能够让你后悔的，从来不是你做过的事，而是你想做却没有去做的事。 ]";
-		txt[2]="[ 小时候觉得开心就好，现在也是。 ]";
-		txt[3]="[ 欲买桂花同载酒，终不似，少年游 ]";
-		txt[4]="[ 聚是一团火，散是满天星 ]";
-		txt[5]="[ 你来人间一趟，你要看看太阳 ]";
-		txt[6]="[ 人之所以孤独，是因为要和某个人相遇。 ]";
-		txt[7]="[ 把酒祝东风，且共从容。 ——欧阳修 ]";
-		txt[8]="[ 每个人都会死去，但并不是每个人都真正活过。 ]";
-		txt[9]="[ 人生碌碌，竞短论长，却不道荣枯有数，得失难量 ]";
-		txt[10]="[ 总之岁月漫长，然而值得等待 ]";
-		txt[11]="[ 关山难越，谁悲失路之人？萍水相逢，尽是他乡之客。 ]";
-		txt[12]="[ 所有快乐，无需假装，此生尽兴，赤诚善良 ]";
-		txt[13]="[ 为你，千千万万遍。 ]";
-		txt[14]="[ 埋骨何须桑梓地，人生无处不青山 ]";
-		txt[15]="[ 于浩歌狂热之际寒，于天上看见深渊，于一切眼中看见无所有，于无处希望中得救。 ]";
-		txt[16]="[ 人生最好的三个词：久别重逢 失而复得 虚惊一场 ]";
-	timer1 = setInterval("myval()",4000);
-	function myval()
-	{
-		var rnd=Math.floor(Math.random()*17);
-		window.document.getElementById("yewei").innerHTML=txt[rnd];
-	}
-	-->
-</SCRIPT>
 </body>
 </html>

@@ -1,72 +1,131 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>彪王的主页</title>
-	<link rel="shortcut icon" href="favicon.ico">
-	<link rel="stylesheet" type="text/css" href="css/normalize.css" />
-	<link rel="stylesheet" type="text/css" href="css/demo.css" />
-    <link rel="stylesheet" type="text/css" href="css/base.css" />
-    <link rel="icon" href="images/logo.png" sizes="35*35">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>USTCCB's Space</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+<body>
+    <div class="background-glow"></div>
+    
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-code-branch"></i>
+                <span>USTCCB</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active"><a href="index.html"><i class="fa-solid fa-house"></i> 首页</a></li>
+                <li><a href="ai-chat.html"><i class="fa-solid fa-robot"></i> AI 助手</a></li>
+                <li><a href="myBlogs.html"><i class="fa-solid fa-pen-nib"></i> 博客</a></li>
+                <li><a href="myAlbum.html"><i class="fa-solid fa-images"></i> 相册</a></li>
+                <li><a href="games.html"><i class="fa-solid fa-gamepad"></i> 游戏实验室</a></li>
+                <li><a href="myTimetable.html"><i class="fa-solid fa-calendar-days"></i> 课表</a></li>
+                <li><a href="myDairy.html"><i class="fa-solid fa-book"></i> 日记</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar"><i class="fa-solid fa-user"></i></div>
+                    <div class="user-info">
+                        <span class="name">AnranWu</span>
+                        <span class="status">Admin</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
 
-<body onload="demo.init();">
-	<!-- /加载动画 -->
-	<script>
-	const SETTINGS = 
-	{
-		rebound: 
-		{
-			tension: 16,
-			friction: 5
-		},
-		spinner: 
-		{
-			id: 'spinner',
-			radius: 90,
-			sides: 3,
-			depth: 4,
-			colors:
-			{
-				//background: '#231E76',
-				//stroke: '#231E76',
-				background: '#f0f0f0',
-				stroke: '#272633',
-				base: null,
-				child: '#272633'
-			},
-			alwaysForward: true, // When false the spring will reverse normally.
-			restAt: 0.5, // A number from 0.1 to 0.9 || null for full rotation
-			renderBase: false
-		}
-	};
-	</script>
-	<script src="js/main.js"></script>
-    <!-- /加载动画 -->
-    
-    <!-- /失去焦点Title变化 -->
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <h1>欢迎来到我的数字空间 👋</h1>
+                <p>探索、记录、创造</p>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- AI Chat Card -->
+                <a href="ai-chat.html" class="card card-primary">
+                    <div class="card-icon"><i class="fa-solid fa-robot"></i></div>
+                    <div class="card-info">
+                        <h3>AI 助手</h3>
+                        <p>基于 GPT 的智能对话助手</p>
+                    </div>
+                    <div class="card-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                </a>
+
+                <!-- Games Card -->
+                <a href="games.html" class="card card-accent">
+                    <div class="card-icon"><i class="fa-solid fa-gamepad"></i></div>
+                    <div class="card-info">
+                        <h3>游戏实验室</h3>
+                        <p>贪吃蛇、井字棋等休闲小游戏</p>
+                    </div>
+                    <div class="card-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                </a>
+
+                <!-- Blogs Card -->
+                <a href="myBlogs.html" class="card">
+                    <div class="card-icon"><i class="fa-solid fa-pen-nib"></i></div>
+                    <div class="card-info">
+                        <h3>我的博客</h3>
+                        <p>记录学习与生活的点滴</p>
+                    </div>
+                </a>
+
+                <!-- Album Card -->
+                <a href="myAlbum.html" class="card">
+                    <div class="card-icon"><i class="fa-solid fa-images"></i></div>
+                    <div class="card-info">
+                        <h3>我的相册</h3>
+                        <p>美好瞬间的定格</p>
+                    </div>
+                </a>
+
+                <!-- Timetable Card -->
+                <a href="myTimetable.html" class="card">
+                    <div class="card-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                    <div class="card-info">
+                        <h3>课程表</h3>
+                        <p>日程安排与规划</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Recent Updates / Widget Section -->
+            <section class="widgets-section">
+                <div class="widget">
+                    <h3><i class="fa-solid fa-quote-left"></i> 今日一言</h3>
+                    <p id="daily-quote" class="quote-text">加载中...</p>
+                </div>
+                <div class="widget">
+                    <h3><i class="fa-regular fa-clock"></i> 现在时间</h3>
+                    <p id="clock" class="clock-text">--:--:--</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
     <script>
-     	document.addEventListener('visibilitychange', function() 
-		{
-			var isHidden = document.hidden;
-			if (isHidden) 
-			{
-				document.title = '(oﾟvﾟ)ノ Hi( •̀ ω •́ )AnranWu的主页';
-			} 
-			else 
-			{
-				document.title = '( •̀ ω •́ )AnranWu的主页';
-			}
-     	});
-	</script>
-    <!-- /失去焦点Title变化 -->
-    
-    <!--自动转到主页-->
-    <script language="javascript" type="text/javascript">
-window.setTimeout("window.location='homePage.html'",2000);
-	</script>
-   	<!--自动转到主页-->
-    
+        // Inline script for simple clock and quote (specific to index)
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        const quotes = [
+            "明日之我，胸中有丘壑，立马振山河。",
+            "能够让你后悔的，从来不是你做过的事，而是你想做却没有去做的事。",
+            "聚是一团火，散是满天星。",
+            "你来人间一趟，你要看看太阳。",
+            "埋骨何须桑梓地，人生无处不青山。"
+        ];
+        document.getElementById('daily-quote').innerText = quotes[Math.floor(Math.random() * quotes.length)];
+    </script>
 </body>
 </html>

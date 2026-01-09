@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blogs - USTCCB</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .blog-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .blog-card {
+            background: var(--card-bg);
+            border: var(--glass-border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: transform 0.2s;
+        }
+        .blog-card:hover {
+            transform: translateY(-2px);
+            background: var(--card-hover);
+        }
+        .blog-date {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .blog-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 12px;
+            display: block;
+        }
+        .blog-excerpt {
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+        .blog-tags {
+            margin-top: 16px;
+            display: flex;
+            gap: 8px;
+        }
+        .tag {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-glow"></div>
+    
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-code-branch"></i>
+                <span>USTCCB</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-house"></i> 首页</a></li>
+                <li><a href="ai-chat.html"><i class="fa-solid fa-robot"></i> AI 助手</a></li>
+                <li class="active"><a href="myBlogs.html"><i class="fa-solid fa-pen-nib"></i> 博客</a></li>
+                <li><a href="myAlbum.html"><i class="fa-solid fa-images"></i> 相册</a></li>
+                <li><a href="games.html"><i class="fa-solid fa-gamepad"></i> 游戏实验室</a></li>
+                <li><a href="myTimetable.html"><i class="fa-solid fa-calendar-days"></i> 课表</a></li>
+                <li><a href="myDairy.html"><i class="fa-solid fa-book"></i> 日记</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-header">
+                <h1>我的博客 ✍️</h1>
+                <p>思考与记录</p>
+            </header>
+
+            <div class="blog-list">
+                <article class="blog-card">
+                    <span class="blog-date">2023-10-24</span>
+                    <a href="#" class="blog-title">深入理解 JavaScript 闭包</a>
+                    <p class="blog-excerpt">闭包是 JavaScript 中最强大的特性之一，但也常常令人困惑。在这篇文章中，我们将通过可视化示例深入探讨闭包的工作原理...</p>
+                    <div class="blog-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Frontend</span>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <span class="blog-date">2023-09-15</span>
+                    <a href="#" class="blog-title">CSS Grid 布局指南</a>
+                    <p class="blog-excerpt">Flexbox 很棒，但 Grid 才是二维布局的王者。学会如何使用 Grid 并在你的下一个项目中构建复杂的布局...</p>
+                    <div class="blog-tags">
+                        <span class="tag">CSS</span>
+                        <span class="tag">Design</span>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <span class="blog-date">2023-08-01</span>
+                    <a href="#" class="blog-title">关于未来的思考</a>
+                    <p class="blog-excerpt">最近读了一本关于人工智能的书，引发了我对未来技术发展的无限遐想...</p>
+                    <div class="blog-tags">
+                        <span class="tag">Life</span>
+                        <span class="tag">Thoughts</span>
+                    </div>
+                </article>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

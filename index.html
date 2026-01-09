@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>USTCCB's Space</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-glow"></div>
+    
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-code-branch"></i>
+                <span>USTCCB</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active"><a href="index.html"><i class="fa-solid fa-house"></i> 首页</a></li>
+                <li><a href="ai-chat.html"><i class="fa-solid fa-robot"></i> AI 助手</a></li>
+                <li><a href="myBlogs.html"><i class="fa-solid fa-pen-nib"></i> 博客</a></li>
+                <li><a href="myAlbum.html"><i class="fa-solid fa-images"></i> 相册</a></li>
+                <li><a href="games.html"><i class="fa-solid fa-gamepad"></i> 游戏实验室</a></li>
+                <li><a href="myTimetable.html"><i class="fa-solid fa-calendar-days"></i> 课表</a></li>
+                <li><a href="myDairy.html"><i class="fa-solid fa-book"></i> 日记</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar"><i class="fa-solid fa-user"></i></div>
+                    <div class="user-info">
+                        <span class="name">AnranWu</span>
+                        <span class="status">Admin</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <h1>欢迎来到我的数字空间 👋</h1>
+                <p>探索、记录、创造</p>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- AI Chat Card -->
+                <a href="ai-chat.html" class="card card-primary">
+                    <div class="card-icon"><i class="fa-solid fa-robot"></i></div>
+                    <div class="card-info">
+                        <h3>AI 助手</h3>
+                        <p>基于 GPT 的智能对话助手</p>
+                    </div>
+                    <div class="card-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                </a>
+
+                <!-- Games Card -->
+                <a href="games.html" class="card card-accent">
+                    <div class="card-icon"><i class="fa-solid fa-gamepad"></i></div>
+                    <div class="card-info">
+                        <h3>游戏实验室</h3>
+                        <p>贪吃蛇、井字棋等休闲小游戏</p>
+                    </div>
+                    <div class="card-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                </a>
+
+                <!-- Blogs Card -->
+                <a href="myBlogs.html" class="card">
+                    <div class="card-icon"><i class="fa-solid fa-pen-nib"></i></div>
+                    <div class="card-info">
+                        <h3>我的博客</h3>
+                        <p>记录学习与生活的点滴</p>
+                    </div>
+                </a>
+
+                <!-- Album Card -->
+                <a href="myAlbum.html" class="card">
+                    <div class="card-icon"><i class="fa-solid fa-images"></i></div>
+                    <div class="card-info">
+                        <h3>我的相册</h3>
+                        <p>美好瞬间的定格</p>
+                    </div>
+                </a>
+
+                <!-- Timetable Card -->
+                <a href="myTimetable.html" class="card">
+                    <div class="card-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                    <div class="card-info">
+                        <h3>课程表</h3>
+                        <p>日程安排与规划</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Recent Updates / Widget Section -->
+            <section class="widgets-section">
+                <div class="widget">
+                    <h3 id="greeting-title"><i class="fa-solid fa-sun"></i> 早安</h3>
+                    <p id="daily-quote" class="quote-text">加载中...</p>
+                </div>
+                
+                <div class="widget">
+                    <h3><i class="fa-solid fa-list-check"></i> 待办事项</h3>
+                    <div class="todo-widget">
+                        <div style="display:flex; gap:8px; margin-bottom:10px;">
+                            <input type="text" id="todoInput" placeholder="添加新任务..." style="flex:1; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:white; padding:6px 10px; border-radius:4px; outline:none;">
+                            <button onclick="addTodo()" style="background:var(--primary-color); border:none; color:white; border-radius:4px; width:30px; cursor:pointer;"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                        <ul id="todoList" style="list-style:none; max-height:120px; overflow-y:auto; padding-right:5px;">
+                            <!-- Todo Items injected by JS -->
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <h3><i class="fa-regular fa-clock"></i> 现在时间</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <p id="clock" class="clock-text">--:--:--</p>
+                            <p id="date-text" style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">YYYY-MM-DD</p>
+                        </div>
+                        <i class="fa-solid fa-clock" style="font-size: 2.5rem; color: rgba(255,255,255,0.1);"></i>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Inline script for simple clock and quote (specific to index)
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString();
+            document.getElementById('date-text').innerText = now.toLocaleDateString('zh-CN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            
+            // Update Greeting based on hour
+            const hour = now.getHours();
+            const greetingTitle = document.getElementById('greeting-title');
+            if(greetingTitle) {
+                let greeting = '你好';
+                let icon = 'fa-sun';
+                
+                if (hour < 6) { greeting = '夜深了'; icon = 'fa-moon'; }
+                else if (hour < 11) { greeting = '早安'; icon = 'fa-coffee'; }
+                else if (hour < 14) { greeting = '中午好'; icon = 'fa-sun'; }
+                else if (hour < 19) { greeting = '下午好'; icon = 'fa-mug-hot'; }
+                else { greeting = '晚上好'; icon = 'fa-moon'; }
+                
+                greetingTitle.innerHTML = `<i class="fa-solid ${icon}"></i> ${greeting}`;
+            }
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        const quotes = [
+            "明日之我，胸中有丘壑，立马振山河。",
+            "能够让你后悔的，从来不是你做过的事，而是你想做却没有去做的事。",
+            "聚是一团火，散是满天星。",
+            "你来人间一趟，你要看看太阳。",
+            "埋骨何须桑梓地，人生无处不青山。",
+            "星光不问赶路人，时光不负有心人。"
+        ];
+        document.getElementById('daily-quote').innerText = quotes[Math.floor(Math.random() * quotes.length)];
+
+        // Simple Todo Logic
+        function loadTodos() {
+            const saved = localStorage.getItem('mini_todos');
+            const list = document.getElementById('todoList');
+            list.innerHTML = '';
+            const todos = saved ? JSON.parse(saved) : ['完善个人网站', '学习 AI 知识'];
+            todos.forEach((todo, index) => {
+                const li = document.createElement('li');
+                li.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.9rem; color:#cbd5e1;";
+                li.innerHTML = `
+                    <span>${todo}</span>
+                    <i class="fa-solid fa-check" style="cursor:pointer; color:rgba(255,255,255,0.3);" onclick="removeTodo(${index})"></i>
+                `;
+                list.appendChild(li);
+            });
+        }
+        
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const val = input.value.trim();
+            if(!val) return;
+            const saved = localStorage.getItem('mini_todos');
+            const todos = saved ? JSON.parse(saved) : ['完善个人网站', '学习 AI 知识'];
+            todos.push(val);
+            localStorage.setItem('mini_todos', JSON.stringify(todos));
+            input.value = '';
+            loadTodos();
+        }
+
+        function removeTodo(index) {
+            const saved = localStorage.getItem('mini_todos');
+            if(!saved) return;
+            const todos = JSON.parse(saved);
+            todos.splice(index, 1);
+            localStorage.setItem('mini_todos', JSON.stringify(todos));
+            loadTodos();
+        }
+
+        // Handle Enter key for Todo
+        document.getElementById('todoInput').addEventListener('keydown', (e) => {
+            if(e.key === 'Enter') addTodo();
+        });
+
+        loadTodos();
+    </script>
+</body>
+</html>

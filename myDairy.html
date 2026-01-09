@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Diary - USTCCB</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .diary-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .diary-entry {
+            background: var(--card-bg);
+            border-left: 4px solid var(--primary-color);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            border-radius: 0 12px 12px 0;
+            position: relative;
+        }
+        .diary-date {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .diary-content {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: #e2e8f0;
+        }
+        .diary-content p {
+            margin-bottom: 12px;
+        }
+        .diary-content p:last-child {
+            margin-bottom: 0;
+        }
+        .mood-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-glow"></div>
+    
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-code-branch"></i>
+                <span>USTCCB</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-house"></i> 首页</a></li>
+                <li><a href="ai-chat.html"><i class="fa-solid fa-robot"></i> AI 助手</a></li>
+                <li><a href="myBlogs.html"><i class="fa-solid fa-pen-nib"></i> 博客</a></li>
+                <li><a href="myAlbum.html"><i class="fa-solid fa-images"></i> 相册</a></li>
+                <li><a href="games.html"><i class="fa-solid fa-gamepad"></i> 游戏实验室</a></li>
+                <li><a href="myTimetable.html"><i class="fa-solid fa-calendar-days"></i> 课表</a></li>
+                <li class="active"><a href="myDairy.html"><i class="fa-solid fa-book"></i> 日记</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-header">
+                <h1>我的日记 📔</h1>
+                <p>记录生活中的小确幸</p>
+            </header>
+
+            <div class="diary-container">
+                <div class="diary-entry">
+                    <div class="diary-date">2023.10.24 星期二 ☁️</div>
+                    <div class="mood-icon"><i class="fa-regular fa-face-smile"></i></div>
+                    <div class="diary-content">
+                        <p>今天是程序员节（1024），给自己放了个假。去公园散步，看到银杏叶开始变黄了，秋天的气息越来越浓。</p>
+                        <p>回来路上买了一杯热咖啡，心情很不错。</p>
+                    </div>
+                </div>
+
+                <div class="diary-entry">
+                    <div class="diary-date">2023.10.20 星期五 ☀️</div>
+                    <div class="mood-icon"><i class="fa-regular fa-face-laugh-beam"></i></div>
+                    <div class="diary-content">
+                        <p>终于把那个棘手的 Bug 修复了！感觉如释重负。有时候编程就像解谜，过程痛苦但结果令人着迷。</p>
+                    </div>
+                </div>
+
+                <div class="diary-entry">
+                    <div class="diary-date">2023.10.15 星期日 🌧️</div>
+                    <div class="mood-icon"><i class="fa-regular fa-face-meh"></i></div>
+                    <div class="diary-content">
+                        <p>下了一整天的雨，哪里也没去。在家里看完了《百年孤独》，马尔克斯的文字真的很有魔力。</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

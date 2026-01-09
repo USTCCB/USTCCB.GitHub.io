@@ -50,7 +50,8 @@ function initChat() {
     const providerConfigs = document.querySelectorAll('.provider-config');
 
     // Load saved configuration
-    let currentProvider = localStorage.getItem('ai_provider') || 'gemini';
+    // [MODIFIED] Default provider changed to 'deepseek'
+    let currentProvider = localStorage.getItem('ai_provider') || 'deepseek';
     let apiConfig = {
         gemini: {
             key: localStorage.getItem('gemini_api_key') || '',
@@ -61,7 +62,8 @@ function initChat() {
             model: localStorage.getItem('openai_model') || 'gpt-5.2'
         },
         deepseek: {
-            key: localStorage.getItem('deepseek_api_key') || '',
+            // [MODIFIED] Added default API Key for DeepSeek
+            key: localStorage.getItem('deepseek_api_key') || 'sk-baf5f27f7566431290140ed72e3cf3fd',
             model: localStorage.getItem('deepseek_model') || 'deepseek-chat'
         }
     };

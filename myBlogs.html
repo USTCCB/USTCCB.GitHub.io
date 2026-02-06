@@ -8,58 +8,233 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .blog-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            max-width: 800px;
+        .blog-container {
+            max-width: 1000px;
             margin: 0 auto;
         }
+
+        .blog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            background: var(--card-bg);
+            border: var(--glass-border);
+            border-radius: 10px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tag {
+            padding: 8px 16px;
+            background: var(--card-bg);
+            border: var(--glass-border);
+            border-radius: 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-tag:hover, .filter-tag.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .blog-list {
+            display: grid;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
         .blog-card {
             background: var(--card-bg);
             border: var(--glass-border);
-            border-radius: 12px;
-            padding: 24px;
-            transition: transform 0.2s;
+            border-radius: 16px;
+            padding: 28px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
+
+        .blog-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
         .blog-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-4px);
             background: var(--card-hover);
+            box-shadow: 0 12px 40px rgba(139, 92, 246, 0.2);
         }
-        .blog-date {
-            color: var(--text-muted);
+
+        .blog-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .blog-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
             font-size: 0.85rem;
-            margin-bottom: 8px;
-            display: block;
+            color: var(--text-muted);
         }
+
+        .blog-meta i {
+            margin-right: 4px;
+        }
+
         .blog-title {
-            font-size: 1.25rem;
+            font-size: 1.4rem;
             font-weight: 600;
             color: var(--text-color);
             margin-bottom: 12px;
-            display: block;
+            line-height: 1.4;
         }
+
         .blog-excerpt {
-            color: #cbd5e1;
-            line-height: 1.6;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 16px;
         }
+
+        .blog-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
         .blog-tags {
-            margin-top: 16px;
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
         }
+
         .tag {
-            background: rgba(99, 102, 241, 0.1);
+            background: rgba(139, 92, 246, 0.1);
             color: var(--primary-color);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .blog-stats {
+            display: flex;
+            gap: 16px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .blog-stats span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 40px;
+        }
+
+        .page-btn {
+            padding: 10px 16px;
+            background: var(--card-bg);
+            border: var(--glass-border);
+            border-radius: 8px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .page-btn:hover, .page-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .no-results i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        @media (max-width: 768px) {
+            .blog-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .blog-footer {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
 <body>
     <div class="background-glow"></div>
-    
+
     <div class="app-container">
         <nav class="sidebar">
             <div class="logo">
@@ -75,47 +250,282 @@
                 <li><a href="myTimetable.html"><i class="fa-solid fa-calendar-days"></i> 课表</a></li>
                 <li><a href="myDairy.html"><i class="fa-solid fa-book"></i> 日记</a></li>
             </ul>
+            <div class="sidebar-footer">
+                <button class="theme-toggle" id="themeToggle" title="切换主题">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <div class="user-profile">
+                    <div class="avatar"><i class="fa-solid fa-user"></i></div>
+                    <div class="user-info">
+                        <span class="name">AnranWu</span>
+                        <span class="status">Admin</span>
+                    </div>
+                </div>
+            </div>
         </nav>
 
         <main class="main-content">
             <header class="top-header">
                 <h1>我的博客 ✍️</h1>
-                <p>思考与记录</p>
+                <p>思考与记录，分享与成长</p>
             </header>
 
-            <div class="blog-list">
-                <article class="blog-card">
-                    <span class="blog-date">2023-10-24</span>
-                    <a href="#" class="blog-title">深入理解 JavaScript 闭包</a>
-                    <p class="blog-excerpt">闭包是 JavaScript 中最强大的特性之一，但也常常令人困惑。在这篇文章中，我们将通过可视化示例深入探讨闭包的工作原理...</p>
-                    <div class="blog-tags">
-                        <span class="tag">JavaScript</span>
-                        <span class="tag">Frontend</span>
+            <div class="blog-container">
+                <div class="blog-header">
+                    <div class="search-box">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="搜索博客...">
                     </div>
-                </article>
+                    <div class="filter-tags">
+                        <span class="filter-tag active" data-tag="all">全部</span>
+                        <span class="filter-tag" data-tag="JavaScript">JavaScript</span>
+                        <span class="filter-tag" data-tag="CSS">CSS</span>
+                        <span class="filter-tag" data-tag="Life">生活</span>
+                        <span class="filter-tag" data-tag="AI">AI</span>
+                    </div>
+                </div>
 
-                <article class="blog-card">
-                    <span class="blog-date">2023-09-15</span>
-                    <a href="#" class="blog-title">CSS Grid 布局指南</a>
-                    <p class="blog-excerpt">Flexbox 很棒，但 Grid 才是二维布局的王者。学会如何使用 Grid 并在你的下一个项目中构建复杂的布局...</p>
-                    <div class="blog-tags">
-                        <span class="tag">CSS</span>
-                        <span class="tag">Design</span>
-                    </div>
-                </article>
+                <div class="blog-list" id="blogList">
+                    <!-- 博客文章将通过 JS 动态生成 -->
+                </div>
 
-                <article class="blog-card">
-                    <span class="blog-date">2023-08-01</span>
-                    <a href="#" class="blog-title">关于未来的思考</a>
-                    <p class="blog-excerpt">最近读了一本关于人工智能的书，引发了我对未来技术发展的无限遐想...</p>
-                    <div class="blog-tags">
-                        <span class="tag">Life</span>
-                        <span class="tag">Thoughts</span>
-                    </div>
-                </article>
+                <div class="no-results" id="noResults" style="display: none;">
+                    <i class="fa-solid fa-search"></i>
+                    <h3>未找到相关博客</h3>
+                    <p>尝试使用其他关键词搜索</p>
+                </div>
+
+                <div class="pagination" id="pagination">
+                    <!-- 分页按钮将通过 JS 动态生成 -->
+                </div>
             </div>
         </main>
     </div>
+
     <script src="script.js"></script>
+    <script>
+        // 博客数据
+        const blogs = [
+            {
+                id: 1,
+                title: '深入理解 JavaScript 闭包',
+                excerpt: '闭包是 JavaScript 中最强大的特性之一，但也常常令人困惑。在这篇文章中，我们将通过可视化示例深入探讨闭包的工作原理，理解词法作用域、执行上下文和内存管理。',
+                date: '2024-02-01',
+                author: 'AnranWu',
+                readTime: '8 分钟',
+                views: 1234,
+                likes: 89,
+                tags: ['JavaScript', 'Frontend', 'Advanced']
+            },
+            {
+                id: 2,
+                title: 'CSS Grid 完全指南',
+                excerpt: 'Flexbox 很棒，但 Grid 才是二维布局的王者。本文将带你从零开始掌握 CSS Grid，学会如何构建复杂的响应式布局，并提供大量实战案例。',
+                date: '2024-01-28',
+                author: 'AnranWu',
+                readTime: '12 分钟',
+                views: 2156,
+                likes: 145,
+                tags: ['CSS', 'Design', 'Layout']
+            },
+            {
+                id: 3,
+                title: 'AI 时代的思考：机遇与挑战',
+                excerpt: '人工智能正在改变世界。从 ChatGPT 到 Midjourney，AI 工具正在重塑我们的工作方式。作为开发者，我们应该如何应对这场变革？本文分享我的一些思考。',
+                date: '2024-01-20',
+                author: 'AnranWu',
+                readTime: '6 分钟',
+                views: 3421,
+                likes: 267,
+                tags: ['AI', 'Life', 'Thoughts']
+            },
+            {
+                id: 4,
+                title: 'React Hooks 最佳实践',
+                excerpt: 'Hooks 改变了我们编写 React 组件的方式。本文总结了使用 Hooks 的最佳实践，包括 useState、useEffect、useCallback 等常用 Hooks 的使用技巧和性能优化方法。',
+                date: '2024-01-15',
+                author: 'AnranWu',
+                readTime: '10 分钟',
+                views: 1876,
+                likes: 132,
+                tags: ['JavaScript', 'React', 'Frontend']
+            },
+            {
+                id: 5,
+                title: '我的 2024 年度计划',
+                excerpt: '新的一年，新的开始。在这篇文章中，我分享了我的 2024 年度目标，包括技术学习、个人成长和生活规划。希望能够坚持下去，实现这些目标。',
+                date: '2024-01-01',
+                author: 'AnranWu',
+                readTime: '5 分钟',
+                views: 987,
+                likes: 76,
+                tags: ['Life', 'Planning']
+            },
+            {
+                id: 6,
+                title: 'TypeScript 进阶技巧',
+                excerpt: 'TypeScript 不仅仅是 JavaScript 的超集。掌握高级类型、泛型、装饰器等特性，可以让你的代码更加健壮和优雅。本文分享一些实用的进阶技巧。',
+                date: '2023-12-25',
+                author: 'AnranWu',
+                readTime: '15 分钟',
+                views: 2543,
+                likes: 198,
+                tags: ['JavaScript', 'TypeScript', 'Advanced']
+            }
+        ];
+
+        let currentFilter = 'all';
+        let currentPage = 1;
+        const blogsPerPage = 4;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            renderBlogs();
+            setupEventListeners();
+            initTheme();
+        });
+
+        function initTheme() {
+            const themeToggle = document.getElementById('themeToggle');
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+
+            if (currentTheme === 'light') {
+                document.body.classList.add('light-theme');
+                themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('light-theme');
+                const isLight = document.body.classList.contains('light-theme');
+                localStorage.setItem('theme', isLight ? 'light' : 'dark');
+                themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+            });
+        }
+
+        function setupEventListeners() {
+            // 搜索
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                currentPage = 1;
+                renderBlogs(e.target.value);
+            });
+
+            // 标签筛选
+            document.querySelectorAll('.filter-tag').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+                    tag.classList.add('active');
+                    currentFilter = tag.dataset.tag;
+                    currentPage = 1;
+                    renderBlogs();
+                });
+            });
+        }
+
+        function renderBlogs(searchTerm = '') {
+            let filtered = blogs;
+
+            // 标签筛选
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(blog => blog.tags.includes(currentFilter));
+            }
+
+            // 搜索筛选
+            if (searchTerm) {
+                const term = searchTerm.toLowerCase();
+                filtered = filtered.filter(blog =>
+                    blog.title.toLowerCase().includes(term) ||
+                    blog.excerpt.toLowerCase().includes(term) ||
+                    blog.tags.some(tag => tag.toLowerCase().includes(term))
+                );
+            }
+
+            const blogList = document.getElementById('blogList');
+            const noResults = document.getElementById('noResults');
+
+            if (filtered.length === 0) {
+                blogList.style.display = 'none';
+                noResults.style.display = 'block';
+                document.getElementById('pagination').style.display = 'none';
+                return;
+            }
+
+            blogList.style.display = 'grid';
+            noResults.style.display = 'none';
+
+            // 分页
+            const totalPages = Math.ceil(filtered.length / blogsPerPage);
+            const start = (currentPage - 1) * blogsPerPage;
+            const end = start + blogsPerPage;
+            const paginatedBlogs = filtered.slice(start, end);
+
+            // 渲染博客卡片
+            blogList.innerHTML = paginatedBlogs.map(blog => `
+                <article class="blog-card" onclick="window.location.href='#blog-${blog.id}'">
+                    <div class="blog-meta">
+                        <span><i class="fa-regular fa-calendar"></i>${blog.date}</span>
+                        <span><i class="fa-regular fa-clock"></i>${blog.readTime}</span>
+                        <span><i class="fa-regular fa-user"></i>${blog.author}</span>
+                    </div>
+                    <h2 class="blog-title">${blog.title}</h2>
+                    <p class="blog-excerpt">${blog.excerpt}</p>
+                    <div class="blog-footer">
+                        <div class="blog-tags">
+                            ${blog.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        <div class="blog-stats">
+                            <span><i class="fa-regular fa-eye"></i>${blog.views}</span>
+                            <span><i class="fa-regular fa-heart"></i>${blog.likes}</span>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+
+            // 渲染分页
+            renderPagination(totalPages);
+        }
+
+        function renderPagination(totalPages) {
+            const pagination = document.getElementById('pagination');
+
+            if (totalPages <= 1) {
+                pagination.style.display = 'none';
+                return;
+            }
+
+            pagination.style.display = 'flex';
+
+            let html = `
+                <button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+            `;
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    html += `
+                        <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
+                            ${i}
+                        </button>
+                    `;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    html += `<span style="color: var(--text-muted); padding: 0 8px;">...</span>`;
+                }
+            }
+
+            html += `
+                <button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            `;
+
+            pagination.innerHTML = html;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            renderBlogs(document.getElementById('searchInput').value);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>

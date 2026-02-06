@@ -28,6 +28,9 @@
                 <li><a href="myDairy.html"><i class="fa-solid fa-book"></i> 日记</a></li>
             </ul>
             <div class="sidebar-footer">
+                <button class="theme-toggle" id="themeToggle" title="切换主题">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
                 <div class="user-profile">
                     <div class="avatar"><i class="fa-solid fa-user"></i></div>
                     <div class="user-info">
@@ -46,6 +49,31 @@
             </header>
 
             <div class="dashboard-grid">
+                <!-- Stats Overview -->
+                <div class="stats-card">
+                    <div class="stat-item">
+                        <i class="fa-solid fa-eye"></i>
+                        <div>
+                            <h4 id="visitCount">0</h4>
+                            <p>访问量</p>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fa-solid fa-fire"></i>
+                        <div>
+                            <h4 id="streakDays">0</h4>
+                            <p>连续天数</p>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fa-solid fa-heart"></i>
+                        <div>
+                            <h4 id="likeCount">0</h4>
+                            <p>获赞数</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- AI Chat Card -->
                 <a href="ai-chat.html" class="card card-primary">
                     <div class="card-icon"><i class="fa-solid fa-robot"></i></div>
@@ -209,6 +237,70 @@
         });
 
         loadTodos();
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+
+        if (currentTheme === 'light') {
+            document.body.classList.add('light-theme');
+            themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        });
+
+        // Animated Counter
+        function animateCounter(id, target, duration = 2000) {
+            const element = document.getElementById(id);
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 16);
+        }
+
+        // Initialize stats
+        const stats = {
+            visits: parseInt(localStorage.getItem('visit_count') || '0'),
+            streak: parseInt(localStorage.getItem('streak_days') || '0'),
+            likes: parseInt(localStorage.getItem('like_count') || '0')
+        };
+
+        stats.visits++;
+        localStorage.setItem('visit_count', stats.visits);
+
+        // Check streak
+        const lastVisit = localStorage.getItem('last_visit');
+        const today = new Date().toDateString();
+        if (lastVisit !== today) {
+            const yesterday = new Date(Date.now() - 86400000).toDateString();
+            if (lastVisit === yesterday) {
+                stats.streak++;
+            } else if (!lastVisit) {
+                stats.streak = 1;
+            } else {
+                stats.streak = 1;
+            }
+            localStorage.setItem('streak_days', stats.streak);
+            localStorage.setItem('last_visit', today);
+        }
+
+        animateCounter('visitCount', stats.visits);
+        animateCounter('streakDays', stats.streak);
+        animateCounter('likeCount', stats.likes);
     </script>
 </body>
 </html>

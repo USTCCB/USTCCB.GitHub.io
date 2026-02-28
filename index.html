@@ -6,7 +6,7 @@
     <title>USTCCB's Space</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="background-glow"></div>
@@ -44,8 +44,12 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="top-header">
-                <h1>欢迎来到我的数字空间 👋</h1>
-                <p>探索、记录、创造</p>
+                <h1>欢迎来到我的数字空间</h1>
+                <p>探索、记录、创造，持续把想法变成作品。</p>
+                <div class="header-actions">
+                    <a href="myBlogs.html" class="action-pill"><i class="fa-solid fa-pen-nib"></i> 最新博客</a>
+                    <a href="myAlbum.html" class="action-pill"><i class="fa-solid fa-camera"></i> 今日相册</a>
+                </div>
             </header>
 
             <div class="dashboard-grid">
@@ -132,11 +136,11 @@
                 <div class="widget">
                     <h3><i class="fa-solid fa-list-check"></i> 待办事项</h3>
                     <div class="todo-widget">
-                        <div style="display:flex; gap:8px; margin-bottom:10px;">
-                            <input type="text" id="todoInput" placeholder="添加新任务..." style="flex:1; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:white; padding:6px 10px; border-radius:4px; outline:none;">
-                            <button onclick="addTodo()" style="background:var(--primary-color); border:none; color:white; border-radius:4px; width:30px; cursor:pointer;"><i class="fa-solid fa-plus"></i></button>
+                        <div class="todo-input-row">
+                            <input type="text" id="todoInput" class="todo-input" placeholder="添加新任务...">
+                            <button onclick="addTodo()" class="todo-add-btn"><i class="fa-solid fa-plus"></i></button>
                         </div>
-                        <ul id="todoList" style="list-style:none; max-height:120px; overflow-y:auto; padding-right:5px;">
+                        <ul id="todoList" class="todo-list">
                             <!-- Todo Items injected by JS -->
                         </ul>
                     </div>
@@ -144,12 +148,12 @@
 
                 <div class="widget">
                     <h3><i class="fa-regular fa-clock"></i> 现在时间</h3>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div class="time-widget-row">
                         <div>
                             <p id="clock" class="clock-text">--:--:--</p>
-                            <p id="date-text" style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">YYYY-MM-DD</p>
+                            <p id="date-text" class="date-text">YYYY-MM-DD</p>
                         </div>
-                        <i class="fa-solid fa-clock" style="font-size: 2.5rem; color: rgba(255,255,255,0.1);"></i>
+                        <i class="fa-solid fa-clock time-widget-icon"></i>
                     </div>
                 </div>
             </section>
@@ -201,10 +205,12 @@
             const todos = saved ? JSON.parse(saved) : ['完善个人网站', '学习 AI 知识'];
             todos.forEach((todo, index) => {
                 const li = document.createElement('li');
-                li.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.9rem; color:#cbd5e1;";
+                li.className = 'todo-item';
                 li.innerHTML = `
-                    <span>${todo}</span>
-                    <i class="fa-solid fa-check" style="cursor:pointer; color:rgba(255,255,255,0.3);" onclick="removeTodo(${index})"></i>
+                    <span class="todo-item-text">${todo}</span>
+                    <button class="todo-item-done" onclick="removeTodo(${index})" aria-label="完成任务">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
                 `;
                 list.appendChild(li);
             });

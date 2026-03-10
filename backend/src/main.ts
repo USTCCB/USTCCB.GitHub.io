@@ -7,6 +7,9 @@ import { authRouter } from './routes/auth';
 import { blogRouter } from './routes/blog';
 import { albumRouter } from './routes/album';
 import { diaryRouter } from './routes/diary';
+import { commentRouter } from './routes/comment';
+import { searchRouter } from './routes/search';
+import { statsRouter } from './routes/stats';
 import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
@@ -40,6 +43,9 @@ app.use('/api/auth', authRouter);
 app.use('/api/blog', blogRouter);
 app.use('/api/album', albumRouter);
 app.use('/api/diary', diaryRouter);
+app.use('/api/comments', commentRouter);
+app.use('/api/search', searchRouter);
+app.use('/api/stats', statsRouter);
 
 // 健康检查
 app.get('/health', (req, res) => {

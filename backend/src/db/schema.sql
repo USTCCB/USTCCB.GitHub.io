@@ -16,12 +16,12 @@ CREATE TABLE IF NOT EXISTS blog_posts (
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   title VARCHAR(255) NOT NULL,
   content TEXT NOT NULL,
-  excerpt TEXT,
+  summary TEXT,
   cover_image TEXT,
-  slug VARCHAR(255) UNIQUE NOT NULL,
-  status VARCHAR(20) DEFAULT 'draft', -- draft, published
-  views INTEGER DEFAULT 0,
-  likes INTEGER DEFAULT 0,
+  tags TEXT[],
+  published BOOLEAN DEFAULT false,
+  view_count INTEGER DEFAULT 0,
+  like_count INTEGER DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -71,6 +71,7 @@ CREATE TABLE IF NOT EXISTS photos (
   thumbnail_url TEXT,
   title VARCHAR(255),
   description TEXT,
+  tags TEXT[],
   taken_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -90,10 +91,11 @@ CREATE TABLE IF NOT EXISTS diaries (
 );
 
 -- 创建索引
-CREATE INDEX idx_blog_posts_user_id ON blog_posts(user_id);
-CREATE INDEX idx_blog_posts_status ON blog_posts(status);
-CREATE INDEX idx_blog_posts_created_at ON blog_posts(created_at DESC);
-CREATE INDEX idx_comments_post_id ON comments(post_id);
-CREATE INDEX idx_photos_album_id ON photos(album_id);
-CREATE INDEX idx_diaries_user_id ON diaries(user_id);
-CREATE INDEX idx_diaries_date ON diaries(diary_date DESC);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_user_id ON blog_posts(user_id);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_published ON blog_posts(published);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_created_at ON blog_posts(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_comments_post_id ON comments(post_id);
+CREATE INDEX IF NOT EXISTS idx_comments_user_id ON comments(user_id);
+CREATE INDEX IF NOT EXISTS idx_photos_album_id ON photos(album_id);
+CREATE INDEX IF NOT EXISTS idx_diaries_user_id ON diaries(user_id);
+CREATE INDEX IF NOT EXISTS idx_diaries_date ON diaries(diary_date DESC);

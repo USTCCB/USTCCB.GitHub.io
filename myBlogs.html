@@ -304,8 +304,13 @@
 
     <script src="script.js"></script>
     <script>
-        // 博客数据
-        const blogs = [
+        // 后端 API 基础地址：
+        // 1. 本地开发时可设为 'http://localhost:3001'
+        // 2. 部署到 Railway 后，改成你的 Railway 后端地址
+        const API_BASE = window.BLOG_API_BASE || 'http://localhost:3001';
+
+        // 本地静态数据作为后备（后端不可用时使用）
+        const fallbackBlogs = [
             {
                 id: 1,
                 title: '深入理解 JavaScript 闭包',
@@ -349,40 +354,18 @@
                 views: 1876,
                 likes: 132,
                 tags: ['JavaScript', 'React', 'Frontend']
-            },
-            {
-                id: 5,
-                title: '我的 2024 年度计划',
-                excerpt: '新的一年，新的开始。在这篇文章中，我分享了我的 2024 年度目标，包括技术学习、个人成长和生活规划。希望能够坚持下去，实现这些目标。',
-                date: '2024-01-01',
-                author: 'AnranWu',
-                readTime: '5 分钟',
-                views: 987,
-                likes: 76,
-                tags: ['Life', 'Planning']
-            },
-            {
-                id: 6,
-                title: 'TypeScript 进阶技巧',
-                excerpt: 'TypeScript 不仅仅是 JavaScript 的超集。掌握高级类型、泛型、装饰器等特性，可以让你的代码更加健壮和优雅。本文分享一些实用的进阶技巧。',
-                date: '2023-12-25',
-                author: 'AnranWu',
-                readTime: '15 分钟',
-                views: 2543,
-                likes: 198,
-                tags: ['JavaScript', 'TypeScript', 'Advanced']
             }
         ];
 
+        let blogs = [];
         let currentFilter = 'all';
         let currentPage = 1;
         const blogsPerPage = 4;
 
-        // 初始化
         document.addEventListener('DOMContentLoaded', () => {
-            renderBlogs();
-            setupEventListeners();
             initTheme();
+            setupEventListeners();
+            loadBlogsFromBackend();
         });
 
         function initTheme() {
@@ -402,14 +385,51 @@
             });
         }
 
+        async function loadBlogsFromBackend() {
+            const blogList = document.getElementById('blogList');
+            const noResults = document.getElementById('noResults');
+
+            try {
+                blogList.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:40px 0;">正在从后端加载博客...</p>';
+
+                const res = await fetch(`${API_BASE}/api/blog?page=1&limit=50`);
+                if (!res.ok) {
+                    throw new Error('后端返回错误状态');
+                }
+
+                const json = await res.json();
+                const posts = json?.data?.posts || [];
+
+                if (!Array.isArray(posts) || posts.length === 0) {
+                    blogs = fallbackBlogs;
+                } else {
+                    blogs = posts.map(post => ({
+                        id: post.id,
+                        title: post.title,
+                        excerpt: post.summary || (post.content ? post.content.slice(0, 120) + '...' : ''),
+                        date: post.created_at ? new Date(post.created_at).toISOString().slice(0, 10) : '',
+                        author: post.username || '匿名',
+                        readTime: '阅读中',
+                        views: post.view_count || 0,
+                        likes: post.like_count || 0,
+                        tags: Array.isArray(post.tags) && post.tags.length > 0 ? post.tags : ['Blog']
+                    }));
+                }
+            } catch (e) {
+                console.warn('从后端加载博客失败，使用本地数据：', e);
+                blogs = fallbackBlogs;
+                noResults.style.display = 'none';
+            }
+
+            renderBlogs();
+        }
+
         function setupEventListeners() {
-            // 搜索
             document.getElementById('searchInput').addEventListener('input', (e) => {
                 currentPage = 1;
                 renderBlogs(e.target.value);
             });
 
-            // 标签筛选
             document.querySelectorAll('.filter-tag').forEach(tag => {
                 tag.addEventListener('click', () => {
                     document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
@@ -422,20 +442,27 @@
         }
 
         function renderBlogs(searchTerm = '') {
-            let filtered = blogs;
-
-            // 标签筛选
-            if (currentFilter !== 'all') {
-                filtered = filtered.filter(blog => blog.tags.includes(currentFilter));
+            if (!Array.isArray(blogs) || blogs.length === 0) {
+                const blogList = document.getElementById('blogList');
+                const noResults = document.getElementById('noResults');
+                blogList.style.display = 'none';
+                noResults.style.display = 'block';
+                document.getElementById('pagination').style.display = 'none';
+                return;
             }
 
-            // 搜索筛选
+            let filtered = blogs.slice();
+
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(blog => Array.isArray(blog.tags) && blog.tags.includes(currentFilter));
+            }
+
             if (searchTerm) {
                 const term = searchTerm.toLowerCase();
                 filtered = filtered.filter(blog =>
-                    blog.title.toLowerCase().includes(term) ||
-                    blog.excerpt.toLowerCase().includes(term) ||
-                    blog.tags.some(tag => tag.toLowerCase().includes(term))
+                    (blog.title || '').toLowerCase().includes(term) ||
+                    (blog.excerpt || '').toLowerCase().includes(term) ||
+                    (blog.tags || []).some(tag => String(tag).toLowerCase().includes(term))
                 );
             }
 
@@ -452,35 +479,32 @@
             blogList.style.display = 'grid';
             noResults.style.display = 'none';
 
-            // 分页
             const totalPages = Math.ceil(filtered.length / blogsPerPage);
             const start = (currentPage - 1) * blogsPerPage;
             const end = start + blogsPerPage;
             const paginatedBlogs = filtered.slice(start, end);
 
-            // 渲染博客卡片
             blogList.innerHTML = paginatedBlogs.map(blog => `
-                <article class="blog-card" onclick="window.location.href='#blog-${blog.id}'">
+                <article class="blog-card">
                     <div class="blog-meta">
-                        <span><i class="fa-regular fa-calendar"></i>${blog.date}</span>
-                        <span><i class="fa-regular fa-clock"></i>${blog.readTime}</span>
-                        <span><i class="fa-regular fa-user"></i>${blog.author}</span>
+                        <span><i class="fa-regular fa-calendar"></i>${blog.date || ''}</span>
+                        <span><i class="fa-regular fa-clock"></i>${blog.readTime || ''}</span>
+                        <span><i class="fa-regular fa-user"></i>${blog.author || ''}</span>
                     </div>
-                    <h2 class="blog-title">${blog.title}</h2>
-                    <p class="blog-excerpt">${blog.excerpt}</p>
+                    <h2 class="blog-title">${blog.title || ''}</h2>
+                    <p class="blog-excerpt">${blog.excerpt || ''}</p>
                     <div class="blog-footer">
                         <div class="blog-tags">
-                            ${blog.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                            ${(blog.tags || []).map(tag => `<span class="tag">${tag}</span>`).join('')}
                         </div>
                         <div class="blog-stats">
-                            <span><i class="fa-regular fa-eye"></i>${blog.views}</span>
-                            <span><i class="fa-regular fa-heart"></i>${blog.likes}</span>
+                            <span><i class="fa-regular fa-eye"></i>${blog.views ?? 0}</span>
+                            <span><i class="fa-regular fa-heart"></i>${blog.likes ?? 0}</span>
                         </div>
                     </div>
                 </article>
             `).join('');
 
-            // 渲染分页
             renderPagination(totalPages);
         }
 

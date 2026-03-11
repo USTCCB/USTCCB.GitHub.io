@@ -66,8 +66,12 @@ app.get('/health', (req, res) => {
 // 手动触发数据库初始化
 app.get('/api/init-db', async (req, res) => {
   try {
+    const dbUrl = process.env.DATABASE_URL;
+    if (!dbUrl) {
+      return res.status(500).json({ success: false, error: 'DATABASE_URL environment variable not set' });
+    }
     await initDatabase();
-    res.json({ success: true, message: '数据库初始化成功' });
+    res.json({ success: true, message: '数据库初始化成功', dbUrl: dbUrl.replace(/:[^:@]+@/, ':***@') });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err?.message || String(err) });
   }

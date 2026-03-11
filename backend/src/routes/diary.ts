@@ -31,8 +31,11 @@ diaryRouter.get('/', authenticate, async (req, res) => {
         limit
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('获取日记列表错误:', error);
+    if (error?.code === 'ECONNREFUSED' || !process.env.DATABASE_URL) {
+      return res.json({ success: true, data: { diaries: [], total: 0, page: 1, limit: 20 } });
+    }
     res.status(500).json({ error: '获取日记列表失败' });
   }
 });

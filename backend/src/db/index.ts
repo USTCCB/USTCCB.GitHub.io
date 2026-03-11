@@ -3,12 +3,24 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
+const dbUrl = process.env.DATABASE_URL;
+
+export const pool = new Pool(
+  dbUrl
+    ? {
+        connectionString: dbUrl,
+        max: 20,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 2000,
+      }
+    : {
+        // 无 DATABASE_URL 时使用空配置，查询会报错但服务不会崩溃
+        host: 'localhost',
+        port: 5432,
+        database: 'nodbconfigured',
+        connectionTimeoutMillis: 1000,
+      }
+);
 
 // 数据库初始化
 export async function initDatabase() {

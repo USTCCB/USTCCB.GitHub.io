@@ -45,8 +45,12 @@ blogRouter.get('/', async (req, res) => {
         limit
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('获取文章列表错误:', error);
+    // 数据库未连接时返回空列表，不报错
+    if (error?.code === 'ECONNREFUSED' || error?.message?.includes('ECONNREFUSED') || !process.env.DATABASE_URL) {
+      return res.json({ success: true, data: { posts: [], total: 0, page: 1, limit: 10 } });
+    }
     res.status(500).json({ error: '获取文章列表失败' });
   }
 });

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Railway 后端部署指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px;
+        }
+        .step {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        .step-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        .step-content {
+            margin-left: 55px;
+        }
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .code-block pre {
+            margin: 0;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        .button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .env-var {
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-family: monospace;
+        }
+        .footer {
+            background: #2d2d2d;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .checklist {
+            list-style: none;
+        }
+        .checklist li {
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #28a745;
+        }
+        .checklist li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Railway 后端部署指南</h1>
+            <p>10 分钟完成全栈应用部署</p>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                <strong>📋 部署信息</strong><br>
+                • 前端已部署: <a href="https://frontend-pi-six-0l9p0rwmqj.vercel.app" target="_blank">https://frontend-pi-six-0l9p0rwmqj.vercel.app</a><br>
+                • GitHub 仓库: USTCCB/USTCCB.GitHub.io<br>
+                • 后端目录: backend<br>
+                • 预计时间: 10 分钟
+            </div>
+
+            <!-- 步骤 1 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">1</span>
+                    访问 Railway 并登录
+                </div>
+                <div class="step-content">
+                    <p>1. 打开浏览器，访问 Railway 官网</p>
+                    <a href="https://railway.app" target="_blank" class="button">打开 Railway</a>
+                    <p>2. 点击右上角 <span class="highlight">Login</span> 按钮</p>
+                    <p>3. 选择 <span class="highlight">Login with GitHub</span></p>
+                    <p>4. 授权 Railway 访问你的 GitHub 账号</p>
+                </div>
+            </div>
+
+            <!-- 步骤 2 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">2</span>
+                    创建新项目
+                </div>
+                <div class="step-content">
+                    <p>1. 登录后，点击 <span class="highlight">New Project</span></p>
+                    <p>2. 选择 <span class="highlight">Deploy from GitHub repo</span></p>
+                    <p>3. 在列表中找到并选择: <span class="highlight">USTCCB/USTCCB.GitHub.io</span></p>
+                    <p>4. Railway 会自动检测到这是一个 Node.js 项目</p>
+                </div>
+            </div>
+
+            <!-- 步骤 3 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">3</span>
+                    添加 PostgreSQL 数据库
+                </div>
+                <div class="step-content">
+                    <p>1. 在项目页面，点击右上角 <span class="highlight">+ New</span></p>
+                    <p>2. 选择 <span class="highlight">Database</span></p>
+                    <p>3. 选择 <span class="highlight">Add PostgreSQL</span></p>
+                    <p>4. Railway 会自动创建数据库并生成连接信息</p>
+                    <div class="success-box">
+                        ✅ PostgreSQL 数据库创建成功！
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步骤 4 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">4</span>
+                    添加 Redis 缓存
+                </div>
+                <div class="step-content">
+                    <p>1. 再次点击 <span class="highlight">+ New</span></p>
+                    <p>2. 选择 <span class="highlight">Database</span></p>
+                    <p>3. 选择 <span class="highlight">Add Redis</span></p>
+                    <div class="success-box">
+                        ✅ Redis 缓存创建成功！
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步骤 5 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">5</span>
+                    配置后端服务
+                </div>
+                <div class="step-content">
+                    <p>1. 点击 GitHub 仓库服务卡片（显示为 <span class="highlight">USTCCB.GitHub.io</span>）</p>
+                    <p>2. 点击 <span class="highlight">Settings</span> 标签</p>
+                    <p>3. 找到 <span class="highlight">Root Directory</span>，输入:</p>
+                    <div class="code-block"><pre>backend</pre></div>
+                    <p>4. 找到 <span class="highlight">Start Command</span>，输入:</p>
+                    <div class="code-block"><pre>node dist/main.js</pre></div>
+                </div>
+            </div>
+
+            <!-- 步骤 6 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">6</span>
+                    配置环境变量
+                </div>
+                <div class="step-content">
+                    <p>1. 在后端服务页面，点击 <span class="highlight">Variables</span> 标签</p>
+                    <p>2. 点击 <span class="highlight">+ New Variable</span></p>
+                    <p>3. 逐个添加以下环境变量（复制粘贴）:</p>
+
+                    <div class="warning-box">
+                        ⚠️ 注意：<span class="highlight">${{Postgres.PGHOST}}</span> 这种格式是 Railway 的引用变量，会自动替换为实际值，直接复制即可！
+                    </div>
+
+                    <h4>基础配置:</h4>
+                    <div class="env-var">NODE_ENV=production</div>
+                    <div class="env-var">PORT=3001</div>
+
+                    <h4>数据库配置:</h4>
+                    <div class="env-var">DB_HOST=${{Postgres.PGHOST}}</div>
+                    <div class="env-var">DB_PORT=${{Postgres.PGPORT}}</div>
+                    <div class="env-var">DB_NAME=${{Postgres.PGDATABASE}}</div>
+                    <div class="env-var">DB_USER=${{Postgres.PGUSER}}</div>
+                    <div class="env-var">DB_PASSWORD=${{Postgres.PGPASSWORD}}</div>
+
+                    <h4>Redis 配置:</h4>
+                    <div class="env-var">REDIS_HOST=${{Redis.REDIS_HOST}}</div>
+                    <div class="env-var">REDIS_PORT=${{Redis.REDIS_PORT}}</div>
+
+                    <h4>JWT 配置:</h4>
+                    <div class="env-var">JWT_SECRET=cea67da6c7e4db6858326ba5640b62a982575c6e775d0cf2cb0719a7231ea5f1</div>
+                    <div class="env-var">JWT_EXPIRES_IN=7d</div>
+
+                    <h4>CORS 配置:</h4>
+                    <div class="env-var">CORS_ORIGIN=https://frontend-pi-six-0l9p0rwmqj.vercel.app</div>
+                </div>
+            </div>
+
+            <!-- 步骤 7 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">7</span>
+                    部署后端
+                </div>
+                <div class="step-content">
+                    <p>1. 所有环境变量配置完成后，点击 <span class="highlight">Deploy</span> 按钮</p>
+                    <p>2. Railway 会自动执行:</p>
+                    <ul class="checklist">
+                        <li>拉取 GitHub 代码</li>
+                        <li>安装依赖 (npm install)</li>
+                        <li>构建 TypeScript (npm run build)</li>
+                        <li>启动服务 (node dist/main.js)</li>
+                    </ul>
+                    <p>3. 等待部署完成（通常需要 2-5 分钟）</p>
+                    <div class="info-box">
+                        💡 提示：可以在 <span class="highlight">Deployments</span> 标签查看实时日志
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步骤 8 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">8</span>
+                    获取后端 URL
+                </div>
+                <div class="step-content">
+                    <p>1. 部署成功后，进入 <span class="highlight">Settings</span> 标签</p>
+                    <p>2. 找到 <span class="highlight">Domains</span> 部分</p>
+                    <p>3. 点击 <span class="highlight">Generate Domain</span></p>
+                    <p>4. Railway 会生成一个公开 URL，类似:</p>
+                    <div class="code-block"><pre>https://ustccbgithubio-production.up.railway.app</pre></div>
+                    <p>5. <strong>复制这个 URL，后面会用到！</strong></p>
+                </div>
+            </div>
+
+            <!-- 步骤 9 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">9</span>
+                    初始化数据库
+                </div>
+                <div class="step-content">
+                    <p>1. 点击 <span class="highlight">PostgreSQL</span> 服务卡片</p>
+                    <p>2. 点击 <span class="highlight">Data</span> 标签</p>
+                    <p>3. 点击 <span class="highlight">Query</span> 按钮</p>
+                    <p>4. 打开本地文件: <span class="highlight">backend/src/db/schema.sql</span></p>
+                    <p>5. 复制所有内容，粘贴到 Railway 的查询编辑器</p>
+                    <p>6. 点击 <span class="highlight">Run Query</span></p>
+                    <div class="success-box">
+                        ✅ 数据库表结构创建成功！
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步骤 10 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">10</span>
+                    测试后端 API
+                </div>
+                <div class="step-content">
+                    <p>1. 打开浏览器，访问:</p>
+                    <div class="code-block"><pre>https://你的Railway后端URL/health</pre></div>
+                    <p>2. 应该看到以下响应:</p>
+                    <div class="code-block"><pre>{
+  "status": "ok",
+  "timestamp": "2026-03-11T..."
+}</pre></div>
+                    <div class="success-box">
+                        🎉 后端部署成功！API 正常运行！
+                    </div>
+                </div>
+            </div>
+
+            <!-- 步骤 11 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">11</span>
+                    更新前端环境变量
+                </div>
+                <div class="step-content">
+                    <p>1. 访问 <a href="https://vercel.com" target="_blank">Vercel Dashboard</a></p>
+                    <p>2. 找到你的 <span class="highlight">frontend</span> 项目</p>
+                    <p>3. 点击 <span class="highlight">Settings</span></p>
+                    <p>4. 点击 <span class="highlight">Environment Variables</span></p>
+                    <p>5. 添加新变量:</p>
+                    <div class="env-var">
+                        Name: NEXT_PUBLIC_API_URL<br>
+                        Value: https://你的Railway后端URL (不要加 /api)
+                    </div>
+                    <p>6. Environment: 选择 <span class="highlight">Production, Preview, Development</span></p>
+                    <p>7. 点击 <span class="highlight">Save</span></p>
+                </div>
+            </div>
+
+            <!-- 步骤 12 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">12</span>
+                    重新部署前端
+                </div>
+                <div class="step-content">
+                    <p>1. 在 Vercel 项目页面，点击 <span class="highlight">Deployments</span> 标签</p>
+                    <p>2. 点击最新部署右侧的 <span class="highlight">...</span> 菜单</p>
+                    <p>3. 选择 <span class="highlight">Redeploy</span></p>
+                    <p>4. 等待重新部署完成（约 1-2 分钟）</p>
+                    <div class="success-box">
+                        🎉 前端重新部署成功！现在前后端已连接！
+                    </div>
+                </div>
+            </div>
+
+            <!-- 完成 -->
+            <div class="step" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                <div class="step-title" style="color: white;">
+                    <span class="step-number" style="background: white; color: #667eea;">✓</span>
+                    部署完成！
+                </div>
+                <div class="step-content">
+                    <h3>🎊 恭喜！你的全栈应用已完全部署到线上！</h3>
+                    <br>
+                    <p><strong>前端:</strong> https://frontend-pi-six-0l9p0rwmqj.vercel.app</p>
+                    <p><strong>后端:</strong> https://你的Railway后端URL</p>
+                    <p><strong>数据库:</strong> PostgreSQL + Redis (Railway)</p>
+                    <br>
+                    <h4>📊 部署架构:</h4>
+                    <div class="code-block"><pre>用户浏览器
+    ↓
+Vercel CDN (前端)
+    ↓
+Railway (后端 API)
+    ↓
+PostgreSQL + Redis (Railway)</pre></div>
+                </div>
+            </div>
+
+            <!-- 测试清单 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">✓</span>
+                    测试清单
+                </div>
+                <div class="step-content">
+                    <h4>请测试以下功能:</h4>
+                    <ul class="checklist">
+                        <li>访问前端首页</li>
+                        <li>打开浏览器开发者工具 (F12)</li>
+                        <li>查看 Network 标签，确认 API 请求成功</li>
+                        <li>测试用户注册功能</li>
+                        <li>测试用户登录功能</li>
+                        <li>测试创建博客文章</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 常见问题 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">?</span>
+                    常见问题
+                </div>
+                <div class="step-content">
+                    <h4>1. 后端部署失败</h4>
+                    <p>• 检查 Deployments 标签的日志</p>
+                    <p>• 确认环境变量配置正确</p>
+                    <p>• 确认 Root Directory 设置为 backend</p>
+                    <br>
+
+                    <h4>2. 数据库连接失败</h4>
+                    <p>• 确保 PostgreSQL 服务正在运行</p>
+                    <p>• 确保环境变量使用了 ${{Postgres.PGHOST}} 格式</p>
+                    <br>
+
+                    <h4>3. CORS 错误</h4>
+                    <p>• 确保 CORS_ORIGIN 设置为前端 Vercel URL</p>
+                    <p>• 不要在 URL 末尾加斜杠</p>
+                    <p>• 重新部署后端</p>
+                    <br>
+
+                    <h4>4. 前端无法连接后端</h4>
+                    <p>• 确保 Vercel 环境变量 NEXT_PUBLIC_API_URL 已设置</p>
+                    <p>• 确保后端 URL 正确（不要加 /api）</p>
+                    <p>• 重新部署前端</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <h3>🎉 恭喜完成部署！</h3>
+            <p>你的全栈应用已经上线，可以写在简历上了！</p>
+            <br>
+            <p>📚 更多文档:</p>
+            <p>
+                <a href="https://github.com/USTCCB/USTCCB.GitHub.io" target="_blank" style="color: #667eea;">GitHub 仓库</a> |
+                <a href="https://docs.railway.app" target="_blank" style="color: #667eea;">Railway 文档</a> |
+                <a href="https://vercel.com/docs" target="_blank" style="color: #667eea;">Vercel 文档</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // 复制环境变量功能
+        document.querySelectorAll('.env-var').forEach(el => {
+            el.style.cursor = 'pointer';
+            el.title = '点击复制';
+            el.addEventListener('click', function() {
+                const text = this.textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    const original = this.style.background;
+                    this.style.background = '#d4edda';
+                    setTimeout(() => {
+                        this.style.background = original;
+                    }, 500);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

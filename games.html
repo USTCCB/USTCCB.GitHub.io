@@ -119,11 +119,13 @@
                 <li><a href="myTimetable.html"><i class="fa-solid fa-calendar-days"></i> 课表</a></li>
                 <li><a href="myDairy.html"><i class="fa-solid fa-book"></i> 日记</a></li>
             </ul>
+            <div class="sidebar-footer">
+                <button class="theme-toggle" id="themeToggle" title="切换主题">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <!-- 动态用户区域 by auth-sidebar.js -->
+            </div>
         </nav>
-
-        <main class="main-content">
-            <header class="top-header">
-                <h1>游戏实验室 🎮</h1>
                 <p>休息一下，玩个游戏吧</p>
             </header>
 
@@ -179,6 +181,7 @@
 
     <script src="script.js"></script>
     <script src="games.js"></script>
+    <script src="auth-sidebar.js"></script>
     <script>
         function switchGame(game) {
             document.querySelectorAll('.game-wrapper').forEach(el => el.classList.add('hidden'));

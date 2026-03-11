@@ -132,6 +132,12 @@
                 <li><a href="myTimetable.html"><i class="fa-solid fa-calendar-days"></i> 课表</a></li>
                 <li class="active"><a href="myDairy.html"><i class="fa-solid fa-book"></i> 日记</a></li>
             </ul>
+            <div class="sidebar-footer">
+                <button class="theme-toggle" id="themeToggle" title="切换主题">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <!-- 动态用户区域 by auth-sidebar.js -->
+            </div>
         </nav>
 
         <main class="main-content">
@@ -197,46 +203,12 @@
         </div>
     </div>
 
-    <!-- 登录弹窗 -->
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal-box" style="max-width:400px;">
-            <h2>🔐 登录</h2>
-            <p style="color:var(--text-muted);margin-bottom:20px;">写日记需要先登录</p>
-            <div class="form-group">
-                <label>邮箱</label>
-                <input type="email" id="loginEmail" class="form-input" placeholder="your@email.com">
-            </div>
-            <div class="form-group">
-                <label>密码</label>
-                <input type="password" id="loginPassword" class="form-input" placeholder="密码">
-            </div>
-            <div id="loginError" style="color:#ef4444;font-size:0.9rem;margin-bottom:12px;display:none;"></div>
-            <div class="modal-buttons">
-                <button class="btn-secondary" onclick="closeLoginModal()">取消</button>
-                <button class="write-diary-btn" style="margin-bottom:0;" onclick="doLogin()">
-                    <i class="fa-solid fa-right-to-bracket"></i> 登录
-                </button>
-            </div>
-            <p style="color:var(--text-muted);font-size:0.85rem;margin-top:16px;text-align:center;">
-                没有账号？<a href="#" onclick="showRegister()" style="color:var(--primary-color);">注册</a>
-            </p>
-            <div id="registerArea" style="display:none;margin-top:20px;border-top:1px solid var(--border-color);padding-top:20px;">
-                <h3 style="margin-bottom:16px;">注册</h3>
-                <div class="form-group"><label>用户名</label><input type="text" id="regUsername" class="form-input" placeholder="用户名"></div>
-                <div class="form-group"><label>邮箱</label><input type="email" id="regEmail" class="form-input" placeholder="email"></div>
-                <div class="form-group"><label>密码</label><input type="password" id="regPassword" class="form-input" placeholder="至少6位"></div>
-                <div id="regError" style="color:#ef4444;font-size:0.9rem;margin-bottom:12px;display:none;"></div>
-                <button class="write-diary-btn" style="width:100%;justify-content:center;margin-bottom:0;" onclick="doRegister()">
-                    <i class="fa-solid fa-user-plus"></i> 注册
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- 登录弹窗已统一到 auth-sidebar.js -->
 
     <div class="toast" id="toast"></div>
 
     <script src="script.js"></script>
-    <script>
+    <script src="auth-sidebar.js"></script>
         const API_BASE = 'https://backend-production-4de2.up.railway.app';
         let token = localStorage.getItem('blog_token') || '';
         let editingId = null;
@@ -250,47 +222,52 @@
 
         async function loadDiaries() {
             const listEl = document.getElementById('diaryList');
-            if (!token) {
-                listEl.innerHTML = `<div class="empty-state"><i class="fa-solid fa-lock"></i><h3>请先登录</h3><p>登录后可查看和编写日记</p><button class="write-diary-btn" style="margin:16px auto 0;" onclick="openLoginModal()"><i class="fa-solid fa-right-to-bracket"></i> 登录</button></div>`;
+            let diaries = [];
+
+            if (token) {
+                // 有 token，从后端加载
+                try {
+                    const res = await fetch(`${API_BASE}/api/diary?limit=50`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (res.status === 401) { token = ''; localStorage.removeItem('blog_token'); }
+                    else {
+                        const json = await res.json();
+                        diaries = json?.data?.diaries || [];
+                    }
+                } catch (e) { /* 网络失败，fallback 到本地 */ }
+            }
+
+            // 合并本地日记（本地优先）
+            const localDiaries = JSON.parse(localStorage.getItem('local_diaries') || '[]');
+            const allDiaries = [...localDiaries, ...diaries];
+
+            if (allDiaries.length === 0) {
+                listEl.innerHTML = `<div class="empty-state"><i class="fa-regular fa-book"></i><h3>还没有日记</h3><p>点击"写日记"开始记录你的生活</p></div>`;
                 return;
             }
-            try {
-                const res = await fetch(`${API_BASE}/api/diary?limit=50`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (res.status === 401) { token = ''; localStorage.removeItem('blog_token'); loadDiaries(); return; }
-                const json = await res.json();
-                const diaries = json?.data?.diaries || [];
-                if (diaries.length === 0) {
-                    listEl.innerHTML = `<div class="empty-state"><i class="fa-regular fa-book"></i><h3>还没有日记</h3><p>点击"写日记"开始记录你的生活</p></div>`;
-                    return;
-                }
-                listEl.innerHTML = diaries.map(d => {
-                    const date = new Date(d.created_at);
-                    const dateStr = `${date.getFullYear()}.${String(date.getMonth()+1).padStart(2,'0')}.${String(date.getDate()).padStart(2,'0')} ${['日','一','二','三','四','五','六'][date.getDay()]} ${d.weather || ''}`;
-                    const icon = moodIconMap[d.mood] || 'fa-face-smile';
-                    return `<div class="diary-entry">
+            listEl.innerHTML = allDiaries.map(d => {
+                const date = new Date(d.created_at || d.date || Date.now());
+                const dateStr = `${date.getFullYear()}.${String(date.getMonth()+1).padStart(2,'0')}.${String(date.getDate()).padStart(2,'0')} ${['日','一','二','三','四','五','六'][date.getDay()]} ${d.weather || ''}`;
+                const icon = moodIconMap[d.mood] || 'fa-face-smile';
+                return `<div class="diary-entry">
                         <div class="diary-date">${dateStr}</div>
                         <div class="mood-icon"><i class="fa-regular ${icon}"></i></div>
                         <div class="diary-title">${d.title}</div>
                         <div class="diary-content"><p>${(d.content || '').replace(/\n/g, '</p><p>')}</p></div>
                         <div class="diary-actions">
-                            <button class="diary-action-btn" onclick="editDiary(${d.id},'${encodeURIComponent(d.title)}','${encodeURIComponent(d.content || '')}','${d.mood||''}','${d.weather||''}')">
+                            <button class="diary-action-btn" onclick="editDiary(${JSON.stringify(d.id)},'${encodeURIComponent(d.title)}','${encodeURIComponent(d.content || '')}','${d.mood||''}','${d.weather||''}','${d.source||''}')">
                                 <i class="fa-regular fa-pen-to-square"></i> 编辑
                             </button>
-                            <button class="diary-action-btn delete" onclick="deleteDiary(${d.id})">
+                            <button class="diary-action-btn delete" onclick="deleteDiary(${JSON.stringify(d.id)},'${d.source||''}')">
                                 <i class="fa-regular fa-trash-can"></i> 删除
                             </button>
                         </div>
                     </div>`;
-                }).join('');
-            } catch (e) {
-                listEl.innerHTML = `<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i><h3>加载失败</h3><p>${e.message}</p></div>`;
-            }
+            }).join('');
         }
 
         function openDiaryModal() {
-            if (!token) { openLoginModal(); return; }
             editingId = null;
             document.getElementById('modalTitle').textContent = '📝 写日记';
             document.getElementById('diaryTitle').value = '';
@@ -302,8 +279,9 @@
         }
         function closeDiaryModal() { document.getElementById('diaryModal').classList.remove('active'); }
 
-        function editDiary(id, title, content, mood, weather) {
+        function editDiary(id, title, content, mood, weather, source) {
             editingId = id;
+            window._editingSource = source || '';
             document.getElementById('modalTitle').textContent = '✏️ 编辑日记';
             document.getElementById('diaryTitle').value = decodeURIComponent(title);
             document.getElementById('diaryContent').value = decodeURIComponent(content);
@@ -321,83 +299,74 @@
             const errEl = document.getElementById('diaryError');
             if (!title || !content) { errEl.textContent = '标题和内容不能为空'; errEl.style.display = 'block'; return; }
             errEl.style.display = 'none';
-            try {
-                const url = editingId ? `${API_BASE}/api/diary/${editingId}` : `${API_BASE}/api/diary`;
-                const method = editingId ? 'PUT' : 'POST';
-                const res = await fetch(url, {
-                    method,
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ title, content, mood, weather, isPrivate: true })
-                });
-                const json = await res.json();
-                if (!res.ok) throw new Error(json.error || '保存失败');
+
+            const isLocal = !token || window._editingSource === 'local';
+            if (!isLocal) {
+                // 后端保存
+                try {
+                    const url = editingId ? `${API_BASE}/api/diary/${editingId}` : `${API_BASE}/api/diary`;
+                    const method = editingId ? 'PUT' : 'POST';
+                    const res = await fetch(url, {
+                        method,
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ title, content, mood, weather, isPrivate: true })
+                    });
+                    const json = await res.json();
+                    if (!res.ok) throw new Error(json.error || '保存失败');
+                    closeDiaryModal();
+                    showToast(editingId ? '✅ 日记已更新' : '📔 日记已保存');
+                    loadDiaries();
+                } catch (e) { errEl.textContent = e.message; errEl.style.display = 'block'; }
+            } else {
+                // 本地保存
+                const localDiaries = JSON.parse(localStorage.getItem('local_diaries') || '[]');
+                if (editingId) {
+                    const idx = localDiaries.findIndex(d => d.id == editingId);
+                    if (idx !== -1) { localDiaries[idx] = { ...localDiaries[idx], title, content, mood, weather }; }
+                } else {
+                    localDiaries.unshift({ id: Date.now(), title, content, mood, weather, source: 'local', date: new Date().toISOString().slice(0,10), created_at: new Date().toISOString() });
+                }
+                localStorage.setItem('local_diaries', JSON.stringify(localDiaries));
                 closeDiaryModal();
-                showToast(editingId ? '✅ 日记已更新' : '📔 日记已保存');
+                showToast(editingId ? '✅ 日记已更新（本地）' : '📔 日记已保存（本地）');
                 loadDiaries();
-            } catch (e) {
-                errEl.textContent = e.message;
-                errEl.style.display = 'block';
             }
         }
 
-        async function deleteDiary(id) {
+        async function deleteDiary(id, source) {
             if (!confirm('确定删除这篇日记吗？')) return;
-            try {
-                const res = await fetch(`${API_BASE}/api/diary/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (!res.ok) throw new Error('删除失败');
+            if (source === 'local' || !token) {
+                // 本地删除
+                const localDiaries = JSON.parse(localStorage.getItem('local_diaries') || '[]');
+                localStorage.setItem('local_diaries', JSON.stringify(localDiaries.filter(d => d.id != id)));
                 showToast('🗑️ 日记已删除', '#ef4444');
                 loadDiaries();
-            } catch (e) { showToast('❌ ' + e.message, '#ef4444'); }
+            } else {
+                try {
+                    const res = await fetch(`${API_BASE}/api/diary/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!res.ok) throw new Error('删除失败');
+                    showToast('🗑️ 日记已删除', '#ef4444');
+                    loadDiaries();
+                } catch (e) { showToast('❌ ' + e.message, '#ef4444'); }
+            }
         }
 
-        function openLoginModal() { document.getElementById('loginModal').classList.add('active'); }
-        function closeLoginModal() {
-            document.getElementById('loginModal').classList.remove('active');
-            document.getElementById('registerArea').style.display = 'none';
-        }
-        function showRegister() { document.getElementById('registerArea').style.display = 'block'; }
+        function openLoginModal() { authSidebar.openModal('login'); }
+        function closeLoginModal() { authSidebar.closeModal(); }
+        function showRegister() { authSidebar.switchTab('register'); }
 
-        async function doLogin() {
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            const errEl = document.getElementById('loginError');
-            try {
-                const res = await fetch(`${API_BASE}/api/auth/login`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                const json = await res.json();
-                if (!res.ok) throw new Error(json.error || '登录失败');
-                token = json.data.token;
-                localStorage.setItem('blog_token', token);
-                closeLoginModal();
-                showToast('✅ 登录成功！');
-                loadDiaries();
-            } catch (e) { errEl.textContent = e.message; errEl.style.display = 'block'; }
-        }
-
-        async function doRegister() {
-            const username = document.getElementById('regUsername').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const password = document.getElementById('regPassword').value;
-            const errEl = document.getElementById('regError');
-            try {
-                const res = await fetch(`${API_BASE}/api/auth/register`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, email, password })
-                });
-                const json = await res.json();
-                if (!res.ok) throw new Error(json.error || '注册失败');
-                token = json.data.token;
-                localStorage.setItem('blog_token', token);
-                closeLoginModal();
-                showToast('✅ 注册成功！');
-                loadDiaries();
-            } catch (e) { errEl.textContent = e.message; errEl.style.display = 'block'; }
-        }
+        // 登录/退出后刷新日记
+        window.onAuthLogin = function() {
+            token = localStorage.getItem('blog_token') || '';
+            loadDiaries();
+        };
+        window.onAuthLogout = function() {
+            token = '';
+            loadDiaries();
+        };
 
         function showToast(msg, color = '#10b981') {
             const t = document.getElementById('toast');

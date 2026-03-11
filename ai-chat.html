@@ -68,11 +68,11 @@
                     <span>Python 爬虫教程</span>
                 </div>
             </div>
-            <div class="user-profile">
+            <div class="user-profile" id="aiChatUserProfile" style="cursor:pointer;" onclick="authSidebar.openModal()">
                 <div class="avatar"><i class="fa-solid fa-user"></i></div>
                 <div class="user-info">
-                    <span class="name">User</span>
-                    <span class="status">Free Plan</span>
+                    <span class="name" id="aiChatUsername">点击登录</span>
+                    <span class="status">登录 / 注册</span>
                 </div>
             </div>
         </aside>
@@ -213,6 +213,20 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="auth-sidebar.js"></script>
+    <script>
+        // 更新 ai-chat 页面侧边栏用户显示
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = localStorage.getItem('blog_username');
+            const el = document.getElementById('aiChatUsername');
+            const profile = document.getElementById('aiChatUserProfile');
+            if (username && el) {
+                el.textContent = username;
+                el.nextElementSibling.textContent = '已登录';
+                if (profile) profile.onclick = null;
+            }
+        });
+    </script>
 </body>
 
 </html>

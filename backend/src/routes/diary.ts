@@ -1,25 +1,38 @@
 import { Router } from 'express';
 import { pool } from '../db';
-import { authenticate } from '../middleware/auth';
 
 export const diaryRouter = Router();
 
-// 获取日记列表（只能看自己的）
-diaryRouter.get('/', authenticate, async (req, res) => {
+// 获取或创建匿名用户 ID
+async function getOrCreateAnonUser() {
+  const result = await pool.query('SELECT id FROM users WHERE username = $1', ['anon']);
+  if (result.rows.length > 0) {
+    return result.rows[0];
+  }
+  const insert = await pool.query(
+    `INSERT INTO users (username, email, password_hash, avatar_url, bio)
+     VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+    ['anon', 'anon@localhost', 'no-password', null, 'Anonymous user for public posts']
+  );
+  return insert.rows[0];
+}
+
+// 获取日记列表（公开）
+diaryRouter.get('/', async (req, res) => {
   try {
-    const userId = (req as any).user.userId;
+    const anonUser = await getOrCreateAnonUser();
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
     const offset = (page - 1) * limit;
 
     const result = await pool.query(
       'SELECT * FROM diaries WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',
-      [userId, limit, offset]
+      [anonUser.id, limit, offset]
     );
 
     const countResult = await pool.query(
       'SELECT COUNT(*) FROM diaries WHERE user_id = $1',
-      [userId]
+      [anonUser.id]
     );
 
     res.json({
@@ -41,14 +54,14 @@ diaryRouter.get('/', authenticate, async (req, res) => {
 });
 
 // 创建日记
-diaryRouter.post('/', authenticate, async (req, res) => {
+diaryRouter.post('/', async (req, res) => {
   try {
     const { title, content, mood, weather, isPrivate } = req.body;
-    const userId = (req as any).user.userId;
+    const anonUser = await getOrCreateAnonUser();
 
     const result = await pool.query(
       'INSERT INTO diaries (user_id, title, content, mood, weather, is_private) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [userId, title, content, mood, weather, isPrivate ?? true]
+      [anonUser.id, title, content, mood, weather, isPrivate ?? true]
     );
 
     res.status(201).json({
@@ -62,22 +75,21 @@ diaryRouter.post('/', authenticate, async (req, res) => {
 });
 
 // 更新日记
-diaryRouter.put('/:id', authenticate, async (req, res) => {
+diaryRouter.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { title, content, mood, weather, isPrivate } = req.body;
-    const userId = (req as any).user.userId;
 
     const result = await pool.query(
       `UPDATE diaries
        SET title = $1, content = $2, mood = $3, weather = $4, is_private = $5, updated_at = CURRENT_TIMESTAMP
-       WHERE id = $6 AND user_id = $7
+       WHERE id = $6
        RETURNING *`,
-      [title, content, mood, weather, isPrivate, id, userId]
+      [title, content, mood, weather, isPrivate, id]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: '日记不存在或无权限修改' });
+      return res.status(404).json({ error: '日记不存在' });
     }
 
     res.json({
@@ -91,18 +103,17 @@ diaryRouter.put('/:id', authenticate, async (req, res) => {
 });
 
 // 删除日记
-diaryRouter.delete('/:id', authenticate, async (req, res) => {
+diaryRouter.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = (req as any).user.userId;
 
     const result = await pool.query(
-      'DELETE FROM diaries WHERE id = $1 AND user_id = $2 RETURNING id',
-      [id, userId]
+      'DELETE FROM diaries WHERE id = $1 RETURNING id',
+      [id]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: '日记不存在或无权限删除' });
+      return res.status(404).json({ error: '日记不存在' });
     }
 
     res.json({

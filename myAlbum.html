@@ -536,29 +536,25 @@
             const grid = document.getElementById('albumGrid');
             const emptyState = document.getElementById('emptyState');
 
-            if (token && currentAlbumId) {
-                // 有 token，从后端加载
-                try {
-                    const res = await fetch(`${API_BASE}/api/album/${currentAlbumId}`);
+            // 直接从后端加载（无需认证）
+            try {
+                const res = await fetch(`${API_BASE}/api/album/1`);
+                if (res.ok) {
                     const json = await res.json();
-                    const backendPhotos = (json?.data?.photos || []).map(p => ({
+                    photos = (json?.data?.photos || []).map(p => ({
                         id: p.id,
                         title: p.title || '未命名',
                         category: (p.tags && p.tags[0]) || '其他',
                         date: p.created_at ? p.created_at.slice(0, 10) : '',
                         url: p.url,
-                        likes: 0,
-                        source: 'backend'
+                        likes: 0
                     }));
-                    // 合并本地照片（本地优先）
-                    const localPhotos = JSON.parse(localStorage.getItem('album_photos_backup') || '[]');
-                    photos = [...localPhotos, ...backendPhotos];
-                } catch (e) {
-                    photos = JSON.parse(localStorage.getItem('album_photos_backup') || '[]');
+                } else {
+                    photos = [];
                 }
-            } else {
-                // 无 token，只显示本地照片
-                photos = JSON.parse(localStorage.getItem('album_photos_backup') || '[]');
+            } catch (e) {
+                console.warn('从后端加载照片失败：', e);
+                photos = [];
             }
 
             renderPhotos();
@@ -684,19 +680,13 @@
             reader.onload = async (e) => {
                 const url = e.target.result;
                 try {
-                    if (currentAlbumId && token) {
-                        const res = await fetch(`${API_BASE}/api/album/${currentAlbumId}/photos`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                            body: JSON.stringify({ url, title, description: '', tags: [category] })
-                        });
-                        if (!res.ok) throw new Error('上传失败');
-                    } else {
-                        // 降级到 localStorage
-                        const backup = JSON.parse(localStorage.getItem('album_photos_backup') || '[]');
-                        backup.unshift({ id: Date.now(), title, category, date: new Date().toISOString().slice(0,10), url, likes: 0 });
-                        localStorage.setItem('album_photos_backup', JSON.stringify(backup));
-                    }
+                    // 直接上传到后端（无需认证）
+                    const res = await fetch(`${API_BASE}/api/album/1/photos`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url, title, description: '', tags: [category] })
+                    });
+                    if (!res.ok) throw new Error('上传失败');
                     closeUploadModal();
                     showToast('✅ 照片上传成功！');
                     await loadPhotos();
@@ -710,17 +700,7 @@
         async function deletePhoto(id) {
             if (!confirm('确定要删除这张照片吗？')) return;
             try {
-                if (token && currentAlbumId) {
-                    await fetch(`${API_BASE}/api/album/${currentAlbumId}/photos/${id}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                }
-                // 同时从 localStorage 删除
-                const backup = JSON.parse(localStorage.getItem('album_photos_backup') || '[]');
-                const newBackup = backup.filter(p => p.id !== id);
-                localStorage.setItem('album_photos_backup', JSON.stringify(newBackup));
-
+                await fetch(`${API_BASE}/api/album/1/photos/${id}`, { method: 'DELETE' });
                 photos = photos.filter(p => p.id !== id);
                 renderPhotos();
                 showToast('🗑️ 照片已删除', '#ef4444');
@@ -734,16 +714,10 @@
             authSidebar.openModal('login');
         }
 
-        // 登录/退出后刷新相册
-        window.onAuthLogin = async function() {
-            token = localStorage.getItem('blog_token') || '';
-            await ensureDefaultAlbum();
-            loadPhotos();
-        };
-        window.onAuthLogout = function() {
-            token = '';
-            loadPhotos();
-        };
+        // 初始化时加载照片
+        window.addEventListener('DOMContentLoaded', async () => {
+            await loadPhotos();
+        });
 
         function showToast(msg, color = '#10b981') {
             let t = document.getElementById('albumToast');

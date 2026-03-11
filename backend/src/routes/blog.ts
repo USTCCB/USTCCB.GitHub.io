@@ -1,9 +1,23 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { pool } from '../db';
-import { authenticate } from '../middleware/auth';
 
 export const blogRouter = Router();
+
+// 获取或创建匿名用户 ID
+async function getOrCreateAnonUser() {
+  const result = await pool.query('SELECT id FROM users WHERE username = $1', ['anon']);
+  if (result.rows.length > 0) {
+    return result.rows[0];
+  }
+  // 创建匿名用户
+  const insert = await pool.query(
+    `INSERT INTO users (username, email, password_hash, avatar_url, bio)
+     VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+    ['anon', 'anon@localhost', 'no-password', null, 'Anonymous user for public posts']
+  );
+  return insert.rows[0];
+}
 
 const createPostSchema = z.object({
   title: z.string().min(1).max(200),
@@ -22,10 +36,10 @@ blogRouter.get('/', async (req, res) => {
     const offset = (page - 1) * limit;
 
     const result = await pool.query(
-      `SELECT p.*, u.username, u.avatar_url,
+      `SELECT p.*, COALESCE(u.username, 'Anonymous') as username, COALESCE(u.avatar_url, '') as avatar_url,
         (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comment_count
        FROM blog_posts p
-       JOIN users u ON p.user_id = u.id
+       LEFT JOIN users u ON p.user_id = u.id
        WHERE p.published = true
        ORDER BY p.created_at DESC
        LIMIT $1 OFFSET $2`,
@@ -88,17 +102,18 @@ blogRouter.get('/:id', async (req, res) => {
   }
 });
 
-// 创建文章（需要认证）
-blogRouter.post('/', authenticate, async (req, res) => {
+// 创建文章（无需认证，使用匿名用户 ID）
+blogRouter.post('/', async (req, res) => {
   try {
     const data = createPostSchema.parse(req.body);
-    const userId = (req as any).user.userId;
+    // 使用匿名用户 ID（如果没有则创建）
+    const anonUser = await getOrCreateAnonUser();
 
     const result = await pool.query(
       `INSERT INTO blog_posts (user_id, title, content, summary, cover_image, tags, published)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [userId, data.title, data.content, data.summary, data.coverImage, data.tags, data.published]
+      [anonUser.id, data.title, data.content, data.summary, data.coverImage, data.tags, data.published]
     );
 
     res.status(201).json({

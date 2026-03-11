@@ -1,17 +1,44 @@
 import { Router } from 'express';
 import { pool } from '../db';
-import { authenticate } from '../middleware/auth';
 
 export const albumRouter = Router();
+
+// 获取或创建匿名用户 ID
+async function getOrCreateAnonUser() {
+  const result = await pool.query('SELECT id FROM users WHERE username = $1', ['anon']);
+  if (result.rows.length > 0) {
+    return result.rows[0];
+  }
+  const insert = await pool.query(
+    `INSERT INTO users (username, email, password_hash, avatar_url, bio)
+     VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+    ['anon', 'anon@localhost', 'no-password', null, 'Anonymous user for public posts']
+  );
+  return insert.rows[0];
+}
+
+// 获取或创建默认相册
+async function getOrCreateDefaultAlbum() {
+  const anonUser = await getOrCreateAnonUser();
+  const result = await pool.query('SELECT id FROM albums WHERE user_id = $1 AND title = $2', [anonUser.id, '默认相册']);
+  if (result.rows.length > 0) {
+    return result.rows[0];
+  }
+  const insert = await pool.query(
+    'INSERT INTO albums (user_id, title, description, cover_image) VALUES ($1, $2, $3, $4) RETURNING *',
+    [anonUser.id, '默认相册', '默认相册，存放所有照片', null]
+  );
+  return insert.rows[0];
+}
 
 // 获取所有相册
 albumRouter.get('/', async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT a.*, u.username,
+      `SELECT a.*, COALESCE(u.username, 'Anonymous') as username,
         (SELECT COUNT(*) FROM photos WHERE album_id = a.id) as photo_count
        FROM albums a
-       JOIN users u ON a.user_id = u.id
+       LEFT JOIN users u ON a.user_id = u.id
        ORDER BY a.created_at DESC`
     );
 
@@ -31,7 +58,7 @@ albumRouter.get('/:id', async (req, res) => {
     const { id } = req.params;
 
     const albumResult = await pool.query(
-      'SELECT a.*, u.username FROM albums a JOIN users u ON a.user_id = u.id WHERE a.id = $1',
+      'SELECT a.*, COALESCE(u.username, \'Anonymous\') as username FROM albums a LEFT JOIN users u ON a.user_id = u.id WHERE a.id = $1',
       [id]
     );
 
@@ -58,14 +85,14 @@ albumRouter.get('/:id', async (req, res) => {
 });
 
 // 创建相册
-albumRouter.post('/', authenticate, async (req, res) => {
+albumRouter.post('/', async (req, res) => {
   try {
     const { title, description, coverImage } = req.body;
-    const userId = (req as any).user.userId;
+    const anonUser = await getOrCreateAnonUser();
 
     const result = await pool.query(
       'INSERT INTO albums (user_id, title, description, cover_image) VALUES ($1, $2, $3, $4) RETURNING *',
-      [userId, title, description, coverImage]
+      [anonUser.id, title, description, coverImage]
     );
 
     res.status(201).json({
@@ -79,15 +106,15 @@ albumRouter.post('/', authenticate, async (req, res) => {
 });
 
 // 上传照片到相册
-albumRouter.post('/:id/photos', authenticate, async (req, res) => {
+albumRouter.post('/:id/photos', async (req, res) => {
   try {
     const { id } = req.params;
     const { url, title, description, tags } = req.body;
-    const userId = (req as any).user.userId;
+    const anonUser = await getOrCreateAnonUser();
 
     const result = await pool.query(
       'INSERT INTO photos (album_id, user_id, url, title, description, tags) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [id, userId, url, title, description, tags]
+      [id, anonUser.id, url, title, description, tags]
     );
 
     res.status(201).json({
@@ -97,5 +124,29 @@ albumRouter.post('/:id/photos', authenticate, async (req, res) => {
   } catch (error) {
     console.error('上传照片错误:', error);
     res.status(500).json({ error: '上传照片失败' });
+  }
+});
+
+// 删除照片
+albumRouter.delete('/:id/photos/:photoId', async (req, res) => {
+  try {
+    const { id, photoId } = req.params;
+
+    const result = await pool.query(
+      'DELETE FROM photos WHERE id = $1 AND album_id = $2 RETURNING id',
+      [photoId, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: '照片不存在' });
+    }
+
+    res.json({
+      success: true,
+      message: '照片已删除'
+    });
+  } catch (error) {
+    console.error('删除照片错误:', error);
+    res.status(500).json({ error: '删除照片失败' });
   }
 });

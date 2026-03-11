@@ -670,44 +670,20 @@
                 showToast('⚠️ 标题和内容不能为空', '#f59e0b');
                 return;
             }
-            if (token) {
-                // 有 token，保存到后端
-                try {
-                    const res = await fetch(`${API_BASE}/api/blog`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                        body: JSON.stringify({ title, content, summary, tags, published })
-                    });
-                    const json = await res.json();
-                    if (!res.ok) {
-                        if (res.status === 401) { token = ''; localStorage.removeItem('blog_token'); throw new Error('登录已过期'); }
-                        throw new Error(json.error || '发布失败');
-                    }
-                    closeWriteModal();
-                    clearBlogForm();
-                    showToast(published ? '🎉 博客发布成功！' : '✅ 草稿已保存！');
-                    loadBlogsFromBackend();
-                } catch (e) { showToast('❌ ' + e.message, '#ef4444'); }
-            } else {
-                // 无 token，保存到 localStorage
-                const localBlogs = JSON.parse(localStorage.getItem('local_blogs') || '[]');
-                localBlogs.unshift({
-                    id: Date.now(),
-                    title, content,
-                    excerpt: summary || content.slice(0, 120) + '...',
-                    date: new Date().toISOString().slice(0, 10),
-                    author: 'AnranWu',
-                    readTime: '阅读中',
-                    views: 0, likes: 0,
-                    tags: tags.length ? tags : ['Blog'],
-                    published
+            // 直接保存到后端（无需认证）
+            try {
+                const res = await fetch(`${API_BASE}/api/blog`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, content, summary, tags, published })
                 });
-                localStorage.setItem('local_blogs', JSON.stringify(localBlogs));
+                const json = await res.json();
+                if (!res.ok) throw new Error(json.error || '发布失败');
                 closeWriteModal();
                 clearBlogForm();
-                showToast(published ? '🎉 博客已保存（本地）' : '✅ 草稿已保存（本地）');
+                showToast(published ? '🎉 博客发布成功！' : '✅ 草稿已保存！');
                 loadBlogsFromBackend();
-            }
+            } catch (e) { showToast('❌ ' + e.message, '#ef4444'); }
         }
 
         function clearBlogForm() {

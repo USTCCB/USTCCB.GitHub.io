@@ -11,6 +11,7 @@ import { commentRouter } from './routes/comment';
 import { searchRouter } from './routes/search';
 import { statsRouter } from './routes/stats';
 import { errorHandler } from './middleware/errorHandler';
+import { initDatabase } from './db';
 
 dotenv.config();
 
@@ -55,6 +56,11 @@ app.get('/health', (req, res) => {
 // 错误处理
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`🚀 服务器运行在 http://localhost:${PORT}`);
+  try {
+    await initDatabase();
+  } catch (err) {
+    console.error('数据库初始化失败，服务继续运行:', err);
+  }
 });

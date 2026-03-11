@@ -499,8 +499,263 @@
 
     <script src="script.js"></script>
     <script>
-        // 照片数据
-        let photos = JSON.parse(localStorage.getItem('album_photos')) || [
+        const API_BASE = 'https://backend-production-4de2.up.railway.app';
+        let token = localStorage.getItem('blog_token') || '';
+        let photos = [];
+        let currentCategory = 'all';
+        let currentLightboxIndex = 0;
+        let selectedFile = null;
+        let currentAlbumId = null; // 默认相册 ID
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof initTheme === 'function') initTheme();
+            setupEventListeners();
+            await ensureDefaultAlbum();
+            loadPhotos();
+        });
+
+        // 获取或创建默认相册
+        async function ensureDefaultAlbum() {
+            if (!token) return;
+            try {
+                const res = await fetch(`${API_BASE}/api/album`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const json = await res.json();
+                const albums = json?.data || [];
+                if (albums.length > 0) {
+                    currentAlbumId = albums[0].id;
+                } else {
+                    // 创建默认相册
+                    const createRes = await fetch(`${API_BASE}/api/album`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ title: '我的相册', description: '默认相册' })
+                    });
+                    const createJson = await createRes.json();
+                    currentAlbumId = createJson?.data?.id;
+                }
+            } catch (e) { console.warn('获取相册失败:', e); }
+        }
+
+        async function loadPhotos() {
+            const grid = document.getElementById('albumGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (!token) {
+                grid.style.display = 'none';
+                emptyState.innerHTML = '<i class="fa-solid fa-lock"></i><h3>请先登录</h3><p>登录后可查看相册</p>';
+                emptyState.style.display = 'block';
+                return;
+            }
+            if (!currentAlbumId) {
+                emptyState.innerHTML = '<i class="fa-regular fa-images"></i><h3>还没有照片</h3><p>点击上传按钮添加你的第一张照片</p>';
+                emptyState.style.display = 'block';
+                grid.style.display = 'none';
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/album/${currentAlbumId}`);
+                const json = await res.json();
+                photos = (json?.data?.photos || []).map(p => ({
+                    id: p.id,
+                    title: p.title || '未命名',
+                    category: (p.tags && p.tags[0]) || '其他',
+                    date: p.created_at ? p.created_at.slice(0, 10) : '',
+                    url: p.url,
+                    likes: 0
+                }));
+            } catch (e) {
+                // 如果后端获取失败，保留当前 photos（可能是 localStorage 数据）
+                photos = JSON.parse(localStorage.getItem('album_photos_backup') || '[]');
+            }
+
+            renderPhotos();
+        }
+
+        function setupEventListeners() {
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    currentCategory = tab.dataset.category;
+                    renderPhotos();
+                });
+            });
+
+            const uploadArea = document.getElementById('uploadArea');
+            uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+            uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault(); uploadArea.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) handleFile(file);
+            });
+
+            document.addEventListener('keydown', (e) => {
+                const lightbox = document.getElementById('lightbox');
+                if (lightbox.classList.contains('active')) {
+                    if (e.key === 'Escape') closeLightbox();
+                    if (e.key === 'ArrowLeft') navigateLightbox(-1);
+                    if (e.key === 'ArrowRight') navigateLightbox(1);
+                }
+            });
+        }
+
+        function renderPhotos() {
+            let filtered = currentCategory === 'all' ? photos : photos.filter(p => p.category === currentCategory);
+            const grid = document.getElementById('albumGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filtered.length === 0) {
+                grid.style.display = 'none';
+                emptyState.innerHTML = '<i class="fa-regular fa-images"></i><h3>还没有照片</h3><p>点击上传按钮添加你的第一张照片</p>';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            grid.innerHTML = filtered.map((photo) => `
+                <div class="photo-card" onclick="openLightbox(${photos.indexOf(photo)})">
+                    <div class="photo-wrapper">
+                        <img src="${photo.url}" alt="${photo.title}" onerror="this.parentElement.innerHTML='<div class=\\'photo-placeholder\\'><i class=\\'fa-regular fa-image\\'></i></div>'">
+                    </div>
+                    <div class="photo-info">
+                        <div class="photo-title">${photo.title}</div>
+                        <div class="photo-meta">
+                            <span class="photo-category">${photo.category}</span>
+                            <div class="photo-actions">
+                                <span class="action-icon" onclick="event.stopPropagation(); deletePhoto(${photo.id})">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openLightbox(index) {
+            currentLightboxIndex = index;
+            const photo = photos[index];
+            document.getElementById('lightboxImage').src = photo.url;
+            document.getElementById('lightboxInfo').innerHTML = `
+                <strong>${photo.title}</strong><br>
+                <small>${photo.category} · ${photo.date}</small>
+            `;
+            document.getElementById('lightbox').classList.add('active');
+        }
+
+        function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
+
+        function navigateLightbox(direction) {
+            currentLightboxIndex += direction;
+            if (currentLightboxIndex < 0) currentLightboxIndex = photos.length - 1;
+            if (currentLightboxIndex >= photos.length) currentLightboxIndex = 0;
+            openLightbox(currentLightboxIndex);
+        }
+
+        function openUploadModal() {
+            if (!token) { showLoginHint(); return; }
+            document.getElementById('uploadModal').classList.add('active');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('active');
+            document.getElementById('previewContainer').style.display = 'none';
+            document.getElementById('photoTitle').value = '';
+            selectedFile = null;
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) handleFile(file);
+        }
+
+        function handleFile(file) {
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('previewImage').src = e.target.result;
+                document.getElementById('previewContainer').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function uploadPhoto() {
+            if (!selectedFile) { alert('请先选择图片'); return; }
+            const title = document.getElementById('photoTitle').value.trim() || '未命名照片';
+            const category = document.getElementById('photoCategory').value;
+
+            // 将图片转为 base64 数据 URL 作为 url 存储（简化方案，无需文件上传服务）
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const url = e.target.result;
+                try {
+                    if (currentAlbumId && token) {
+                        const res = await fetch(`${API_BASE}/api/album/${currentAlbumId}/photos`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ url, title, description: '', tags: [category] })
+                        });
+                        if (!res.ok) throw new Error('上传失败');
+                    } else {
+                        // 降级到 localStorage
+                        const backup = JSON.parse(localStorage.getItem('album_photos_backup') || '[]');
+                        backup.unshift({ id: Date.now(), title, category, date: new Date().toISOString().slice(0,10), url, likes: 0 });
+                        localStorage.setItem('album_photos_backup', JSON.stringify(backup));
+                    }
+                    closeUploadModal();
+                    showToast('✅ 照片上传成功！');
+                    await loadPhotos();
+                } catch (err) {
+                    alert('上传失败：' + err.message);
+                }
+            };
+            reader.readAsDataURL(selectedFile);
+        }
+
+        async function deletePhoto(id) {
+            if (!confirm('确定要删除这张照片吗？')) return;
+            try {
+                if (token) {
+                    await fetch(`${API_BASE}/api/album/${currentAlbumId}/photos/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                }
+                photos = photos.filter(p => p.id !== id);
+                renderPhotos();
+                showToast('🗑️ 照片已删除', '#ef4444');
+            } catch (e) {
+                photos = photos.filter(p => p.id !== id);
+                renderPhotos();
+            }
+        }
+
+        function showLoginHint() {
+            showToast('⚠️ 请先登录后再上传照片', '#f59e0b');
+        }
+
+        function showToast(msg, color = '#10b981') {
+            let t = document.getElementById('albumToast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = 'albumToast';
+                t.style.cssText = 'position:fixed;bottom:30px;right:30px;color:white;padding:14px 24px;border-radius:10px;font-size:0.95rem;z-index:2000;';
+                document.body.appendChild(t);
+            }
+            t.textContent = msg;
+            t.style.background = color;
+            t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 3000);
+        }
+    </script>
+</body>
+</html>
             {
                 id: 1,
                 title: '美丽的日落',

@@ -218,19 +218,64 @@
             opacity: 0.3;
         }
 
-        @media (max-width: 768px) {
-            .blog-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .blog-footer {
-                flex-direction: column;
-                gap: 12px;
-                align-items: flex-start;
-            }
+        .write-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+            text-decoration: none;
         }
-    </style>
+        .write-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+        }
+        /* 写博客弹窗 */
+        .write-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 999;
+            display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .write-modal.active { display: flex; }
+        .write-modal-content {
+            background: var(--card-bg); border: var(--glass-border);
+            border-radius: 16px; padding: 30px;
+            max-width: 700px; width: 90%; max-height: 90vh; overflow-y: auto;
+        }
+        .write-modal h2 { margin-bottom: 20px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; color: var(--text-muted); font-size: 0.9rem; }
+        .form-input, .form-textarea {
+            width: 100%; padding: 12px; background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color); border-radius: 8px;
+            color: var(--text-color); font-size: 0.95rem; outline: none;
+            transition: border-color 0.3s; box-sizing: border-box;
+        }
+        .form-textarea { min-height: 200px; resize: vertical; font-family: inherit; line-height: 1.6; }
+        .form-input:focus, .form-textarea:focus { border-color: var(--primary-color); }
+        .modal-buttons { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+        .btn-secondary {
+            background: var(--card-bg); border: var(--glass-border);
+            color: var(--text-color); padding: 10px 20px;
+            border-radius: 8px; cursor: pointer; transition: all 0.3s;
+        }
+        .btn-secondary:hover { background: var(--card-hover); }
+        .toast {
+            position: fixed; bottom: 30px; right: 30px;
+            background: #10b981; color: white; padding: 14px 24px;
+            border-radius: 10px; font-size: 0.95rem; z-index: 2000;
+            display: none; animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 </head>
 <body>
     <div class="background-glow"></div>
@@ -283,6 +328,9 @@
                         <span class="filter-tag" data-tag="Life">生活</span>
                         <span class="filter-tag" data-tag="AI">AI</span>
                     </div>
+                    <button class="write-btn" onclick="openWriteModal()">
+                        <i class="fa-solid fa-plus"></i> 写博客
+                    </button>
                 </div>
 
                 <div class="blog-list" id="blogList">
@@ -302,12 +350,96 @@
         </main>
     </div>
 
+    <!-- 写博客弹窗 -->
+    <div class="write-modal" id="writeModal">
+        <div class="write-modal-content">
+            <h2>✍️ 写新博客</h2>
+            <div class="form-group">
+                <label>标题 *</label>
+                <input type="text" id="blogTitle" class="form-input" placeholder="输入博客标题...">
+            </div>
+            <div class="form-group">
+                <label>内容 *</label>
+                <textarea id="blogContent" class="form-textarea" placeholder="写下你的想法..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>摘要（可选）</label>
+                <input type="text" id="blogSummary" class="form-input" placeholder="简短描述，不填则自动截取内容前120字">
+            </div>
+            <div class="form-group">
+                <label>标签（逗号分隔，如：JavaScript,生活）</label>
+                <input type="text" id="blogTags" class="form-input" placeholder="JavaScript, CSS, 生活...">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="closeWriteModal()">取消</button>
+                <button class="write-btn" onclick="submitBlog(false)">
+                    <i class="fa-solid fa-save"></i> 保存草稿
+                </button>
+                <button class="write-btn" onclick="submitBlog(true)">
+                    <i class="fa-solid fa-paper-plane"></i> 发布
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 登录弹窗 -->
+    <div class="write-modal" id="loginModal">
+        <div class="write-modal-content" style="max-width:400px;">
+            <h2>🔐 登录</h2>
+            <p style="color:var(--text-muted);margin-bottom:20px;">发布博客需要先登录</p>
+            <div class="form-group">
+                <label>邮箱</label>
+                <input type="email" id="loginEmail" class="form-input" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="loginPassword" class="form-input" placeholder="密码">
+            </div>
+            <div id="loginError" style="color:#ef4444;font-size:0.9rem;margin-bottom:12px;display:none;"></div>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="closeLoginModal()">取消</button>
+                <button class="write-btn" onclick="doLogin()">
+                    <i class="fa-solid fa-right-to-bracket"></i> 登录
+                </button>
+            </div>
+            <p style="color:var(--text-muted);font-size:0.85rem;margin-top:16px;text-align:center;">
+                没有账号？先注册：
+                <a href="#" onclick="showRegister()" style="color:var(--primary-color);">点击注册</a>
+            </p>
+            <!-- 注册区域 -->
+            <div id="registerArea" style="display:none;margin-top:20px;border-top:1px solid var(--border-color);padding-top:20px;">
+                <h3 style="margin-bottom:16px;">注册新账号</h3>
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input type="text" id="regUsername" class="form-input" placeholder="用户名">
+                </div>
+                <div class="form-group">
+                    <label>邮箱</label>
+                    <input type="email" id="regEmail" class="form-input" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>密码（至少6位）</label>
+                    <input type="password" id="regPassword" class="form-input" placeholder="密码">
+                </div>
+                <div id="regError" style="color:#ef4444;font-size:0.9rem;margin-bottom:12px;display:none;"></div>
+                <button class="write-btn" style="width:100%;justify-content:center;" onclick="doRegister()">
+                    <i class="fa-solid fa-user-plus"></i> 注册
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
     <script src="script.js"></script>
     <script>
-        // 后端 API 基础地址：
-        // 1. 本地开发时可设为 'http://localhost:3001'
-        // 2. 部署到 Railway 后，改成你的 Railway 后端地址
-        const API_BASE = window.BLOG_API_BASE || 'http://localhost:3001';
+        const API_BASE = 'https://backend-production-4de2.up.railway.app';
+
+        let blogs = [];
+        let currentFilter = 'all';
+        let currentPage = 1;
+        const blogsPerPage = 4;
+        let token = localStorage.getItem('blog_token') || '';
 
         // 本地静态数据作为后备（后端不可用时使用）
         const fallbackBlogs = [
@@ -356,11 +488,6 @@
                 tags: ['JavaScript', 'React', 'Frontend']
             }
         ];
-
-        let blogs = [];
-        let currentFilter = 'all';
-        let currentPage = 1;
-        const blogsPerPage = 4;
 
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
@@ -549,6 +676,117 @@
             currentPage = page;
             renderBlogs(document.getElementById('searchInput').value);
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showToast(msg, color = '#10b981') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.background = color;
+            t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 3000);
+        }
+
+        function openWriteModal() {
+            if (!token) { openLoginModal(); return; }
+            document.getElementById('writeModal').classList.add('active');
+        }
+        function closeWriteModal() {
+            document.getElementById('writeModal').classList.remove('active');
+        }
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+        }
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+            document.getElementById('registerArea').style.display = 'none';
+            document.getElementById('loginError').style.display = 'none';
+        }
+        function showRegister() {
+            document.getElementById('registerArea').style.display = 'block';
+        }
+
+        async function doLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errEl = document.getElementById('loginError');
+            try {
+                const res = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const json = await res.json();
+                if (!res.ok) throw new Error(json.error || '登录失败');
+                token = json.data.token;
+                localStorage.setItem('blog_token', token);
+                closeLoginModal();
+                showToast('✅ 登录成功！');
+                openWriteModal();
+            } catch (e) {
+                errEl.textContent = e.message;
+                errEl.style.display = 'block';
+            }
+        }
+
+        async function doRegister() {
+            const username = document.getElementById('regUsername').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const errEl = document.getElementById('regError');
+            try {
+                const res = await fetch(`${API_BASE}/api/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                const json = await res.json();
+                if (!res.ok) throw new Error(json.error || '注册失败');
+                token = json.data.token;
+                localStorage.setItem('blog_token', token);
+                closeLoginModal();
+                showToast('✅ 注册成功！');
+                openWriteModal();
+            } catch (e) {
+                errEl.textContent = e.message;
+                errEl.style.display = 'block';
+            }
+        }
+
+        async function submitBlog(published) {
+            const title = document.getElementById('blogTitle').value.trim();
+            const content = document.getElementById('blogContent').value.trim();
+            const summary = document.getElementById('blogSummary').value.trim();
+            const tagsRaw = document.getElementById('blogTags').value.trim();
+            const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
+
+            if (!title || !content) {
+                showToast('⚠️ 标题和内容不能为空', '#f59e0b');
+                return;
+            }
+            try {
+                const res = await fetch(`${API_BASE}/api/blog`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ title, content, summary, tags, published })
+                });
+                const json = await res.json();
+                if (!res.ok) {
+                    if (res.status === 401) { token = ''; localStorage.removeItem('blog_token'); throw new Error('登录已过期，请重新登录'); }
+                    throw new Error(json.error || '发布失败');
+                }
+                closeWriteModal();
+                document.getElementById('blogTitle').value = '';
+                document.getElementById('blogContent').value = '';
+                document.getElementById('blogSummary').value = '';
+                document.getElementById('blogTags').value = '';
+                showToast(published ? '🎉 博客发布成功！' : '✅ 草稿已保存！');
+                loadBlogsFromBackend();
+            } catch (e) {
+                showToast('❌ ' + e.message, '#ef4444');
+            }
         }
     </script>
 </body>

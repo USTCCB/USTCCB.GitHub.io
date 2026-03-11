@@ -26,17 +26,19 @@
             margin-bottom: 8px;
             font-family: 'JetBrains Mono', monospace;
         }
+        .diary-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
         .diary-content {
             font-size: 1.05rem;
             line-height: 1.7;
             color: #e2e8f0;
         }
-        .diary-content p {
-            margin-bottom: 12px;
-        }
-        .diary-content p:last-child {
-            margin-bottom: 0;
-        }
+        .diary-content p { margin-bottom: 12px; }
+        .diary-content p:last-child { margin-bottom: 0; }
         .mood-icon {
             position: absolute;
             top: 20px;
@@ -44,6 +46,72 @@
             font-size: 1.5rem;
             color: rgba(255,255,255,0.2);
         }
+        .diary-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .diary-action-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .diary-action-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+        .diary-action-btn.delete:hover { border-color: #ef4444; color: #ef4444; }
+        /* 写日记按钮 */
+        .write-diary-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white; border: none; padding: 12px 24px;
+            border-radius: 10px; cursor: pointer; font-size: 0.95rem;
+            font-weight: 500; display: flex; align-items: center; gap: 8px;
+            transition: all 0.3s; box-shadow: 0 4px 12px rgba(139,92,246,0.3);
+            margin-bottom: 24px;
+        }
+        .write-diary-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139,92,246,0.4); }
+        /* 弹窗 */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 999;
+            display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: var(--card-bg); border: var(--glass-border);
+            border-radius: 16px; padding: 30px;
+            max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;
+        }
+        .modal-box h2 { margin-bottom: 20px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; color: var(--text-muted); font-size: 0.9rem; }
+        .form-input, .form-textarea, .form-select {
+            width: 100%; padding: 12px; background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color); border-radius: 8px;
+            color: var(--text-color); font-size: 0.95rem; outline: none;
+            transition: border-color 0.3s; box-sizing: border-box;
+        }
+        .form-textarea { min-height: 180px; resize: vertical; font-family: inherit; line-height: 1.6; }
+        .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--primary-color); }
+        .modal-buttons { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+        .btn-secondary {
+            background: var(--card-bg); border: var(--glass-border);
+            color: var(--text-color); padding: 10px 20px;
+            border-radius: 8px; cursor: pointer; transition: all 0.3s;
+        }
+        .btn-secondary:hover { background: var(--card-hover); }
+        .toast {
+            position: fixed; bottom: 30px; right: 30px;
+            background: #10b981; color: white; padding: 14px 24px;
+            border-radius: 10px; font-size: 0.95rem; z-index: 2000;
+            display: none;
+        }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .empty-state i { font-size: 3rem; margin-bottom: 16px; opacity: 0.3; display: block; }
     </style>
 </head>
 <body>
@@ -73,33 +141,271 @@
             </header>
 
             <div class="diary-container">
-                <div class="diary-entry">
-                    <div class="diary-date">2023.10.24 星期二 ☁️</div>
-                    <div class="mood-icon"><i class="fa-regular fa-face-smile"></i></div>
-                    <div class="diary-content">
-                        <p>今天是程序员节（1024），给自己放了个假。去公园散步，看到银杏叶开始变黄了，秋天的气息越来越浓。</p>
-                        <p>回来路上买了一杯热咖啡，心情很不错。</p>
-                    </div>
-                </div>
-
-                <div class="diary-entry">
-                    <div class="diary-date">2023.10.20 星期五 ☀️</div>
-                    <div class="mood-icon"><i class="fa-regular fa-face-laugh-beam"></i></div>
-                    <div class="diary-content">
-                        <p>终于把那个棘手的 Bug 修复了！感觉如释重负。有时候编程就像解谜，过程痛苦但结果令人着迷。</p>
-                    </div>
-                </div>
-
-                <div class="diary-entry">
-                    <div class="diary-date">2023.10.15 星期日 🌧️</div>
-                    <div class="mood-icon"><i class="fa-regular fa-face-meh"></i></div>
-                    <div class="diary-content">
-                        <p>下了一整天的雨，哪里也没去。在家里看完了《百年孤独》，马尔克斯的文字真的很有魔力。</p>
-                    </div>
+                <button class="write-diary-btn" onclick="openDiaryModal()">
+                    <i class="fa-solid fa-plus"></i> 写日记
+                </button>
+                <div id="diaryList">
+                    <p style="text-align:center;color:var(--text-muted);padding:40px 0;">正在加载日记...</p>
                 </div>
             </div>
         </main>
     </div>
+
+    <!-- 写/编辑日记弹窗 -->
+    <div class="modal-overlay" id="diaryModal">
+        <div class="modal-box">
+            <h2 id="modalTitle">📝 写日记</h2>
+            <div class="form-group">
+                <label>标题 *</label>
+                <input type="text" id="diaryTitle" class="form-input" placeholder="今天的标题...">
+            </div>
+            <div class="form-group">
+                <label>内容 *</label>
+                <textarea id="diaryContent" class="form-textarea" placeholder="记录今天发生的事..."></textarea>
+            </div>
+            <div style="display:flex;gap:12px;">
+                <div class="form-group" style="flex:1;">
+                    <label>心情</label>
+                    <select id="diaryMood" class="form-select">
+                        <option value="">-- 选择心情 --</option>
+                        <option value="开心">😊 开心</option>
+                        <option value="平静">😐 平静</option>
+                        <option value="难过">😢 难过</option>
+                        <option value="兴奋">🤩 兴奋</option>
+                        <option value="疲惫">😴 疲惫</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>天气</label>
+                    <select id="diaryWeather" class="form-select">
+                        <option value="">-- 选择天气 --</option>
+                        <option value="晴天">☀️ 晴天</option>
+                        <option value="多云">⛅ 多云</option>
+                        <option value="阴天">☁️ 阴天</option>
+                        <option value="下雨">🌧️ 下雨</option>
+                        <option value="下雪">❄️ 下雪</option>
+                    </select>
+                </div>
+            </div>
+            <div id="diaryError" style="color:#ef4444;font-size:0.9rem;margin-bottom:12px;display:none;"></div>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="closeDiaryModal()">取消</button>
+                <button class="write-diary-btn" style="margin-bottom:0;" onclick="saveDiary()">
+                    <i class="fa-solid fa-save"></i> 保存
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 登录弹窗 -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-box" style="max-width:400px;">
+            <h2>🔐 登录</h2>
+            <p style="color:var(--text-muted);margin-bottom:20px;">写日记需要先登录</p>
+            <div class="form-group">
+                <label>邮箱</label>
+                <input type="email" id="loginEmail" class="form-input" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="loginPassword" class="form-input" placeholder="密码">
+            </div>
+            <div id="loginError" style="color:#ef4444;font-size:0.9rem;margin-bottom:12px;display:none;"></div>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="closeLoginModal()">取消</button>
+                <button class="write-diary-btn" style="margin-bottom:0;" onclick="doLogin()">
+                    <i class="fa-solid fa-right-to-bracket"></i> 登录
+                </button>
+            </div>
+            <p style="color:var(--text-muted);font-size:0.85rem;margin-top:16px;text-align:center;">
+                没有账号？<a href="#" onclick="showRegister()" style="color:var(--primary-color);">注册</a>
+            </p>
+            <div id="registerArea" style="display:none;margin-top:20px;border-top:1px solid var(--border-color);padding-top:20px;">
+                <h3 style="margin-bottom:16px;">注册</h3>
+                <div class="form-group"><label>用户名</label><input type="text" id="regUsername" class="form-input" placeholder="用户名"></div>
+                <div class="form-group"><label>邮箱</label><input type="email" id="regEmail" class="form-input" placeholder="email"></div>
+                <div class="form-group"><label>密码</label><input type="password" id="regPassword" class="form-input" placeholder="至少6位"></div>
+                <div id="regError" style="color:#ef4444;font-size:0.9rem;margin-bottom:12px;display:none;"></div>
+                <button class="write-diary-btn" style="width:100%;justify-content:center;margin-bottom:0;" onclick="doRegister()">
+                    <i class="fa-solid fa-user-plus"></i> 注册
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
     <script src="script.js"></script>
+    <script>
+        const API_BASE = 'https://backend-production-4de2.up.railway.app';
+        let token = localStorage.getItem('blog_token') || '';
+        let editingId = null;
+
+        const moodIconMap = { '开心': 'fa-face-smile', '平静': 'fa-face-meh', '难过': 'fa-face-sad-tear', '兴奋': 'fa-face-grin-stars', '疲惫': 'fa-face-tired' };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof initTheme === 'function') initTheme();
+            loadDiaries();
+        });
+
+        async function loadDiaries() {
+            const listEl = document.getElementById('diaryList');
+            if (!token) {
+                listEl.innerHTML = `<div class="empty-state"><i class="fa-solid fa-lock"></i><h3>请先登录</h3><p>登录后可查看和编写日记</p><button class="write-diary-btn" style="margin:16px auto 0;" onclick="openLoginModal()"><i class="fa-solid fa-right-to-bracket"></i> 登录</button></div>`;
+                return;
+            }
+            try {
+                const res = await fetch(`${API_BASE}/api/diary?limit=50`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.status === 401) { token = ''; localStorage.removeItem('blog_token'); loadDiaries(); return; }
+                const json = await res.json();
+                const diaries = json?.data?.diaries || [];
+                if (diaries.length === 0) {
+                    listEl.innerHTML = `<div class="empty-state"><i class="fa-regular fa-book"></i><h3>还没有日记</h3><p>点击"写日记"开始记录你的生活</p></div>`;
+                    return;
+                }
+                listEl.innerHTML = diaries.map(d => {
+                    const date = new Date(d.created_at);
+                    const dateStr = `${date.getFullYear()}.${String(date.getMonth()+1).padStart(2,'0')}.${String(date.getDate()).padStart(2,'0')} ${['日','一','二','三','四','五','六'][date.getDay()]} ${d.weather || ''}`;
+                    const icon = moodIconMap[d.mood] || 'fa-face-smile';
+                    return `<div class="diary-entry">
+                        <div class="diary-date">${dateStr}</div>
+                        <div class="mood-icon"><i class="fa-regular ${icon}"></i></div>
+                        <div class="diary-title">${d.title}</div>
+                        <div class="diary-content"><p>${(d.content || '').replace(/\n/g, '</p><p>')}</p></div>
+                        <div class="diary-actions">
+                            <button class="diary-action-btn" onclick="editDiary(${d.id},'${encodeURIComponent(d.title)}','${encodeURIComponent(d.content || '')}','${d.mood||''}','${d.weather||''}')">
+                                <i class="fa-regular fa-pen-to-square"></i> 编辑
+                            </button>
+                            <button class="diary-action-btn delete" onclick="deleteDiary(${d.id})">
+                                <i class="fa-regular fa-trash-can"></i> 删除
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (e) {
+                listEl.innerHTML = `<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i><h3>加载失败</h3><p>${e.message}</p></div>`;
+            }
+        }
+
+        function openDiaryModal() {
+            if (!token) { openLoginModal(); return; }
+            editingId = null;
+            document.getElementById('modalTitle').textContent = '📝 写日记';
+            document.getElementById('diaryTitle').value = '';
+            document.getElementById('diaryContent').value = '';
+            document.getElementById('diaryMood').value = '';
+            document.getElementById('diaryWeather').value = '';
+            document.getElementById('diaryError').style.display = 'none';
+            document.getElementById('diaryModal').classList.add('active');
+        }
+        function closeDiaryModal() { document.getElementById('diaryModal').classList.remove('active'); }
+
+        function editDiary(id, title, content, mood, weather) {
+            editingId = id;
+            document.getElementById('modalTitle').textContent = '✏️ 编辑日记';
+            document.getElementById('diaryTitle').value = decodeURIComponent(title);
+            document.getElementById('diaryContent').value = decodeURIComponent(content);
+            document.getElementById('diaryMood').value = mood;
+            document.getElementById('diaryWeather').value = weather;
+            document.getElementById('diaryError').style.display = 'none';
+            document.getElementById('diaryModal').classList.add('active');
+        }
+
+        async function saveDiary() {
+            const title = document.getElementById('diaryTitle').value.trim();
+            const content = document.getElementById('diaryContent').value.trim();
+            const mood = document.getElementById('diaryMood').value;
+            const weather = document.getElementById('diaryWeather').value;
+            const errEl = document.getElementById('diaryError');
+            if (!title || !content) { errEl.textContent = '标题和内容不能为空'; errEl.style.display = 'block'; return; }
+            errEl.style.display = 'none';
+            try {
+                const url = editingId ? `${API_BASE}/api/diary/${editingId}` : `${API_BASE}/api/diary`;
+                const method = editingId ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ title, content, mood, weather, isPrivate: true })
+                });
+                const json = await res.json();
+                if (!res.ok) throw new Error(json.error || '保存失败');
+                closeDiaryModal();
+                showToast(editingId ? '✅ 日记已更新' : '📔 日记已保存');
+                loadDiaries();
+            } catch (e) {
+                errEl.textContent = e.message;
+                errEl.style.display = 'block';
+            }
+        }
+
+        async function deleteDiary(id) {
+            if (!confirm('确定删除这篇日记吗？')) return;
+            try {
+                const res = await fetch(`${API_BASE}/api/diary/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) throw new Error('删除失败');
+                showToast('🗑️ 日记已删除', '#ef4444');
+                loadDiaries();
+            } catch (e) { showToast('❌ ' + e.message, '#ef4444'); }
+        }
+
+        function openLoginModal() { document.getElementById('loginModal').classList.add('active'); }
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+            document.getElementById('registerArea').style.display = 'none';
+        }
+        function showRegister() { document.getElementById('registerArea').style.display = 'block'; }
+
+        async function doLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errEl = document.getElementById('loginError');
+            try {
+                const res = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const json = await res.json();
+                if (!res.ok) throw new Error(json.error || '登录失败');
+                token = json.data.token;
+                localStorage.setItem('blog_token', token);
+                closeLoginModal();
+                showToast('✅ 登录成功！');
+                loadDiaries();
+            } catch (e) { errEl.textContent = e.message; errEl.style.display = 'block'; }
+        }
+
+        async function doRegister() {
+            const username = document.getElementById('regUsername').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const errEl = document.getElementById('regError');
+            try {
+                const res = await fetch(`${API_BASE}/api/auth/register`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+                const json = await res.json();
+                if (!res.ok) throw new Error(json.error || '注册失败');
+                token = json.data.token;
+                localStorage.setItem('blog_token', token);
+                closeLoginModal();
+                showToast('✅ 注册成功！');
+                loadDiaries();
+            } catch (e) { errEl.textContent = e.message; errEl.style.display = 'block'; }
+        }
+
+        function showToast(msg, color = '#10b981') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.background = color;
+            t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 3000);
+        }
+    </script>
 </body>
 </html>

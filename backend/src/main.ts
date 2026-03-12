@@ -60,7 +60,7 @@ app.use('/api/stats', statsRouter);
 
 // 健康检查
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', timestamp: new Date().toISOString(), version: 'v2-no-auth' });
 });
 
 // 手动触发数据库初始化

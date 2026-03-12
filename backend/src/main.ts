@@ -45,9 +45,9 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// 解析请求体
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// 解析请求体（增加限制以允许 base64 图片上传，50MB）
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // 静态文件
 app.use('/uploads', express.static('uploads'));

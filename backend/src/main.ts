@@ -18,6 +18,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// 信任反向代理（Railway 需要）
+app.set('trust proxy', 1);
+
 // 安全中间件
 app.use(helmet());
 const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000')

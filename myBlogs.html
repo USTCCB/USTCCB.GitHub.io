@@ -384,6 +384,7 @@
     <script src="auth-sidebar.js"></script>
     <script>
         const API_BASE = 'https://backend-production-4de2.up.railway.app';
+        console.log('[myBlogs] API_BASE:', API_BASE);
 
         let blogs = [];
         let currentFilter = 'all';
@@ -463,6 +464,7 @@
         }
 
         async function loadBlogsFromBackend() {
+            console.log('[myBlogs] loadBlogsFromBackend called');
             const blogList = document.getElementById('blogList');
             const noResults = document.getElementById('noResults');
 
@@ -470,9 +472,11 @@
                 blogList.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:40px 0;">正在从后端加载博客...</p>';
 
                 const res = await fetch(`${API_BASE}/api/blog?page=1&limit=50`);
+                console.log('[myBlogs] API response status:', res.status);
                 if (!res.ok) throw new Error('后端返回错误状态');
 
                 const json = await res.json();
+                console.log('[myBlogs] API response data:', json);
                 const posts = json?.data?.posts || [];
 
                 if (Array.isArray(posts) && posts.length > 0) {
@@ -487,11 +491,13 @@
                         likes: post.like_count || 0,
                         tags: Array.isArray(post.tags) && post.tags.length > 0 ? post.tags : ['Blog']
                     }));
+                    console.log('[myBlogs] Loaded blogs count:', blogs.length);
                 } else {
+                    console.log('[myBlogs] No posts in API response');
                     blogs = [];
                 }
             } catch (e) {
-                console.warn('从后端加载博客失败，使用本地数据：', e);
+                console.error('[myBlogs] loadBlogsFromBackend error:', e);
                 blogs = [];
                 noResults.style.display = 'none';
             }
@@ -499,6 +505,7 @@
             // 合并本地存储的博客（本地优先显示在前）
             const localBlogs = JSON.parse(localStorage.getItem('local_blogs') || '[]');
             blogs = [...localBlogs, ...blogs];
+            console.log('[myBlogs] Total blogs after merge:', blogs.length);
 
             renderBlogs();
         }

@@ -509,14 +509,18 @@
         });
 
         async function loadPhotos() {
+            console.log('[myAlbum] loadPhotos called');
             const grid = document.getElementById('albumGrid');
             const emptyState = document.getElementById('emptyState');
 
             // 直接从后端加载（无需认证，使用默认相册 ID=1）
             try {
+                console.log('[myAlbum] Fetching from:', `${API_BASE}/api/album/1`);
                 const res = await fetch(`${API_BASE}/api/album/1`);
+                console.log('[myAlbum] API response status:', res.status);
                 if (res.ok) {
                     const json = await res.json();
+                    console.log('[myAlbum] API response data:', json);
                     photos = (json?.data?.photos || []).map(p => ({
                         id: p.id,
                         title: p.title || '未命名',
@@ -525,11 +529,13 @@
                         url: p.url,
                         likes: 0
                     }));
+                    console.log('[myAlbum] Loaded photos count:', photos.length);
                 } else {
+                    console.log('[myAlbum] API response not ok');
                     photos = [];
                 }
             } catch (e) {
-                console.warn('从后端加载照片失败：', e);
+                console.error('[myAlbum] loadPhotos error:', e);
                 photos = [];
             }
 
@@ -650,23 +656,34 @@
             if (!selectedFile) { alert('请先选择图片'); return; }
             const title = document.getElementById('photoTitle').value.trim() || '未命名照片';
             const category = document.getElementById('photoCategory').value;
+            console.log('[myAlbum] Uploading photo:', { title, category });
 
             // 将图片转为 base64 数据 URL 作为 url 存储（简化方案，无需文件上传服务）
             const reader = new FileReader();
             reader.onload = async (e) => {
                 const url = e.target.result;
+                console.log('[myAlbum] Photo converted to base64, length:', url.length);
                 try {
                     // 直接上传到后端（无需认证）
+                    console.log('[myAlbum] Sending POST to:', `${API_BASE}/api/album/1/photos`);
                     const res = await fetch(`${API_BASE}/api/album/1/photos`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ url, title, description: '', tags: [category] })
                     });
-                    if (!res.ok) throw new Error('上传失败');
+                    console.log('[myAlbum] API response status:', res.status);
+                    if (!res.ok) {
+                        const errText = await res.text();
+                        console.error('[myAlbum] API error:', errText);
+                        throw new Error('上传失败：' + errText);
+                    }
+                    const json = await res.json();
+                    console.log('[myAlbum] Upload success:', json);
                     closeUploadModal();
                     showToast('✅ 照片上传成功！');
                     await loadPhotos();
                 } catch (err) {
+                    console.error('[myAlbum] Upload error:', err);
                     alert('上传失败：' + err.message);
                 }
             };

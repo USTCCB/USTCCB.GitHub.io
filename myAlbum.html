@@ -493,6 +493,7 @@
 
     <script src="script.js"></script>
     <script src="auth-sidebar.js"></script>
+    <script>
         const API_BASE = 'https://backend-production-4de2.up.railway.app';
         let token = localStorage.getItem('blog_token') || '';
         let photos = [];
@@ -504,39 +505,14 @@
         document.addEventListener('DOMContentLoaded', async () => {
             if (typeof initTheme === 'function') initTheme();
             setupEventListeners();
-            await ensureDefaultAlbum();
             loadPhotos();
         });
-
-        // 获取或创建默认相册
-        async function ensureDefaultAlbum() {
-            if (!token) return;
-            try {
-                const res = await fetch(`${API_BASE}/api/album`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const json = await res.json();
-                const albums = json?.data || [];
-                if (albums.length > 0) {
-                    currentAlbumId = albums[0].id;
-                } else {
-                    // 创建默认相册
-                    const createRes = await fetch(`${API_BASE}/api/album`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                        body: JSON.stringify({ title: '我的相册', description: '默认相册' })
-                    });
-                    const createJson = await createRes.json();
-                    currentAlbumId = createJson?.data?.id;
-                }
-            } catch (e) { console.warn('获取相册失败:', e); }
-        }
 
         async function loadPhotos() {
             const grid = document.getElementById('albumGrid');
             const emptyState = document.getElementById('emptyState');
 
-            // 直接从后端加载（无需认证）
+            // 直接从后端加载（无需认证，使用默认相册 ID=1）
             try {
                 const res = await fetch(`${API_BASE}/api/album/1`);
                 if (res.ok) {

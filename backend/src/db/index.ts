@@ -82,7 +82,7 @@ export async function initDatabase() {
         id SERIAL PRIMARY KEY,
         album_id INTEGER REFERENCES albums(id) ON DELETE CASCADE,
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        url VARCHAR(255) NOT NULL,
+        url TEXT NOT NULL,
         title VARCHAR(100),
         description TEXT,
         tags TEXT[],
@@ -109,6 +109,18 @@ export async function initDatabase() {
       CREATE INDEX IF NOT EXISTS idx_photos_album_id ON photos(album_id);
       CREATE INDEX IF NOT EXISTS idx_diaries_user_id ON diaries(user_id);
     `);
+
+    // 迁移：将 photos.url 从 VARCHAR(255) 改为 TEXT（如果之前是 VARCHAR）
+    try {
+      await client.query('ALTER TABLE photos ALTER COLUMN url TYPE TEXT');
+      console.log('✅ 数据库迁移完成：photos.url 已改为 TEXT 类型');
+    } catch (migrateError: any) {
+      // 如果已经是 TEXT 类型，忽略错误
+      if (!migrateError?.message?.includes('already exists')) {
+        console.log('ℹ️ 数据库迁移提示:', migrateError?.message || '未知迁移错误');
+      }
+    }
+
     console.log('✅ 数据库初始化成功');
   } catch (error) {
     console.error('❌ 数据库初始化失败:', error);

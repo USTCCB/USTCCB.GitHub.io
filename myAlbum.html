@@ -870,7 +870,7 @@
             grid.innerHTML = filtered.map((photo, index) => `
                 <div class="photo-card" onclick="openLightbox(${photos.indexOf(photo)})">
                     <div class="photo-wrapper">
-                        <img src="${photo.url}" alt="${photo.title}" onerror="this.parentElement.innerHTML='<div class=\\'photo-placeholder\\'><i class=\\'fa-regular fa-image\\'></i></div>'">
+                        <img src="${photo.url}" alt="${photo.title}" onerror="this.parentElement.innerHTML='<div class=photo-placeholder><i class=fa-regular fa-image></i></div>'">
                     </div>
                     <div class="photo-info">
                         <div class="photo-title">${photo.title}</div>

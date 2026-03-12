@@ -517,7 +517,13 @@
             }
 
             // 合并本地存储的博客（本地优先显示在前）
-            const localBlogs = JSON.parse(localStorage.getItem('local_blogs') || '[]');
+            let localBlogs = [];
+            try {
+                localBlogs = JSON.parse(localStorage.getItem('local_blogs') || '[]');
+            } catch (parseErr) {
+                console.warn('[myBlogs] local_blogs JSON parse error, using empty array');
+                localBlogs = [];
+            }
             blogs = [...localBlogs, ...blogs];
             console.log('[myBlogs] Total blogs after merge:', blogs.length);
 

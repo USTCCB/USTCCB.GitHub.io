@@ -506,11 +506,13 @@
                     console.log('[myBlogs] Loaded blogs count:', blogs.length);
                 } else {
                     console.log('[myBlogs] No posts in API response');
-                    blogs = [];
+                    // 后端没有文章时，回退显示本地示例内容，避免页面空白
+                    blogs = fallbackBlogs;
                 }
             } catch (e) {
                 console.error('[myBlogs] loadBlogsFromBackend error:', e);
-                blogs = [];
+                // 后端不可用（CORS/网络/500 等）时，回退显示本地示例内容，避免页面空白
+                blogs = fallbackBlogs;
                 noResults.style.display = 'none';
             }
 

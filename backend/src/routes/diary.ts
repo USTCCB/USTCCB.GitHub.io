@@ -20,19 +20,21 @@ async function getOrCreateAnonUser() {
 // 获取日记列表（公开）
 diaryRouter.get('/', async (req, res) => {
   try {
-    const anonUser = await getOrCreateAnonUser();
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 20;
+    const limit = parseInt(req.query.limit as string) || 50;
     const offset = (page - 1) * limit;
 
     const result = await pool.query(
-      'SELECT * FROM diaries WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',
-      [anonUser.id, limit, offset]
+      `SELECT d.*, COALESCE(u.username, 'Anonymous') as username
+       FROM diaries d
+       LEFT JOIN users u ON d.user_id = u.id
+       ORDER BY d.created_at DESC
+       LIMIT $1 OFFSET $2`,
+      [limit, offset]
     );
 
     const countResult = await pool.query(
-      'SELECT COUNT(*) FROM diaries WHERE user_id = $1',
-      [anonUser.id]
+      'SELECT COUNT(*) FROM diaries'
     );
 
     res.json({
@@ -47,7 +49,7 @@ diaryRouter.get('/', async (req, res) => {
   } catch (error: any) {
     console.error('获取日记列表错误:', error);
     if (error?.code === 'ECONNREFUSED' || !process.env.DATABASE_URL) {
-      return res.json({ success: true, data: { diaries: [], total: 0, page: 1, limit: 20 } });
+      return res.json({ success: true, data: { diaries: [], total: 0, page: 1, limit: 50 } });
     }
     res.status(500).json({ error: '获取日记列表失败' });
   }

@@ -441,13 +441,25 @@
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
-            initTheme();
-            setupEventListeners();
-            loadBlogsFromBackend();
+            console.log('[myBlogs] DOMContentLoaded started');
+            try {
+                initTheme();
+                console.log('[myBlogs] initTheme completed');
+                setupEventListeners();
+                console.log('[myBlogs] setupEventListeners completed');
+                loadBlogsFromBackend();
+                console.log('[myBlogs] loadBlogsFromBackend called from DOMContentLoaded');
+            } catch (e) {
+                console.error('[myBlogs] DOMContentLoaded error:', e);
+            }
         });
 
         function initTheme() {
             const themeToggle = document.getElementById('themeToggle');
+            if (!themeToggle) {
+                console.warn('[myBlogs] themeToggle not found');
+                return;
+            }
             const currentTheme = localStorage.getItem('theme') || 'dark';
 
             if (currentTheme === 'light') {
@@ -511,12 +523,20 @@
         }
 
         function setupEventListeners() {
-            document.getElementById('searchInput').addEventListener('input', (e) => {
+            console.log('[myBlogs] setupEventListeners called');
+            const searchInput = document.getElementById('searchInput');
+            if (!searchInput) {
+                console.warn('[myBlogs] searchInput not found');
+                return;
+            }
+            searchInput.addEventListener('input', (e) => {
                 currentPage = 1;
                 renderBlogs(e.target.value);
             });
 
-            document.querySelectorAll('.filter-tag').forEach(tag => {
+            const filterTags = document.querySelectorAll('.filter-tag');
+            console.log('[myBlogs] filterTags count:', filterTags.length);
+            filterTags.forEach(tag => {
                 tag.addEventListener('click', () => {
                     document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
                     tag.classList.add('active');
@@ -525,14 +545,19 @@
                     renderBlogs();
                 });
             });
+            console.log('[myBlogs] setupEventListeners completed');
         }
 
         function renderBlogs(searchTerm = '') {
+            console.log('[myBlogs] renderBlogs called, blogs.length:', blogs.length, 'searchTerm:', searchTerm);
             if (!Array.isArray(blogs) || blogs.length === 0) {
+                console.log('[myBlogs] No blogs to render');
                 const blogList = document.getElementById('blogList');
                 const noResults = document.getElementById('noResults');
-                blogList.style.display = 'none';
-                noResults.style.display = 'block';
+                if (blogList && noResults) {
+                    blogList.style.display = 'none';
+                    noResults.style.display = 'block';
+                }
                 document.getElementById('pagination').style.display = 'none';
                 return;
             }

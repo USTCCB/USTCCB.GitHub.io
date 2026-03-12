@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { pool } from '../db';
+import { authenticate } from '../middleware/auth';
 
 export const blogRouter = Router();
 

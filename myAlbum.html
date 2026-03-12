@@ -500,6 +500,7 @@
         let currentCategory = 'all';
         let currentLightboxIndex = 0;
         let selectedFile = null;
+        let selectedFileBase64 = null; // 保存 base64 数据
         let currentAlbumId = null; // 默认相册 ID
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -635,6 +636,7 @@
             document.getElementById('previewContainer').style.display = 'none';
             document.getElementById('photoTitle').value = '';
             selectedFile = null;
+            selectedFileBase64 = null; // 清除 base64 数据
         }
 
         function handleFileSelect(event) {
@@ -646,48 +648,46 @@
             selectedFile = file;
             const reader = new FileReader();
             reader.onload = (e) => {
-                document.getElementById('previewImage').src = e.target.result;
+                const base64Data = e.target.result;
+                selectedFileBase64 = base64Data; // 保存 base64 数据
+                document.getElementById('previewImage').src = base64Data;
                 document.getElementById('previewContainer').style.display = 'block';
+                console.log('[myAlbum] File loaded, base64 length:', base64Data.length);
             };
             reader.readAsDataURL(file);
         }
 
         async function uploadPhoto() {
             if (!selectedFile) { alert('请先选择图片'); return; }
+            if (!selectedFileBase64) { alert('图片数据未加载，请重试'); return; }
             const title = document.getElementById('photoTitle').value.trim() || '未命名照片';
             const category = document.getElementById('photoCategory').value;
             console.log('[myAlbum] Uploading photo:', { title, category });
+            console.log('[myAlbum] Base64 length:', selectedFileBase64.length);
 
-            // 将图片转为 base64 数据 URL 作为 url 存储（简化方案，无需文件上传服务）
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const url = e.target.result;
-                console.log('[myAlbum] Photo converted to base64, length:', url.length);
-                try {
-                    // 直接上传到后端（无需认证）
-                    console.log('[myAlbum] Sending POST to:', `${API_BASE}/api/album/1/photos`);
-                    const res = await fetch(`${API_BASE}/api/album/1/photos`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ url, title, description: '', tags: [category] })
-                    });
-                    console.log('[myAlbum] API response status:', res.status);
-                    if (!res.ok) {
-                        const errText = await res.text();
-                        console.error('[myAlbum] API error:', errText);
-                        throw new Error('上传失败：' + errText);
-                    }
-                    const json = await res.json();
-                    console.log('[myAlbum] Upload success:', json);
-                    closeUploadModal();
-                    showToast('✅ 照片上传成功！');
-                    await loadPhotos();
-                } catch (err) {
-                    console.error('[myAlbum] Upload error:', err);
-                    alert('上传失败：' + err.message);
+            try {
+                // 直接上传到后端（无需认证）
+                console.log('[myAlbum] Sending POST to:', `${API_BASE}/api/album/1/photos`);
+                const res = await fetch(`${API_BASE}/api/album/1/photos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: selectedFileBase64, title, description: '', tags: [category] })
+                });
+                console.log('[myAlbum] API response status:', res.status);
+                if (!res.ok) {
+                    const errText = await res.text();
+                    console.error('[myAlbum] API error:', errText);
+                    throw new Error('上传失败：' + errText);
                 }
-            };
-            reader.readAsDataURL(selectedFile);
+                const json = await res.json();
+                console.log('[myAlbum] Upload success:', json);
+                closeUploadModal();
+                showToast('✅ 照片上传成功！');
+                await loadPhotos();
+            } catch (err) {
+                console.error('[myAlbum] Upload error:', err);
+                alert('上传失败：' + err.message);
+            }
         }
 
         async function deletePhoto(id) {

@@ -707,11 +707,6 @@
             authSidebar.openModal('login');
         }
 
-        // 初始化时加载照片
-        window.addEventListener('DOMContentLoaded', async () => {
-            await loadPhotos();
-        });
-
         function showToast(msg, color = '#10b981') {
             let t = document.getElementById('albumToast');
             if (!t) {
@@ -782,15 +777,19 @@
         let currentLightboxIndex = 0;
         let selectedFile = null;
 
-        // 初始化
-        document.addEventListener('DOMContentLoaded', () => {
-            renderPhotos();
+        // 初始化 - 只调用一次
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof initTheme === 'function') initTheme();
             setupEventListeners();
-            initTheme();
+            await loadPhotos();
         });
 
         function initTheme() {
             const themeToggle = document.getElementById('themeToggle');
+            if (!themeToggle) {
+                console.warn('[myAlbum] themeToggle not found');
+                return;
+            }
             const currentTheme = localStorage.getItem('theme') || 'dark';
 
             if (currentTheme === 'light') {
@@ -806,116 +805,25 @@
             });
         }
 
-        function setupEventListeners() {
-            // 分类筛选
-            document.querySelectorAll('.category-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    currentCategory = tab.dataset.category;
-                    renderPhotos();
-                });
-            });
-
-            // 拖拽上传
-            const uploadArea = document.getElementById('uploadArea');
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.classList.add('dragover');
-            });
-
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.classList.remove('dragover');
-            });
-
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-                const file = e.dataTransfer.files[0];
-                if (file && file.type.startsWith('image/')) {
-                    handleFile(file);
-                }
-            });
-
-            // 键盘导航
-            document.addEventListener('keydown', (e) => {
-                const lightbox = document.getElementById('lightbox');
-                if (lightbox.classList.contains('active')) {
-                    if (e.key === 'Escape') closeLightbox();
-                    if (e.key === 'ArrowLeft') navigateLightbox(-1);
-                    if (e.key === 'ArrowRight') navigateLightbox(1);
-                }
-            });
-        }
-
-        function renderPhotos() {
-            let filtered = photos;
-
-            if (currentCategory !== 'all') {
-                filtered = photos.filter(p => p.category === currentCategory);
-            }
-
-            const grid = document.getElementById('albumGrid');
-            const emptyState = document.getElementById('emptyState');
-
-            if (filtered.length === 0) {
-                grid.style.display = 'none';
-                emptyState.style.display = 'block';
-                return;
-            }
-
-            grid.style.display = 'grid';
-            emptyState.style.display = 'none';
-
-            grid.innerHTML = filtered.map((photo, index) => `
-                <div class="photo-card" onclick="openLightbox(${photos.indexOf(photo)})">
-                    <div class="photo-wrapper">
-                        <img src="${photo.url}" alt="${photo.title}" onerror="this.parentElement.innerHTML='<div class=photo-placeholder><i class=fa-regular fa-image></i></div>'">
-                    </div>
-                    <div class="photo-info">
-                        <div class="photo-title">${photo.title}</div>
-                        <div class="photo-meta">
-                            <span class="photo-category">${photo.category}</span>
-                            <div class="photo-actions">
-                                <span class="action-icon" onclick="event.stopPropagation(); likePhoto(${photo.id})">
-                                    <i class="fa-regular fa-heart"></i> ${photo.likes}
-                                </span>
-                                <span class="action-icon" onclick="event.stopPropagation(); deletePhoto(${photo.id})">
-                                    <i class="fa-regular fa-trash-can"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function openLightbox(index) {
-            currentLightboxIndex = index;
-            const photo = photos[index];
-            document.getElementById('lightboxImage').src = photo.url;
-            document.getElementById('lightboxInfo').innerHTML = `
-                <strong>${photo.title}</strong><br>
-                <small>${photo.category} · ${photo.date}</small>
-            `;
-            document.getElementById('lightbox').classList.add('active');
-        }
-
-        function closeLightbox() {
-            document.getElementById('lightbox').classList.remove('active');
-        }
-
-        function navigateLightbox(direction) {
-            currentLightboxIndex += direction;
-            if (currentLightboxIndex < 0) currentLightboxIndex = photos.length - 1;
-            if (currentLightboxIndex >= photos.length) currentLightboxIndex = 0;
-            openLightbox(currentLightboxIndex);
-        }
-
         function openUploadModal() {
             document.getElementById('uploadModal').classList.add('active');
         }
 
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('active');
+            document.getElementById('previewContainer').style.display = 'none';
+            document.getElementById('photoTitle').value = '';
+            selectedFile = null;
+            selectedFileBase64 = null;
+        }
+
+        function likePhoto(id) {
+            const photo = photos.find(p => p.id === id);
+            if (photo) {
+                photo.likes++;
+                renderPhotos();
+            }
+        }
     </script>
 </body>
 </html>

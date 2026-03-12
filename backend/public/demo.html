@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人平台 API 演示</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh; padding: 20px; color: #fff;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 10px; font-size: 2rem; }
+    .subtitle { text-align: center; color: #888; margin-bottom: 30px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; text-align: center; }
+    .stat-value { font-size: 3rem; font-weight: bold; color: #4fc3f7; }
+    .stat-label { color: #888; margin-top: 8px; }
+    .section { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+    .section h2 { margin-bottom: 16px; }
+    button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; cursor: pointer; margin-right: 10px; }
+    button:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(102,126,234,0.4); }
+    .log-container { background: #0d1117; border-radius: 8px; padding: 16px; max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 0.9rem; }
+    .log-entry { padding: 4px 0; border-bottom: 1px solid #21262d; }
+    .log-entry.info { color: #58a6ff; }
+    .log-entry.success { color: #3fb950; }
+    .log-entry.error { color: #f85149; }
+    .log-entry.ws { color: #d2a8ff; }
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; }
+    .status-badge.connected { background: rgba(63,185,80,0.2); color: #3fb950; }
+    .status-badge.disconnected { background: rgba(248,81,73,0.2); color: #f85149; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .upload-area { border: 2px dashed rgba(255,255,255,0.3); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; }
+    .upload-area:hover { border-color: #667eea; background: rgba(102,126,234,0.1); }
+    .upload-area input { display: none; }
+    .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; margin-top: 20px; }
+    .preview-item { position: relative; border-radius: 8px; overflow: hidden; aspect-ratio: 1; }
+    .preview-item img { width: 100%; height: 100%; object-fit: cover; }
+    .api-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .api-links a { color: #667eea; text-decoration: none; padding: 8px 16px; background: rgba(102,126,234,0.1); border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 个人平台 API 演示</h1>
+    <p class="subtitle">企业级全栈应用 - Swagger + WebSocket + S3</p>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="visits">0</div>
+        <div class="stat-label">👁️ 访问量</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="likes">0</div>
+        <div class="stat-label">❤️ 点赞数</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="online">0</div>
+        <div class="stat-label">👤 在线用户</div>
+      </div>
+      <div class="stat-card">
+        <div class="status-badge" id="wsStatus">
+          <span class="status-dot"></span>
+          <span id="wsText">连接中</span>
+        </div>
+        <div class="stat-label" style="margin-top:12px">📡 WebSocket</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🧪 API 测试</h2>
+      <button onclick="recordVisit()">👁️ 记录访问</button>
+      <button onclick="recordLike()">❤️ 记录点赞</button>
+      <button onclick="fetchStats()">📊 刷新统计</button>
+    </div>
+
+    <div class="section">
+      <h2>☁️ 文件上传 (S3)</h2>
+      <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+        <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)">
+        <div style="font-size:3rem">📁</div>
+        <p>点击选择文件或拖拽到此处</p>
+        <p style="color:#888;font-size:0.9rem">支持 JPEG, PNG, GIF, WebP (最大 10MB)</p>
+      </div>
+      <div class="preview-grid" id="previewGrid"></div>
+    </div>
+
+    <div class="section">
+      <h2>📋 实时日志</h2>
+      <div class="log-container" id="logContainer"></div>
+    </div>
+
+    <div class="api-links">
+      <a href="/api-docs" target="_blank">📚 Swagger API 文档</a>
+      <a href="/health" target="_blank">💚 健康检查</a>
+      <a href="https://github.com/USTCCB/USTCCB.GitHub.io" target="_blank">🐙 GitHub</a>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin;
+    let socket;
+
+    function log(msg, type = 'info') {
+      const c = document.getElementById('logContainer');
+      const e = document.createElement('div');
+      e.className = `log-entry ${type}`;
+      e.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      c.insertBefore(e, c.firstChild);
+      while (c.children.length > 50) c.removeChild(c.lastChild);
+    }
+
+    function connectWebSocket() {
+      socket = new WebSocket(API_BASE.replace('http', 'ws'));
+      socket.onopen = () => { log('WebSocket 连接成功', 'success'); updateWsStatus(true); };
+      socket.onclose = () => { log('WebSocket 断开，5 秒后重连...', 'error'); updateWsStatus(false); setTimeout(connectWebSocket, 5000); };
+      socket.onerror = (e) => log(`WebSocket 错误`, 'error');
+      socket.onmessage = (e) => {
+        const d = JSON.parse(e.data);
+        if (d.type === 'stats:update') {
+          if (d.visits !== undefined) document.getElementById('visits').textContent = d.visits;
+          if (d.likes !== undefined) document.getElementById('likes').textContent = d.likes;
+          log(`实时统计更新：访问=${d.visits}, 点赞=${d.likes}`, 'ws');
+        } else if (d.type === 'users:online') {
+          document.getElementById('online').textContent = d.count;
+          log(`在线用户更新：${d.count}`, 'ws');
+        }
+      };
+    }
+
+    function updateWsStatus(connected) {
+      const b = document.getElementById('wsStatus');
+      const t = document.getElementById('wsText');
+      if (connected) { b.className = 'status-badge connected'; t.textContent = '已连接'; }
+      else { b.className = 'status-badge disconnected'; t.textContent = '已断开'; }
+    }
+
+    async function recordVisit() {
+      try {
+        const r = await fetch(`${API_BASE}/api/stats/visit`, { method: 'POST' });
+        const d = await r.json();
+        document.getElementById('visits').textContent = d.data.visits;
+        log(`访问记录成功：${d.data.visits}`, 'success');
+      } catch (e) { log(`访问记录失败：${e.message}`, 'error'); }
+    }
+
+    async function recordLike() {
+      try {
+        const r = await fetch(`${API_BASE}/api/stats/like`, { method: 'POST' });
+        const d = await r.json();
+        document.getElementById('likes').textContent = d.data.likes;
+        log(`点赞记录成功：${d.data.likes}`, 'success');
+      } catch (e) { log(`点赞记录失败：${e.message}`, 'error'); }
+    }
+
+    async function fetchStats() {
+      try {
+        const r = await fetch(`${API_BASE}/api/stats`);
+        const d = await r.json();
+        document.getElementById('visits').textContent = d.data.visits;
+        document.getElementById('likes').textContent = d.data.likes;
+        document.getElementById('online').textContent = d.data.onlineUsers;
+        log(`统计刷新成功`, 'success');
+      } catch (e) { log(`统计刷新失败：${e.message}`, 'error'); }
+    }
+
+    function handleFileSelect(e) { const f = e.target.files[0]; if (f) uploadFile(f); }
+
+    async function uploadFile(file) {
+      log(`开始上传：${file.name}`, 'info');
+      const fd = new FormData(); fd.append('file', file);
+      try {
+        const r = await fetch(`${API_BASE}/api/files/upload`, { method: 'POST', body: fd });
+        const d = await r.json();
+        if (r.ok) { log(`上传成功`, 'success'); addPreview(d.url); }
+        else { log(`上传失败：${d.error}`, 'error'); }
+      } catch (e) { log(`上传错误：${e.message}`, 'error'); }
+    }
+
+    function addPreview(url) {
+      const g = document.getElementById('previewGrid');
+      const item = document.createElement('div');
+      item.className = 'preview-item';
+      item.innerHTML = `<img src="${url}" alt="preview">`;
+      g.appendChild(item);
+    }
+
+    connectWebSocket();
+    fetchStats();
+    log('演示页面已加载', 'success');
+  </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Deploy to Railway
+        uses: railroadapp/railway-deploy@v3
+        with:
+          railway-token: ${{ secrets.RAILWAY_TOKEN }}

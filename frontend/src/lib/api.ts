@@ -58,6 +58,7 @@ export const blogApi = {
 export const albumApi = {
   getAlbums: () => api.get('/album'),
   getAlbum: (id: number) => api.get(`/album/${id}`),
+  getPhotos: (albumId: number) => api.get(`/album/${albumId}/photos`),
   createAlbum: (data: any) => api.post('/album', data),
   addPhoto: (albumId: number, data: any) =>
     api.post(`/album/${albumId}/photos`, data),

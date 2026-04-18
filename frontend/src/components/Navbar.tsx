@@ -9,12 +9,12 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
 
   const links = [
-    { href: '/', label: '首页', icon: '⌂' },
-    { href: '/login', label: '站内入口', icon: '•' },
-    { href: '/studio', label: '工作台', icon: '◦' },
-    { href: '/blog', label: '博客', icon: '✎' },
-    { href: '/album', label: '相册', icon: '◫' },
-    { href: '/diary', label: '日记', icon: '□' },
+    { href: '/', label: 'Overview', icon: '01' },
+    { href: '/blog', label: 'Writing', icon: '02' },
+    { href: '/album', label: 'Gallery', icon: '03' },
+    { href: '/diary', label: 'Journal', icon: '04' },
+    { href: '/studio', label: 'Studio', icon: '05' },
+    { href: '/login', label: 'Access', icon: '06' },
   ]
 
   return (
@@ -32,11 +32,14 @@ export function Navbar() {
         onClick={() => setIsOpen(false)}
       />
 
-      <aside className={`site-sidebar ${isOpen ? 'is-open' : ''}`}>
+        <aside className={`site-sidebar ${isOpen ? 'is-open' : ''}`}>
         <div className="sidebar-top">
           <Link href="/" className="sidebar-logo" onClick={() => setIsOpen(false)}>
-            <span className="sidebar-logo__mark">◎</span>
-            <span className="sidebar-logo__text">USTCCB</span>
+            <span className="sidebar-logo__mark">U</span>
+            <span className="sidebar-logo__text">
+              <strong>USTCCB</strong>
+              <small>Personal Hub</small>
+            </span>
           </Link>
           <button
             className="sidebar-close"
@@ -48,6 +51,7 @@ export function Navbar() {
         </div>
 
         <nav className="sidebar-nav">
+          <p className="sidebar-nav__label">Navigate</p>
           <ul>
             {links.map((link) => (
               <li key={link.href}>
@@ -65,15 +69,19 @@ export function Navbar() {
         </nav>
 
         <div className="sidebar-meta">
+          <div className="sidebar-note">
+            <span>Publishing stack</span>
+            <strong>Workers + Vercel</strong>
+          </div>
           <div className="sidebar-status">
             <span className="sidebar-status__dot" />
-            <span>Personal Hub Online</span>
+            <span>System online</span>
           </div>
           <div className="sidebar-profile">
-            <div className="sidebar-profile__avatar">A</div>
+            <div className="sidebar-profile__avatar">AW</div>
             <div>
               <p>AnranWu</p>
-              <span>Digital Builder</span>
+              <span>Writer / Builder / Archivist</span>
             </div>
           </div>
         </div>

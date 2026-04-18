@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { SectionHeading } from '@/components/SectionHeading';
 import { albumApi, fileApi } from '@/lib/api';
 
@@ -12,9 +12,10 @@ type Album = {
   photo_count?: number | string;
 };
 
-type UploadPhoto = {
+type Photo = {
   id: number;
   url: string;
+  object_key: string;
   title?: string | null;
   description?: string | null;
   created_at?: string;
@@ -26,15 +27,23 @@ type AlbumListResponse = {
   error?: string;
 };
 
+type PhotoListResponse = {
+  success: boolean;
+  data?: Photo[];
+  error?: string;
+};
+
 type UploadResponse = {
+  success?: boolean;
   url: string;
   key: string;
   size: number;
+  warning?: string;
 };
 
 export default function AlbumPage() {
   const [albums, setAlbums] = useState<Album[]>([]);
-  const [photos, setPhotos] = useState<UploadPhoto[]>([]);
+  const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -47,40 +56,55 @@ export default function AlbumPage() {
     photoDescription: '',
   });
 
-  const heroCount = useMemo(() => photos.length, [photos]);
-
   async function loadAlbums() {
-    setLoading(true);
-    setError('');
+    const response = await albumApi.getAlbums();
+    const payload = response.data as AlbumListResponse;
+    const list = payload.data || [];
+    setAlbums(list);
+    return list;
+  }
 
-    try {
-      const response = await albumApi.getAlbums();
-      const payload = response.data as AlbumListResponse;
-      const list = payload.data || [];
-      setAlbums(list);
-    } catch (err) {
-      setError('现在还没连上可用的相册服务。');
-    } finally {
-      setLoading(false);
-    }
+  async function loadPhotos(albumId: number) {
+    const response = await albumApi.getPhotos(albumId);
+    const payload = response.data as PhotoListResponse;
+    setPhotos(payload.data || []);
   }
 
   useEffect(() => {
-    void loadAlbums();
+    async function bootstrap() {
+      setLoading(true);
+      setError('');
+
+      try {
+        const list = await loadAlbums();
+        if (list[0]?.id) {
+          await loadPhotos(list[0].id);
+        }
+      } catch (err) {
+        setError('现在还没连上可用的相册服务。');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    void bootstrap();
   }, []);
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const selected = event.target.files?.[0] || null;
     setFile(selected);
 
-    if (selected) {
-      setPreviewUrl(URL.createObjectURL(selected));
-      if (!form.photoTitle.trim()) {
-        const name = selected.name.replace(/\.[^.]+$/, '');
-        setForm((current) => ({ ...current, photoTitle: name }));
-      }
-    } else {
+    if (!selected) {
       setPreviewUrl('');
+      return;
+    }
+
+    setPreviewUrl(URL.createObjectURL(selected));
+    if (!form.photoTitle.trim()) {
+      setForm((current) => ({
+        ...current,
+        photoTitle: selected.name.replace(/\.[^.]+$/, ''),
+      }));
     }
   }
 
@@ -96,8 +120,8 @@ export default function AlbumPage() {
     });
 
     const createdAlbum = createResponse.data?.data as Album;
-    await loadAlbums();
-    return createdAlbum.id;
+    const list = await loadAlbums();
+    return createdAlbum?.id || list[0]?.id;
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -119,15 +143,15 @@ export default function AlbumPage() {
       const uploadData = uploadResponse.data as UploadResponse;
       const albumId = await ensureAlbumId();
 
-      const photoResponse = await albumApi.addPhoto(albumId, {
+      await albumApi.addPhoto(albumId, {
         url: uploadData.url,
+        key: uploadData.key,
         title: form.photoTitle.trim() || file.name,
         description: form.photoDescription.trim(),
-        tags: [],
       });
 
-      const photo = photoResponse.data?.data as UploadPhoto;
-      setPhotos((current) => [photo, ...current]);
+      await loadAlbums();
+      await loadPhotos(albumId);
       setFile(null);
       setPreviewUrl('');
       setForm((current) => ({
@@ -135,7 +159,10 @@ export default function AlbumPage() {
         photoTitle: '',
         photoDescription: '',
       }));
-      await loadAlbums();
+
+      if (uploadData.warning) {
+        setError(uploadData.warning);
+      }
     } catch (err: any) {
       setError(err?.response?.data?.error || '上传图片失败。');
     } finally {
@@ -143,23 +170,25 @@ export default function AlbumPage() {
     }
   }
 
+  const totalPhotos = albums.reduce((count, album) => count + Number(album.photo_count || 0), 0);
+
   return (
     <div className="page-shell space-y-10 pb-24">
       <SectionHeading
-        eyebrow="Album"
-        title="图片上传这次是真的，不再只是相册占位展示。"
-        description="你可以直接往网站里传图，图片会先走上传接口，再写进相册数据里。后面再继续做分类、标签和筛选。"
+        eyebrow="Gallery"
+        title="相册不是临时占位，而是一条真正能接收图片资产的内容流。"
+        description="上传先走统一资产入口，再写入相册记录。代码已经按 R2 资产层重构，当前账号启用 R2 后会直接切到正式对象存储公开 URL。"
       />
 
-      <section className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
+      <section className="grid gap-6 xl:grid-cols-[0.82fr_1.18fr]">
         <form className="panel compose-panel p-8" onSubmit={handleSubmit}>
-          <div className="space-y-3">
-            <p className="section-chip">Image Upload</p>
-            <h2 className="text-3xl font-semibold text-white">上传一张新的图片</h2>
-            <p className="text-sm leading-7 text-[var(--muted)]">
-              先把上传路径做顺：选图、写标题、写描述、立即入相册。
-            </p>
-          </div>
+          <p className="section-chip">Asset Intake</p>
+          <h2 className="mt-5 font-[var(--font-serif)] text-5xl leading-[0.98] tracking-[-0.05em] text-white">
+            把今天的新图，收进这座网站。
+          </h2>
+          <p className="mt-5 text-sm leading-8 text-[var(--muted-strong)]">
+            文件上传、对象键生成、相册写入都已经串起来了。你上传的不再只是一个预览，而是一条真实记录。
+          </p>
 
           <div className="mt-8 space-y-4">
             <label className="upload-dropzone">
@@ -169,14 +198,15 @@ export default function AlbumPage() {
                 className="sr-only"
                 onChange={handleFileChange}
               />
+
               {previewUrl ? (
                 <div className="upload-preview">
                   <img src={previewUrl} alt="上传预览" className="upload-preview__image" />
                 </div>
               ) : (
                 <div className="space-y-3 text-center">
-                  <p className="text-lg font-semibold text-white">点这里选择图片</p>
-                  <p className="text-sm text-[var(--muted)]">支持 PNG / JPG / WEBP / GIF，单张 10MB 以内</p>
+                  <p className="text-xl font-semibold text-white">选择一张图片开始上传</p>
+                  <p className="text-sm text-[var(--muted)]">支持 PNG / JPG / WEBP / GIF</p>
                 </div>
               )}
             </label>
@@ -191,91 +221,88 @@ export default function AlbumPage() {
             />
 
             <textarea
-              className="field-input min-h-[140px] resize-y"
-              placeholder="写一点这张图的描述"
+              className="field-input min-h-[150px] resize-y"
+              placeholder="写一点关于这张图的说明"
               value={form.photoDescription}
               onChange={(event) =>
-                setForm((current) => ({
-                  ...current,
-                  photoDescription: event.target.value,
-                }))
+                setForm((current) => ({ ...current, photoDescription: event.target.value }))
               }
             />
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center gap-4">
+          <div className="mt-6 flex flex-wrap gap-4">
             <button type="submit" className="button-primary" disabled={submitting}>
-              {submitting ? '正在上传...' : '上传到相册'}
+              {submitting ? '正在写入...' : '上传到相册'}
             </button>
-            <span className="text-sm text-[var(--muted)]">
-              当前已连接真实上传接口和相册写入接口。
+            <span className="text-sm leading-7 text-[var(--muted)]">
+              目标 bucket：`ustccb-hub-assets`
             </span>
           </div>
 
-          {error ? <p className="mt-4 text-sm text-[#fda4af]">{error}</p> : null}
+          {error ? <p className="mt-4 text-sm text-[var(--warning)]">{error}</p> : null}
         </form>
 
-        <section className="space-y-4">
-          <div className="panel p-6">
-            <p className="section-chip">Live Album</p>
-            <h2 className="mt-3 text-2xl font-semibold text-white">当前相册状态</h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <div className="metric-panel">
-                <span>已有相册</span>
-                <strong>{albums.length}</strong>
-              </div>
-              <div className="metric-panel">
-                <span>本页新传图片</span>
-                <strong>{heroCount}</strong>
-              </div>
+        <div className="space-y-6">
+          <section className="grid gap-4 sm:grid-cols-3">
+            <article className="metric-panel">
+              <span>相册数量</span>
+              <strong>{albums.length}</strong>
+            </article>
+            <article className="metric-panel">
+              <span>已收录图片</span>
+              <strong>{totalPhotos}</strong>
+            </article>
+            <article className="metric-panel">
+              <span>当前视图</span>
+              <strong>{photos.length}</strong>
+            </article>
+          </section>
+
+          <section className="panel p-8">
+            <p className="section-chip">Archive Shelf</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              {albums.map((album) => (
+                <div
+                  key={album.id}
+                  className="rounded-full border border-[var(--line)] bg-[rgba(255,255,255,0.04)] px-4 py-2 text-sm text-[var(--muted-strong)]"
+                >
+                  {album.title} · {album.photo_count || 0}
+                </div>
+              ))}
             </div>
-          </div>
+          </section>
 
-          {loading ? (
-            <article className="panel p-7 text-sm text-[var(--muted)]">正在读取相册...</article>
-          ) : null}
+          <section className="grid gap-4 sm:grid-cols-2">
+            {loading ? (
+              <article className="panel p-7 text-sm text-[var(--muted)]">正在读取相册...</article>
+            ) : null}
 
-          {!loading && albums.length === 0 ? (
-            <article className="panel p-7 text-sm text-[var(--muted)]">
-              还没有相册，上传第一张图时会自动创建一个默认相册。
-            </article>
-          ) : null}
+            {!loading && photos.length === 0 ? (
+              <article className="panel p-7 text-sm leading-7 text-[var(--muted)] sm:col-span-2">
+                还没有图片记录。上传第一张之后，这里会直接显示实际写入的图片 URL 和相册结果。
+              </article>
+            ) : null}
 
-          {albums.map((album) => (
-            <article key={album.id} className="panel p-6">
-              <p className="text-xs uppercase tracking-[0.26em] text-[var(--accent-strong)]">
-                Album
-              </p>
-              <h3 className="mt-3 text-2xl font-semibold text-white">{album.title}</h3>
-              <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
-                {album.description || '这个相册还没有描述。'}
-              </p>
-              <p className="mt-4 text-sm text-[var(--muted)]">
-                图片数量：{album.photo_count || 0}
-              </p>
-            </article>
-          ))}
-
-          {photos.map((photo) => (
-            <article key={photo.id} className="panel overflow-hidden p-0">
-              <div className="relative min-h-[280px]">
-                <img
-                  src={photo.url}
-                  alt={photo.title || '上传图片'}
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-              </div>
-              <div className="space-y-3 p-6">
-                <h3 className="text-2xl font-semibold text-white">
-                  {photo.title || '未命名图片'}
-                </h3>
-                <p className="text-sm leading-7 text-[var(--muted)]">
-                  {photo.description || '这张图还没有描述。'}
-                </p>
-              </div>
-            </article>
-          ))}
-        </section>
+            {photos.map((photo) => (
+              <article key={photo.id} className="panel overflow-hidden p-0">
+                <div className="relative min-h-[280px]">
+                  <img
+                    src={photo.url}
+                    alt={photo.title || '上传图片'}
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                </div>
+                <div className="space-y-3 p-6">
+                  <p className="hero-label">{photo.object_key}</p>
+                  <h3 className="text-2xl text-white">{photo.title || '未命名图片'}</h3>
+                  <p className="text-sm leading-7 text-[var(--muted-strong)]">
+                    {photo.description || '这张图还没有补充描述。'}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </section>
+        </div>
       </section>
     </div>
   );

@@ -9,8 +9,20 @@
     "head_sampling_rate": 1
   },
   "vars": {
-    "ALLOWED_ORIGINS": "https://ustccb-git-hub-io.vercel.app,https://ustc.chat,https://ustccb.github.io,http://localhost:3000"
+    "ALLOWED_ORIGINS": "https://ustccb-git-hub-io.vercel.app,https://ustc.chat,https://ustccb.github.io,http://localhost:3000",
+    "ASSETS_BASE_URL": "https://assets.ustccb.com"
   },
+  // Assumption: this account still needs R2 enabled in the Cloudflare dashboard
+  // before the binding below can be activated. The backend code already supports
+  // ASSETS_BUCKET and will switch from fallback uploads to R2 as soon as the
+  // bucket is available.
+  // "r2_buckets": [
+  //   {
+  //     "binding": "ASSETS_BUCKET",
+  //     "bucket_name": "ustccb-hub-assets",
+  //     "preview_bucket_name": "ustccb-hub-assets"
+  //   }
+  // ],
   "d1_databases": [
     {
       "binding": "DB",

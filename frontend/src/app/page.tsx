@@ -1,59 +1,54 @@
 import Link from 'next/link';
 import { SectionHeading } from '@/components/SectionHeading';
 import {
-  albumShots,
-  blogPosts,
   capabilityCards,
-  diaryEntries,
   moduleCards,
+  blogPosts,
+  diaryEntries,
   siteStats,
 } from '@/lib/site-content';
 
 export default function Home() {
   return (
-    <div className="page-shell space-y-6 pb-24">
+    <div className="page-shell space-y-8 pb-24">
       <section className="hero-panel">
-        <div className="space-y-8">
-          <p className="hero-eyebrow">
-            Personal Hub / Full Stack Site
-          </p>
-          <div className="space-y-5">
-            <h1 className="max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.04em] text-white sm:text-6xl lg:text-7xl">
-              把博客、相册、日记和个人工具收进同一个真正可生长的网站。
-            </h1>
-            <p className="max-w-2xl text-lg leading-8 text-[var(--muted)] sm:text-xl">
-              这次不再只是一个静态页面集合，而是一套前端、接口和部署链路重新接通后的个人平台。它更好看，也更适合继续长期维护。
-            </p>
+        <div className="hero-copy">
+          <div className="hero-kicker">
+            <span className="hero-eyebrow">USTCCB Personal Hub</span>
+            <span className="section-chip">Deep Focus Edition</span>
           </div>
-          <div className="flex flex-wrap gap-4">
-            <Link href="/login" className="button-primary">
-              直接登录
+
+          <h1 className="hero-title">
+            一座更安静、更高级，也真正能持续写东西的个人中枢。
+          </h1>
+
+          <p className="hero-description">
+            这次不再做“看起来像产品模板”的主页，而是把写作、相册、日记和站内工具都收进一套深色、克制、长期可维护的个人系统里。前端界面更完整，内容入口更顺，图片链路也正在从旧方案迁向 Cloudflare R2。
+          </p>
+
+          <div className="hero-actions">
+            <Link href="/diary" className="button-primary">
+              立即写一篇
             </Link>
-            <Link href="/blog" className="button-secondary">
-              浏览内容
+            <Link href="/album" className="button-secondary">
+              打开相册工作流
             </Link>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-3">
+            {capabilityCards.map((card) => (
+              <article key={card.title} className="panel p-6">
+                <p className="hero-label">{card.eyebrow}</p>
+                <strong className="mt-3 block text-xl text-white">{card.title}</strong>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted-strong)]">
+                  {card.description}
+                </p>
+              </article>
+            ))}
           </div>
         </div>
 
-        <div className="space-y-4">
-          <article className="panel p-6">
-            <div className="flex items-center justify-between gap-4">
-              <span className="section-chip !mb-0">Live Status</span>
-              <span className="inline-flex items-center gap-2 text-sm text-[var(--muted)]">
-                <span className="h-2.5 w-2.5 rounded-full bg-[var(--success)]" />
-                Online
-              </span>
-            </div>
-            <div className="mt-5 space-y-3">
-              <p className="font-[var(--font-mono)] text-4xl font-bold tracking-[-0.06em] text-white">
-                24 / 7
-              </p>
-              <p className="text-sm leading-6 text-[var(--muted)]">
-                页面、认证接口和内容结构已经被整理进同一个 Next.js 全栈项目里。
-              </p>
-            </div>
-          </article>
-
+        <aside className="hero-rail">
           <div className="stats-grid">
             {siteStats.map((item) => (
               <article key={item.label} className="metric-panel">
@@ -63,160 +58,71 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="hero-grid">
-            <div className="hero-card hero-card-main">
-              <span className="hero-label">System</span>
-              <strong>Next.js Frontend</strong>
-              <p>现代化界面、内容模块和统一布局系统。</p>
-            </div>
-            <div className="hero-card">
-              <span className="hero-label">Auth</span>
-              <strong>Login Flow</strong>
-              <p>站内已经具备登录、注册和会话校验入口。</p>
-            </div>
-            <div className="hero-card">
-              <span className="hero-label">Deploy</span>
-              <strong>Vercel Runtime</strong>
-              <p>前端和接口同时发布，减少分叉状态。</p>
-            </div>
-            <div className="hero-card">
-              <span className="hero-label">Content</span>
-              <strong>Unified Data Layer</strong>
-              <p>博客、影像、记录共用一套内容模型。</p>
-            </div>
+          <div className="hero-stack">
+            <article className="hero-card">
+              <span className="hero-label">Publishing Rail</span>
+              <strong>Diary + Gallery + Blog</strong>
+              <p>把公开写作、私人记录和图像整理进同一条内容流，而不是互相断开的三套页面。</p>
+            </article>
+            <article className="hero-card">
+              <span className="hero-label">Assets Migration</span>
+              <strong>Cloudflare R2 Ready</strong>
+              <p>上传逻辑已经抽象成统一资产层，等待账号启用 R2 后切到正式对象存储即可。</p>
+            </article>
           </div>
-        </div>
+        </aside>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+      <section className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
         <article className="panel p-8">
-          <p className="section-chip">Featured Flow</p>
-          <h2 className="text-4xl font-semibold tracking-[-0.04em] text-white">
-            保留原来“个人空间”的感觉，但把登录和全栈能力藏得更自然。
-          </h2>
-          <p className="mt-4 max-w-3xl text-base leading-8 text-[var(--muted)]">
-            这次首页不再做成产品后台，而是继续维持个人主页的叙事感。你可以从这里直接进入登录、内容模块和工作台，但整体看上去仍然像你的网站，而不是一个通用模板。
-          </p>
-          <div className="mt-8 grid gap-4">
-            <Link href="/login" className="panel flex items-center justify-between gap-4 p-5 transition hover:-translate-y-1">
-              <div>
-                <p className="font-semibold text-white">进入站内账号</p>
-                <p className="mt-1 text-sm text-[var(--muted)]">直接登录，进入全栈工作台。</p>
-              </div>
-              <span className="text-[var(--accent-strong)]">01</span>
-            </Link>
-            <Link href="/blog" className="panel flex items-center justify-between gap-4 p-5 transition hover:-translate-y-1">
-              <div>
-                <p className="font-semibold text-white">阅读博客与项目记录</p>
-                <p className="mt-1 text-sm text-[var(--muted)]">继续保留原站里“写东西”的主线。</p>
-              </div>
-              <span className="text-[var(--accent-strong)]">02</span>
-            </Link>
-            <Link href="/studio" className="panel flex items-center justify-between gap-4 p-5 transition hover:-translate-y-1">
-              <div>
-                <p className="font-semibold text-white">打开工作台</p>
-                <p className="mt-1 text-sm text-[var(--muted)]">把登录后能力收进更私人的入口里。</p>
-              </div>
-              <span className="text-[var(--accent-strong)]">03</span>
-            </Link>
-          </div>
-        </article>
+          <SectionHeading
+            eyebrow="Editorial Layout"
+            title="首页像一本深色工作日志，而不是堆卡片的 SaaS 首页。"
+            description="视觉上借了 Linear、Raycast 和 Craft 那种克制、密度适中、留白很讲究的感觉，但内容仍然是个人站叙事。重点不是炫，而是让你愿意每天打开它。"
+          />
 
-        <article className="panel p-8">
-          <p className="section-chip">Today Mood</p>
-          <h2 className="text-3xl font-semibold text-white">现在最值得继续打磨的三个方向</h2>
-          <div className="mt-6 space-y-4">
-            {capabilityCards.map((card, index) => (
-              <article key={card.title} className="panel p-5">
-                <div className="flex items-start gap-4">
-                  <span className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[14px] bg-[rgba(34,211,238,0.12)] text-sm font-bold text-[var(--accent-strong)]">
-                    0{index + 1}
-                  </span>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            {moduleCards.slice(0, 4).map((card) => (
+              <Link key={card.id} href={card.href} className="module-card p-6">
+                <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.26em] text-[var(--muted)]">{card.eyebrow}</p>
-                    <h3 className="mt-2 text-xl font-semibold text-white">{card.title}</h3>
-                    <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{card.description}</p>
+                    <p className="hero-label">{card.eyebrow}</p>
+                    <h3 className="mt-3 text-2xl text-white">{card.title}</h3>
                   </div>
+                  <span className="module-card__badge">{card.badge}</span>
                 </div>
-              </article>
+                <p className="mt-5 max-w-sm text-sm leading-7 text-[var(--muted-strong)]">
+                  {card.description}
+                </p>
+              </Link>
             ))}
           </div>
         </article>
-      </section>
 
-      <section className="space-y-8">
-        <SectionHeading
-          eyebrow="Explore"
-          title="熟悉的模块感保留下来了，只是这次骨架更完整。"
-          description="首页继续像个人空间的总入口，而不是制式产品首页。内容、登录和工作台会一起长在同一个系统里。"
-        />
-
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {moduleCards.map((card) => (
-            <Link
-              key={card.id}
-              href={card.href}
-              className="panel module-card p-6 transition hover:-translate-y-1"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.26em] text-[var(--accent-strong)]">
-                    {card.eyebrow}
-                  </p>
-                  <h3 className="mt-3 text-2xl font-semibold text-white">
-                    {card.title}
-                  </h3>
-                </div>
-                <span className="module-card__badge">{card.badge}</span>
-              </div>
-              <p className="mt-5 max-w-sm text-sm leading-7 text-[var(--muted)]">
-                {card.description}
-              </p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="space-y-10">
-        <SectionHeading
-          eyebrow="Why This Version"
-          title="这次改版不只是换皮，而是把站点的结构也一起理顺。"
-          description="旧站的问题不是不够花哨，而是静态页面、真实前端项目、后端和发布渠道彼此脱节。新版先把骨架接通，再让视觉升级。"
-        />
-
-        <div className="grid gap-6 lg:grid-cols-3">
-          {capabilityCards.map((card) => (
-            <article key={card.title} className="panel p-7">
-              <p className="text-sm uppercase tracking-[0.28em] text-[var(--accent-strong)]">
-                {card.eyebrow}
-              </p>
-              <h3 className="mt-4 text-2xl font-semibold text-white">
-                {card.title}
-              </h3>
-              <p className="mt-4 text-base leading-7 text-[var(--muted)]">
-                {card.description}
-              </p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
         <article className="panel p-8">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm uppercase tracking-[0.3em] text-[var(--accent-strong)]">
-                Latest Writing
-              </p>
-              <h2 className="mt-3 text-3xl font-semibold text-white">
-                最近的文章与思考
-              </h2>
-            </div>
-            <Link href="/blog" className="text-sm text-[var(--accent-strong)]">
-              查看全部
-            </Link>
+          <p className="section-chip">Current Focus</p>
+          <h2 className="mt-5 font-[var(--font-serif)] text-5xl leading-[0.98] tracking-[-0.05em] text-white">
+            让网站继续像“你自己的空间”。
+          </h2>
+          <div className="mt-6 space-y-5 text-[15px] leading-8 text-[var(--muted-strong)]">
+            <p>保留个人站的温度，不做成冷冰冰的后台面板。</p>
+            <p>上传、发布、归档这些真正要用的功能，慢慢变成自然的操作，而不是演示用的入口。</p>
+            <p>图片统一迁进资产层，后续可以直接接自定义域名 `assets.ustccb.com`。</p>
           </div>
-          <div className="mt-8 space-y-6">
+          <div className="mt-8 rounded-[24px] border border-[var(--line)] bg-[rgba(255,255,255,0.03)] p-5">
+            <p className="hero-label">System Note</p>
+            <p className="mt-3 text-white">当前线上已经能通过站点入口真实写入日记。</p>
+            <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
+              图片链路已统一为资产抽象，等 Cloudflare 账号启用 R2 后会直接切换到对象存储公开 URL。
+            </p>
+          </div>
+        </article>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
+        <article className="panel p-8">
+          <p className="section-chip">Writing Desk</p>
+          <div className="mt-5 space-y-6">
             {blogPosts.map((post) => (
               <article key={post.id} className="border-t border-[var(--line)] pt-6 first:border-t-0 first:pt-0">
                 <div className="flex flex-wrap gap-3 text-sm text-[var(--muted)]">
@@ -224,81 +130,29 @@ export default function Home() {
                   <span>{post.readTime}</span>
                   <span>{post.publishedAt}</span>
                 </div>
-                <h3 className="mt-3 text-2xl font-semibold text-white">
-                  {post.title}
-                </h3>
-                <p className="mt-3 text-base leading-7 text-[var(--muted)]">
-                  {post.summary}
-                </p>
+                <h3 className="mt-3 text-3xl text-white">{post.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted-strong)]">{post.summary}</p>
               </article>
             ))}
           </div>
         </article>
 
         <article className="panel p-8">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm uppercase tracking-[0.3em] text-[var(--accent-strong)]">
-                Memory Board
-              </p>
-              <h2 className="mt-3 text-3xl font-semibold text-white">
-                更有氛围感的相册模块
-              </h2>
-            </div>
-            <Link href="/album" className="text-sm text-[var(--accent-strong)]">
-              进入相册
-            </Link>
-          </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            {albumShots.map((shot) => (
-              <article key={shot.id} className="overflow-hidden rounded-[24px] border border-[var(--line)] bg-[rgba(255,255,255,0.03)]">
-                <div className={`h-40 bg-gradient-to-br ${shot.accent}`} />
-                <div className="space-y-3 p-5">
-                  <p className="text-sm text-[var(--muted)]">
-                    {shot.location} / {shot.season}
-                  </p>
-                  <h3 className="text-xl font-semibold text-white">{shot.title}</h3>
-                  <p className="text-sm leading-6 text-[var(--muted)]">{shot.description}</p>
+          <p className="section-chip">Journal Strip</p>
+          <div className="mt-5 space-y-4">
+            {diaryEntries.map((entry) => (
+              <article key={entry.id} className="rounded-[22px] border border-[var(--line)] bg-[rgba(255,255,255,0.02)] p-5">
+                <div className="flex flex-wrap gap-3 text-sm text-[var(--muted)]">
+                  <span>{entry.createdAt}</span>
+                  <span>{entry.weather}</span>
+                  <span>{entry.mood}</span>
                 </div>
+                <h3 className="mt-3 text-2xl text-white">{entry.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted-strong)]">{entry.excerpt}</p>
               </article>
             ))}
           </div>
         </article>
-      </section>
-
-      <section className="grid gap-6 lg:grid-cols-[0.88fr_1.12fr]">
-        <article className="panel p-8">
-          <p className="text-sm uppercase tracking-[0.3em] text-[var(--accent-strong)]">
-            Journal
-          </p>
-          <h2 className="mt-4 text-3xl font-semibold text-white">
-            日记区域保留个人感，不做成冷冰冰的信息流。
-          </h2>
-          <p className="mt-4 text-base leading-7 text-[var(--muted)]">
-            这里更像一个被整理好的时间线，适合继续接情绪标签、归档与私密权限。站点更完整之后，表达也会更轻松。
-          </p>
-          <Link href="/diary" className="button-secondary mt-8 inline-flex">
-            查看记录
-          </Link>
-        </article>
-
-        <div className="space-y-4">
-          {diaryEntries.map((entry) => (
-            <article key={entry.id} className="panel p-6">
-              <div className="flex flex-wrap items-center gap-3 text-sm text-[var(--muted)]">
-                <span>{entry.createdAt}</span>
-                <span>{entry.weather}</span>
-                <span>{entry.mood}</span>
-              </div>
-              <h3 className="mt-3 text-2xl font-semibold text-white">
-                {entry.title}
-              </h3>
-              <p className="mt-3 text-base leading-7 text-[var(--muted)]">
-                {entry.excerpt}
-              </p>
-            </article>
-          ))}
-        </div>
       </section>
     </div>
   );

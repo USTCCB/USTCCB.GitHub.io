@@ -38,22 +38,25 @@ export default function DiaryPage() {
   });
 
   async function loadEntries() {
-    setLoading(true);
-    setError('');
-
-    try {
-      const response = await diaryApi.getDiaries(1, 50);
-      const payload = response.data as DiaryResponse;
-      setEntries(payload.data?.diaries || []);
-    } catch (err) {
-      setError('现在还没连上可用的日记服务。');
-    } finally {
-      setLoading(false);
-    }
+    const response = await diaryApi.getDiaries(1, 50);
+    const payload = response.data as DiaryResponse;
+    setEntries(payload.data?.diaries || []);
   }
 
   useEffect(() => {
-    void loadEntries();
+    async function bootstrap() {
+      setLoading(true);
+      setError('');
+      try {
+        await loadEntries();
+      } catch {
+        setError('现在还没连上可用的日记服务。');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    void bootstrap();
   }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -82,7 +85,6 @@ export default function DiaryPage() {
         mood: moodOptions[0],
         weather: weatherOptions[0],
       });
-
       await loadEntries();
     } catch (err: any) {
       setError(err?.response?.data?.error || '发布日记失败。');
@@ -94,20 +96,20 @@ export default function DiaryPage() {
   return (
     <div className="page-shell space-y-10 pb-24">
       <SectionHeading
-        eyebrow="Diary"
-        title="直接写、直接发，把日记真的收进网站里。"
-        description="这次不是静态占位页。你可以在这里直接新建日记，发出去后下面的时间线会立即刷新。"
+        eyebrow="Journal"
+        title="在这里写下来的内容，会直接进入站点自己的时间线。"
+        description="这一页现在接的是真接口，不是静态演示。你写下来的标题、正文、天气和心情会立即回到下方时间线，形成可持续归档的私人记录。"
       />
 
-      <section className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
+      <section className="grid gap-6 xl:grid-cols-[0.82fr_1.18fr]">
         <form className="panel compose-panel p-8" onSubmit={handleSubmit}>
-          <div className="space-y-3">
-            <p className="section-chip">Quick Publish</p>
-            <h2 className="text-3xl font-semibold text-white">写一篇新的日记</h2>
-            <p className="text-sm leading-7 text-[var(--muted)]">
-              先把最需要的能力做实：标题、正文、天气、心情，发完就能在时间线上看到。
-            </p>
-          </div>
+          <p className="section-chip">Writing Console</p>
+          <h2 className="mt-5 font-[var(--font-serif)] text-5xl leading-[0.98] tracking-[-0.05em] text-white">
+            写一篇今天真正想留下来的东西。
+          </h2>
+          <p className="mt-5 text-sm leading-8 text-[var(--muted-strong)]">
+            这不是社交信息流，也不是演示卡片，而是一块适合长期记录的深色写作面板。输入尽量轻，读取尽量安静。
+          </p>
 
           <div className="mt-8 space-y-4">
             <input
@@ -120,7 +122,7 @@ export default function DiaryPage() {
             />
 
             <textarea
-              className="field-input min-h-[220px] resize-y"
+              className="field-input min-h-[260px] resize-y"
               placeholder="把今天真正想记下来的内容写在这里"
               value={form.content}
               onChange={(event) =>
@@ -165,65 +167,67 @@ export default function DiaryPage() {
             </div>
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center gap-4">
+          <div className="mt-6 flex flex-wrap gap-4">
             <button type="submit" className="button-primary" disabled={submitting}>
               {submitting ? '正在发布...' : '发布日记'}
             </button>
-            <span className="text-sm text-[var(--muted)]">
-              不走登录流程，直接以站内发布模式写入。
+            <span className="text-sm leading-7 text-[var(--muted)]">
+              不绕后台，直接写入站点内容层。
             </span>
           </div>
 
-          {error ? <p className="mt-4 text-sm text-[#fda4af]">{error}</p> : null}
+          {error ? <p className="mt-4 text-sm text-[var(--warning)]">{error}</p> : null}
         </form>
 
-        <section className="space-y-4">
-          <div className="panel p-6">
-            <p className="section-chip">Timeline</p>
-            <h2 className="mt-3 text-2xl font-semibold text-white">最近的日记记录</h2>
-            <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
-              这里显示的是接口里真实返回的数据，不再是写死的展示卡片。
-            </p>
-          </div>
+        <div className="space-y-5">
+          <section className="grid gap-4 sm:grid-cols-3">
+            <article className="metric-panel">
+              <span>已发布</span>
+              <strong>{entries.length}</strong>
+            </article>
+            <article className="metric-panel">
+              <span>最新天气</span>
+              <strong>{entries[0]?.weather || '—'}</strong>
+            </article>
+            <article className="metric-panel">
+              <span>最新心情</span>
+              <strong>{entries[0]?.mood || '—'}</strong>
+            </article>
+          </section>
 
           {loading ? (
             <article className="panel p-7 text-sm text-[var(--muted)]">正在读取日记...</article>
           ) : null}
 
           {!loading && entries.length === 0 ? (
-            <article className="panel p-7 text-sm text-[var(--muted)]">
-              还没有日记内容，先在左侧发布第一篇。
+            <article className="panel p-7 text-sm leading-7 text-[var(--muted)]">
+              还没有日记内容。左侧发布第一篇之后，这里会马上出现一条新的时间线记录。
             </article>
           ) : null}
 
-          {!loading &&
-            entries.map((entry, index) => (
-              <article
-                key={entry.id}
-                className="panel grid gap-6 p-7 md:grid-cols-[120px_1fr]"
-              >
-                <div className="space-y-2 border-b border-[var(--line)] pb-4 md:border-b-0 md:border-r md:pb-0 md:pr-6">
-                  <p className="text-sm uppercase tracking-[0.3em] text-[var(--accent-strong)]">
-                    Day {String(index + 1).padStart(2, '0')}
-                  </p>
-                  <p className="text-sm text-[var(--muted)]">
-                    {new Date(entry.created_at).toLocaleDateString('zh-CN')}
-                  </p>
-                  <p className="text-sm text-[var(--muted)]">
-                    {entry.weather || '未填写天气'} / {entry.mood || '未填写心情'}
-                  </p>
-                </div>
-                <div>
-                  <h3 className="text-2xl font-semibold text-[var(--ink)]">
-                    {entry.title}
-                  </h3>
-                  <p className="mt-4 whitespace-pre-wrap text-base leading-7 text-[var(--muted)]">
-                    {entry.content}
-                  </p>
-                </div>
-              </article>
-            ))}
-        </section>
+          {entries.map((entry, index) => (
+            <article key={entry.id} className="panel grid gap-6 p-7 lg:grid-cols-[110px_1fr]">
+              <div className="border-b border-[var(--line)] pb-4 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-6">
+                <p className="hero-label">Entry {String(index + 1).padStart(2, '0')}</p>
+                <p className="mt-3 text-sm text-[var(--muted)]">
+                  {new Date(entry.created_at).toLocaleDateString('zh-CN')}
+                </p>
+                <p className="mt-2 text-sm text-[var(--muted)]">
+                  {entry.weather || '未填写天气'}
+                </p>
+                <p className="text-sm text-[var(--muted)]">
+                  {entry.mood || '未填写心情'}
+                </p>
+              </div>
+              <div>
+                <h3 className="text-3xl text-white">{entry.title}</h3>
+                <p className="mt-4 whitespace-pre-wrap text-sm leading-8 text-[var(--muted-strong)]">
+                  {entry.content}
+                </p>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
     </div>
   );

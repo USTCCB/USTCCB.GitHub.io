@@ -3,6 +3,25 @@ import { readBackendJson } from '@/lib/backend';
 
 export const dynamic = 'force-dynamic';
 
+export async function GET(
+  _request: NextRequest,
+  context: { params: { id: string } }
+) {
+  try {
+    const data = await readBackendJson(`/api/album/${context.params.id}/photos`);
+    return NextResponse.json(data);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          error instanceof Error ? error.message : '读取相册图片失败',
+      },
+      { status: 502 }
+    );
+  }
+}
+
 export async function POST(
   request: NextRequest,
   context: { params: { id: string } }

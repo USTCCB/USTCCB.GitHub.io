@@ -1,91 +1,229 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>USTCCB Personal Hub</title>
-    <style>
-      :root {
-        color-scheme: light;
-      }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>USTCCB's Space</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="home-page">
+    <div class="background-glow"></div>
 
-      * {
-        box-sizing: border-box;
-      }
+    <div class="app-container">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="打开导航">
+            <i class="fa-solid fa-bars"></i>
+        </button>
 
-      body {
-        margin: 0;
-        min-height: 100vh;
-        display: grid;
-        place-items: center;
-        padding: 24px;
-        font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-        background:
-          radial-gradient(circle at top left, rgba(217, 119, 87, 0.22), transparent 28%),
-          radial-gradient(circle at 80% 10%, rgba(109, 157, 197, 0.2), transparent 24%),
-          linear-gradient(180deg, #f8f4ee 0%, #f6f2eb 100%);
-        color: #1b2230;
-      }
+        <nav class="sidebar" id="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-code-branch"></i>
+                <span>USTCCB</span>
+                <button class="close-sidebar-btn" id="closeSidebarBtn" aria-label="关闭导航">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <ul class="nav-links">
+                <li class="active"><a href="index.html"><i class="fa-solid fa-house"></i> 首页</a></li>
+                <li><a href="ai-chat.html"><i class="fa-solid fa-robot"></i> AI 助手</a></li>
+                <li><a href="myBlogs.html"><i class="fa-solid fa-pen-nib"></i> 博客</a></li>
+                <li><a href="myAlbum.html"><i class="fa-solid fa-images"></i> 相册</a></li>
+                <li><a href="games.html"><i class="fa-solid fa-gamepad"></i> 游戏实验室</a></li>
+                <li><a href="myTimetable.html"><i class="fa-solid fa-calendar-days"></i> 课表</a></li>
+                <li><a href="myDairy.html"><i class="fa-solid fa-book"></i> 日记</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
+                    <div class="user-info">
+                        <span class="name">AnranWu</span>
+                        <span class="status">Digital Builder</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
 
-      .shell {
-        width: min(100%, 720px);
-        border: 1px solid rgba(27, 34, 48, 0.1);
-        border-radius: 28px;
-        padding: 32px;
-        background: rgba(255, 255, 255, 0.82);
-        box-shadow: 0 20px 60px rgba(41, 50, 65, 0.1);
-        backdrop-filter: blur(18px);
-      }
+        <main class="main-content">
+            <section class="hero-panel">
+                <div class="hero-copy">
+                    <span class="hero-eyebrow">PERSONAL HUB / PORTFOLIO / PLAYGROUND</span>
+                    <h1>把学习、创作、AI 工具和日常记录，收进同一个更好用的数字空间。</h1>
+                    <p class="hero-lead">
+                        这里不是单纯的导航页，而是一个可长期使用的个人主页中枢。
+                        你可以在这里继续写、继续学、继续玩，也能快速进入最常用的功能页面。
+                    </p>
+                    <div class="hero-actions">
+                        <a href="ai-chat.html" class="hero-btn hero-btn-primary">
+                            <i class="fa-solid fa-sparkles"></i> 进入 AI 助手
+                        </a>
+                        <a href="myBlogs.html" class="hero-btn hero-btn-secondary">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> 阅读最新内容
+                        </a>
+                    </div>
+                </div>
 
-      .eyebrow {
-        margin: 0;
-        color: #b85a3d;
-        font-size: 12px;
-        letter-spacing: 0.32em;
-        text-transform: uppercase;
-      }
+                <div class="hero-aside">
+                    <div class="signal-card">
+                        <div class="signal-head">
+                            <span class="signal-label">Live Status</span>
+                            <span class="signal-dot"></span>
+                        </div>
+                        <div class="signal-time" id="heroClock">--:--</div>
+                        <p class="signal-date" id="heroDate">加载中...</p>
+                        <div class="signal-tags">
+                            <span>Static / GitHub Pages</span>
+                            <span>Local-first widgets</span>
+                            <span>AI ready</span>
+                        </div>
+                    </div>
 
-      h1 {
-        margin: 18px 0 12px;
-        font-size: clamp(2rem, 6vw, 3.6rem);
-        line-height: 1.02;
-      }
+                    <div class="mini-metrics">
+                        <article class="metric-box">
+                            <span>入口页面</span>
+                            <strong>6+</strong>
+                        </article>
+                        <article class="metric-box">
+                            <span>本地待办</span>
+                            <strong id="todoCount">0</strong>
+                        </article>
+                        <article class="metric-box">
+                            <span>访问次数</span>
+                            <strong id="visitCount">0</strong>
+                        </article>
+                    </div>
+                </div>
+            </section>
 
-      p {
-        margin: 0;
-        font-size: 16px;
-        line-height: 1.8;
-        color: #5e6778;
-      }
+            <section class="spotlight-grid">
+                <article class="spotlight-primary">
+                    <div class="section-chip">Featured Flow</div>
+                    <h2>现在最值得打开的三个模块</h2>
+                    <p>
+                        这次首页不再只做“卡片堆叠”，而是把最重要的行动路径做成更清楚的内容层级：
+                        问问题、写东西、休息一下。
+                    </p>
+                    <div class="spotlight-actions">
+                        <a href="ai-chat.html" class="tool-link">
+                            <span><i class="fa-solid fa-robot"></i> AI 助手</span>
+                            <small>本地配置多模型，适合问答和代码</small>
+                        </a>
+                        <a href="myBlogs.html" class="tool-link">
+                            <span><i class="fa-solid fa-pen-nib"></i> 博客</span>
+                            <small>沉淀学习笔记、项目记录与想法</small>
+                        </a>
+                        <a href="games.html" class="tool-link">
+                            <span><i class="fa-solid fa-gamepad"></i> 游戏实验室</span>
+                            <small>切换节奏，短暂放松和测试交互</small>
+                        </a>
+                    </div>
+                </article>
 
-      a {
-        display: inline-flex;
-        margin-top: 24px;
-        align-items: center;
-        justify-content: center;
-        border-radius: 999px;
-        padding: 12px 20px;
-        background: #1b2230;
-        color: white;
-        text-decoration: none;
-      }
-    </style>
-    <script>
-      (function () {
-        var targetBase = "https://ustccb-git-hub-io.vercel.app";
-        var target = targetBase + window.location.pathname + window.location.search + window.location.hash;
-        window.location.replace(target);
-      })();
-    </script>
-  </head>
-  <body>
-    <main class="shell">
-      <p class="eyebrow">Redirecting To The New Full Stack Site</p>
-      <h1>正在带你进入新版个人站。</h1>
-      <p>
-        现在的正式版本已经迁移到新的全栈入口，博客、相册、日记和接口都在那里统一运行。
-      </p>
-      <a href="https://ustccb-git-hub-io.vercel.app">如果没有自动跳转，点这里继续</a>
-    </main>
-  </body>
+                <div class="spotlight-stack">
+                    <article class="spotlight-panel">
+                        <span class="section-chip">Quick Access</span>
+                        <h3>今天想做什么</h3>
+                        <ul class="spotlight-list">
+                            <li><a href="myTimetable.html">看课表并安排今天的节奏</a></li>
+                            <li><a href="myAlbum.html">翻一下最近的相册内容</a></li>
+                            <li><a href="myDairy.html">写几句当天记录</a></li>
+                        </ul>
+                    </article>
+
+                    <article class="spotlight-panel">
+                        <span class="section-chip">Today Mood</span>
+                        <h3 id="greeting-title">你好，欢迎回来</h3>
+                        <p id="daily-quote" class="quote-text">加载中...</p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="utility-grid">
+                <article class="utility-card">
+                    <div class="utility-head">
+                        <div>
+                            <span class="section-chip">Local Widget</span>
+                            <h3>待办清单</h3>
+                        </div>
+                        <span class="utility-meta" id="todayLabel">今天</span>
+                    </div>
+                    <div class="todo-entry">
+                        <input type="text" id="todoInput" placeholder="输入一个今天要完成的小目标">
+                        <button id="todoAddBtn" aria-label="添加待办">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                    <ul id="todoList" class="todo-list"></ul>
+                </article>
+
+                <article class="utility-card">
+                    <div class="utility-head">
+                        <div>
+                            <span class="section-chip">Focus Widget</span>
+                            <h3>专注计时</h3>
+                        </div>
+                        <span class="utility-meta" id="focusModeLabel">Focus</span>
+                    </div>
+                    <div class="focus-ring">
+                        <strong id="focusTimer">25:00</strong>
+                        <span>25 分钟专注节奏</span>
+                    </div>
+                    <div class="focus-actions">
+                        <button class="hero-btn hero-btn-primary small" id="focusToggleBtn">开始</button>
+                        <button class="hero-btn hero-btn-secondary small" id="focusResetBtn">重置</button>
+                    </div>
+                </article>
+
+                <article class="utility-card utility-card-wide">
+                    <div class="utility-head">
+                        <div>
+                            <span class="section-chip">Scratchpad</span>
+                            <h3>快速便签</h3>
+                        </div>
+                        <span class="utility-meta">自动保存在浏览器</span>
+                    </div>
+                    <textarea id="quickNote" class="quick-note" placeholder="把灵感、提醒或临时想法先记在这里..."></textarea>
+                </article>
+            </section>
+
+            <section class="activity-section">
+                <div class="activity-copy">
+                    <span class="section-chip">Recent Direction</span>
+                    <h2>这版首页更接近近年高质量个人站的做法</h2>
+                    <p>
+                        大首屏、清晰分层、较少但更精致的动效，再加上本地可用的小工具，
+                        比“全站都是同样的玻璃卡片”更耐看，也更适合长期使用。
+                    </p>
+                </div>
+                <div class="activity-feed">
+                    <article>
+                        <span>01</span>
+                        <div>
+                            <h4>更强的首屏识别度</h4>
+                            <p>先看到“这是谁的空间、有什么内容、下一步能做什么”。</p>
+                        </div>
+                    </article>
+                    <article>
+                        <span>02</span>
+                        <div>
+                            <h4>更像作品站，而不是后台卡片墙</h4>
+                            <p>用版式和主次关系代替机械卡片堆叠，让内容更有节奏。</p>
+                        </div>
+                    </article>
+                    <article>
+                        <span>03</span>
+                        <div>
+                            <h4>更实用的本地功能</h4>
+                            <p>待办、专注计时和便签都走本地存储，不需要后端就能立即可用。</p>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <script src="script.js"></script>
+</body>
 </html>

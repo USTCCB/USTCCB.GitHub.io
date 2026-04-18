@@ -3,31 +3,98 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --bg: #f6f2eb;
+  --bg-soft: #efe7db;
+  --surface: rgba(255, 255, 255, 0.82);
+  --surface-alt: #f0e6d8;
+  --ink: #1b2230;
+  --muted: #5e6778;
+  --line: rgba(27, 34, 48, 0.1);
+  --accent: #d97757;
+  --accent-strong: #b85a3d;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  min-height: 100vh;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(217, 119, 87, 0.2), transparent 28%),
+    radial-gradient(circle at 85% 12%, rgba(109, 157, 197, 0.2), transparent 24%),
+    linear-gradient(180deg, #f8f4ee 0%, var(--bg) 100%);
+  font-family: var(--font-serif), serif;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+::selection {
+  background: rgba(217, 119, 87, 0.18);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@layer components {
+  .page-shell {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .panel {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    box-shadow: 0 20px 60px rgba(41, 50, 65, 0.08);
+    backdrop-filter: blur(18px);
+    @apply rounded-[32px];
+  }
+
+  .button-primary {
+    background: var(--ink);
+    color: white;
+    @apply inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-medium transition duration-300 hover:-translate-y-0.5;
+  }
+
+  .button-secondary {
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.65);
+    color: var(--ink);
+    @apply inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-medium transition duration-300 hover:-translate-y-0.5;
+  }
+
+  .hero-grid {
+    display: grid;
+    gap: 1px;
+    background: var(--line);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hero-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(247, 240, 232, 0.94));
+    min-height: 180px;
+    @apply p-6;
+  }
+
+  .hero-card-main {
+    grid-column: span 2;
+    min-height: 240px;
+  }
+
+  .hero-card strong {
+    @apply mt-5 block text-2xl font-semibold text-[color:var(--ink)];
+  }
+
+  .hero-card p {
+    @apply mt-3 max-w-sm text-sm leading-6 text-[color:var(--muted)];
+  }
+
+  .hero-label {
+    color: var(--accent-strong);
+    @apply text-xs uppercase tracking-[0.3em];
   }
 }

@@ -3,9 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// 优先使用环境变量，如果没有则使用硬编码的 Railway PostgreSQL 地址
-const dbUrl = process.env.DATABASE_URL
-  || 'postgresql://postgres:hAJeYuCbrmOxUfXjlEHtCBHDtPawWfnV@postgres.railway.internal:5432/railway';
+const dbUrl = process.env.DATABASE_URL;
 
 export const pool = new Pool(
   dbUrl

@@ -1,3 +1,4 @@
+import type { NextFunction, Request, Response } from 'express';
 import winston from 'winston';
 
 // 结构化日志配置
@@ -19,7 +20,7 @@ export const logger = winston.createLogger({
 });
 
 // 请求日志中间件
-export const requestLogger = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
   res.on('finish', () => {
     logger.info({

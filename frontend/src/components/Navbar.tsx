@@ -13,26 +13,34 @@ export function Navbar() {
     { href: '/blog', label: '博客' },
     { href: '/album', label: '相册' },
     { href: '/diary', label: '日记' },
-    { href: '/ai-chat', label: 'AI聊天' },
-    { href: '/games', label: '游戏' },
+    { href: '/api/health', label: '接口' },
   ]
 
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            个人平台
+    <nav className="sticky top-0 z-50 border-b border-[var(--line)] bg-[rgba(246,242,235,0.78)] backdrop-blur-xl">
+      <div className="page-shell">
+        <div className="flex h-20 items-center justify-between gap-6">
+          <Link href="/" className="flex items-center gap-3">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--ink)] text-sm font-semibold text-white">
+              CB
+            </span>
+            <span className="flex flex-col">
+              <span className="text-sm uppercase tracking-[0.28em] text-[var(--muted)]">
+                ustccb
+              </span>
+              <span className="text-lg font-semibold text-[var(--ink)]">
+                Personal Hub
+              </span>
+            </span>
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden items-center gap-8 md:flex">
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`hover:text-blue-600 transition ${
-                  pathname === link.href ? 'text-blue-600 font-semibold' : 'text-gray-700'
+                className={`text-sm transition ${
+                  pathname === link.href ? 'font-semibold text-[var(--ink)]' : 'text-[var(--muted)] hover:text-[var(--ink)]'
                 }`}
               >
                 {link.label}
@@ -40,26 +48,22 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Auth Buttons */}
-          <div className="hidden md:flex space-x-4">
+          <div className="hidden items-center gap-4 md:flex">
+            <span className="rounded-full border border-[var(--line)] px-4 py-2 text-sm text-[var(--muted)]">
+              Full Stack Online
+            </span>
             <Link
-              href="/login"
-              className="px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+              href="/blog"
+              className="button-secondary"
             >
-              登录
-            </Link>
-            <Link
-              href="/register"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-            >
-              注册
+              打开内容页
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             className="md:hidden"
             onClick={() => setIsOpen(!isOpen)}
+            aria-label="切换导航"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {isOpen ? (
@@ -71,27 +75,27 @@ export function Navbar() {
           </button>
         </div>
 
-        {/* Mobile Menu */}
         {isOpen && (
-          <div className="md:hidden py-4 space-y-2">
+          <div className="space-y-2 border-t border-[var(--line)] py-4 md:hidden">
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`block px-4 py-2 rounded-lg ${
-                  pathname === link.href ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50'
+                className={`block rounded-2xl px-4 py-3 ${
+                  pathname === link.href ? 'bg-[var(--surface-alt)] text-[var(--ink)]' : 'text-[var(--muted)]'
                 }`}
                 onClick={() => setIsOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
-            <div className="flex flex-col space-y-2 px-4 pt-4 border-t">
-              <Link href="/login" className="py-2 text-center text-blue-600">
-                登录
-              </Link>
-              <Link href="/register" className="py-2 text-center bg-blue-600 text-white rounded-lg">
-                注册
+            <div className="border-t border-[var(--line)] px-1 pt-4">
+              <Link
+                href="/blog"
+                className="button-primary flex w-full justify-center"
+                onClick={() => setIsOpen(false)}
+              >
+                打开内容页
               </Link>
             </div>
           </div>

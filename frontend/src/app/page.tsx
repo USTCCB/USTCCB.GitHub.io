@@ -5,6 +5,7 @@ import {
   blogPosts,
   capabilityCards,
   diaryEntries,
+  moduleCards,
   siteStats,
 } from '@/lib/site-content';
 
@@ -141,6 +142,39 @@ export default function Home() {
             ))}
           </div>
         </article>
+      </section>
+
+      <section className="space-y-8">
+        <SectionHeading
+          eyebrow="Explore"
+          title="熟悉的模块感保留下来了，只是这次骨架更完整。"
+          description="首页继续像个人空间的总入口，而不是制式产品首页。内容、登录和工作台会一起长在同一个系统里。"
+        />
+
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {moduleCards.map((card) => (
+            <Link
+              key={card.id}
+              href={card.href}
+              className="panel module-card p-6 transition hover:-translate-y-1"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.26em] text-[var(--accent-strong)]">
+                    {card.eyebrow}
+                  </p>
+                  <h3 className="mt-3 text-2xl font-semibold text-white">
+                    {card.title}
+                  </h3>
+                </div>
+                <span className="module-card__badge">{card.badge}</span>
+              </div>
+              <p className="mt-5 max-w-sm text-sm leading-7 text-[var(--muted)]">
+                {card.description}
+              </p>
+            </Link>
+          ))}
+        </div>
       </section>
 
       <section className="space-y-10">

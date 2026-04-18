@@ -26,6 +26,15 @@ export type DiaryEntry = {
   excerpt: string;
 };
 
+export type ModuleCard = {
+  id: number;
+  eyebrow: string;
+  title: string;
+  description: string;
+  href: string;
+  badge: string;
+};
+
 export const siteStats = [
   { label: '发布文章', value: '12+' },
   { label: '项目实验', value: '8' },
@@ -140,5 +149,56 @@ export const capabilityCards = [
     eyebrow: 'Design',
     title: '更克制也更有记忆点的视觉语言',
     description: '保留个人站该有的温度，同时把层级、留白、配色和动效做得更像现代产品页面。',
+  },
+];
+
+export const moduleCards: ModuleCard[] = [
+  {
+    id: 1,
+    eyebrow: 'Workspace',
+    title: '站内入口',
+    description: '把登录、身份和后续的私人工作台自然地收进主站。',
+    href: '/login',
+    badge: '01',
+  },
+  {
+    id: 2,
+    eyebrow: 'Writing',
+    title: '博客',
+    description: '继续保留原站最重要的写作感和项目记录主线。',
+    href: '/blog',
+    badge: '02',
+  },
+  {
+    id: 3,
+    eyebrow: 'Memory',
+    title: '相册',
+    description: '把校园、旅途和日常片段整理成更完整的视觉归档。',
+    href: '/album',
+    badge: '03',
+  },
+  {
+    id: 4,
+    eyebrow: 'Journal',
+    title: '日记',
+    description: '保留原来那种更私人的记录感，而不只是公开展示。',
+    href: '/diary',
+    badge: '04',
+  },
+  {
+    id: 5,
+    eyebrow: 'System',
+    title: '工作台',
+    description: '把之后的 AI 工具、管理入口和站内能力沉到这里。',
+    href: '/studio',
+    badge: '05',
+  },
+  {
+    id: 6,
+    eyebrow: 'Runtime',
+    title: '全栈骨架',
+    description: '界面、接口和部署链路已经不再分家，后续功能更容易长出来。',
+    href: '/studio',
+    badge: '06',
   },
 ];

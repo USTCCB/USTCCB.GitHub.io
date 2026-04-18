@@ -10,7 +10,7 @@ export function Navbar() {
 
   const links = [
     { href: '/', label: '首页', icon: '⌂' },
-    { href: '/login', label: '登录', icon: '•' },
+    { href: '/login', label: '站内入口', icon: '•' },
     { href: '/studio', label: '工作台', icon: '◦' },
     { href: '/blog', label: '博客', icon: '✎' },
     { href: '/album', label: '相册', icon: '◫' },
@@ -67,7 +67,7 @@ export function Navbar() {
         <div className="sidebar-meta">
           <div className="sidebar-status">
             <span className="sidebar-status__dot" />
-            <span>Full Stack Online</span>
+            <span>Personal Hub Online</span>
           </div>
           <div className="sidebar-profile">
             <div className="sidebar-profile__avatar">A</div>

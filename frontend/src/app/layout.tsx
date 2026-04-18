@@ -34,7 +34,7 @@ export default function RootLayout({
             <footer className="site-footer">
               <div className="site-footer__inner">
                 <p>&copy; 2026 USTCCB Personal Hub</p>
-                <p>Learning, building, writing, and shipping from one personal space.</p>
+                <p>Learning, building, writing, and keeping a little life inside the site.</p>
               </div>
             </footer>
           </div>

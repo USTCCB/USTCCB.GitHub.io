@@ -10,6 +10,7 @@ type Album = {
   description?: string | null;
   cover_image?: string | null;
   photo_count?: number | string;
+  photos?: Photo[];
 };
 
 type Photo = {
@@ -61,13 +62,8 @@ export default function AlbumPage() {
     const payload = response.data as AlbumListResponse;
     const list = payload.data || [];
     setAlbums(list);
+    setPhotos(list[0]?.photos || []);
     return list;
-  }
-
-  async function loadPhotos(albumId: number) {
-    const response = await albumApi.getPhotos(albumId);
-    const payload = response.data as PhotoListResponse;
-    setPhotos(payload.data || []);
   }
 
   useEffect(() => {
@@ -77,9 +73,6 @@ export default function AlbumPage() {
 
       try {
         const list = await loadAlbums();
-        if (list[0]?.id) {
-          await loadPhotos(list[0].id);
-        }
       } catch (err) {
         setError('现在还没连上可用的相册服务。');
       } finally {
@@ -120,8 +113,8 @@ export default function AlbumPage() {
     });
 
     const createdAlbum = createResponse.data?.data as Album;
-    const list = await loadAlbums();
-    return createdAlbum?.id || list[0]?.id;
+      const list = await loadAlbums();
+      return createdAlbum?.id || list[0]?.id;
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -151,7 +144,6 @@ export default function AlbumPage() {
       });
 
       await loadAlbums();
-      await loadPhotos(albumId);
       setFile(null);
       setPreviewUrl('');
       setForm((current) => ({
@@ -273,9 +265,9 @@ export default function AlbumPage() {
           </section>
 
           <section className="grid gap-4 sm:grid-cols-2">
-            {loading ? (
-              <article className="panel p-7 text-sm text-[var(--muted)]">正在读取相册...</article>
-            ) : null}
+          {loading ? (
+            <article className="panel p-7 text-sm text-[var(--muted)]">正在读取相册...</article>
+          ) : null}
 
             {!loading && photos.length === 0 ? (
               <article className="panel p-7 text-sm leading-7 text-[var(--muted)] sm:col-span-2">

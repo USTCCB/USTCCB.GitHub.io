@@ -231,10 +231,25 @@ async function handleAlbumList(request: Request, env: Env) {
      ORDER BY a.id ASC`
   ).all<DatabaseRecord>();
 
+  const albumsWithPhotos = await Promise.all(
+    (results || []).map(async (record) => {
+      const { results: photoRows } = await env.DB.prepare(
+        'SELECT id, album_id, url, object_key, title, description, created_at FROM photos WHERE album_id = ? ORDER BY datetime(created_at) DESC LIMIT 12'
+      )
+        .bind(Number(record.id))
+        .all<DatabaseRecord>();
+
+      return {
+        ...mapAlbumRecord(record, env),
+        photos: (photoRows || []).map((photo) => mapPhotoRecord(photo, env)),
+      };
+    })
+  );
+
   return json(
     {
       success: true,
-      data: (results || []).map((record) => mapAlbumRecord(record, env)),
+      data: albumsWithPhotos,
     },
     200,
     origin

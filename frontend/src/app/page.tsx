@@ -25,11 +25,11 @@ export default function Home() {
             </p>
           </div>
           <div className="flex flex-wrap gap-4">
-            <Link href="/blog" className="button-primary">
-              浏览内容
+            <Link href="/login" className="button-primary">
+              直接登录
             </Link>
-            <Link href="/api/health" className="button-secondary">
-              查看接口状态
+            <Link href="/register" className="button-secondary">
+              创建预览账号
             </Link>
           </div>
         </div>
@@ -42,9 +42,9 @@ export default function Home() {
               <p>现代化界面、内容模块和统一布局系统。</p>
             </div>
             <div className="hero-card">
-              <span className="hero-label">API</span>
-              <strong>Route Handlers</strong>
-              <p>把数据接口收回到站点部署链路里。</p>
+              <span className="hero-label">Auth</span>
+              <strong>Login Flow</strong>
+              <p>站内已经具备登录、注册和会话校验入口。</p>
             </div>
             <div className="hero-card">
               <span className="hero-label">Deploy</span>
@@ -195,6 +195,41 @@ export default function Home() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <article className="panel p-8">
+          <p className="text-sm uppercase tracking-[0.3em] text-[var(--accent-strong)]">
+            Access
+          </p>
+          <h2 className="mt-4 text-4xl font-semibold text-[var(--ink)]">
+            主域名切到 Vercel 后，这里就会成为可以直接登录的站点首页。
+          </h2>
+          <p className="mt-4 max-w-3xl text-base leading-7 text-[var(--muted)]">
+            现在新版前端已经把登录入口、工作台和接口整理进同一个 Next.js 项目。只要把 `ustc.chat` 的 DNS 从 GitHub Pages 切到 Vercel，主域名就能直接承载这套全栈版本。
+          </p>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <Link href="/studio" className="button-primary">
+              打开工作台
+            </Link>
+            <Link href="/api/health" className="button-secondary">
+              查看健康检查
+            </Link>
+          </div>
+        </article>
+
+        <article className="panel p-8">
+          <p className="text-sm uppercase tracking-[0.3em] text-[var(--accent-strong)]">
+            Ready Now
+          </p>
+          <ul className="mt-5 space-y-4 text-sm leading-6 text-[var(--muted)]">
+            <li>登录页：`/login`</li>
+            <li>注册页：`/register`</li>
+            <li>工作台：`/studio`</li>
+            <li>登录接口：`/api/auth/login`</li>
+            <li>会话接口：`/api/auth/me`</li>
+          </ul>
+        </article>
       </section>
     </div>
   );

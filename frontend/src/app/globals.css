@@ -67,6 +67,19 @@ a {
     @apply inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-medium transition duration-300 hover:-translate-y-0.5;
   }
 
+  .field-input {
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.76);
+    color: var(--ink);
+    outline: none;
+    @apply w-full rounded-[20px] px-4 py-3 text-base transition;
+  }
+
+  .field-input:focus {
+    border-color: rgba(184, 90, 61, 0.42);
+    box-shadow: 0 0 0 4px rgba(184, 90, 61, 0.08);
+  }
+
   .hero-grid {
     display: grid;
     gap: 1px;

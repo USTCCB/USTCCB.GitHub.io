@@ -13,6 +13,7 @@ export function Navbar() {
     { href: '/blog', label: '博客' },
     { href: '/album', label: '相册' },
     { href: '/diary', label: '日记' },
+    { href: '/studio', label: '工作台' },
     { href: '/api/health', label: '接口' },
   ]
 
@@ -53,10 +54,10 @@ export function Navbar() {
               Full Stack Online
             </span>
             <Link
-              href="/blog"
+              href="/login"
               className="button-secondary"
             >
-              打开内容页
+              登录站点
             </Link>
           </div>
 
@@ -91,11 +92,11 @@ export function Navbar() {
             ))}
             <div className="border-t border-[var(--line)] px-1 pt-4">
               <Link
-                href="/blog"
+                href="/login"
                 className="button-primary flex w-full justify-center"
                 onClick={() => setIsOpen(false)}
               >
-                打开内容页
+                登录站点
               </Link>
             </div>
           </div>

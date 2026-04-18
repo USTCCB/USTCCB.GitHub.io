@@ -1,4 +1,5 @@
-const DEFAULT_BACKEND_BASE_URL = 'https://backend-production-4de2.up.railway.app';
+const DEFAULT_BACKEND_BASE_URL =
+  'https://ustccb-personal-hub-api.ustccb-personal-hub.workers.dev';
 
 export function getBackendBaseUrl() {
   return (

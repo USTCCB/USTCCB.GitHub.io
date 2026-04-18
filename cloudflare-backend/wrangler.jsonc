@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "ustccb-personal-hub-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-04-18",
+  "workers_dev": true,
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "vars": {
+    "ALLOWED_ORIGINS": "https://ustccb-git-hub-io.vercel.app,https://ustc.chat,https://ustccb.github.io,http://localhost:3000"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ustccb-personal-hub",
+      "database_id": "8399461a-c740-47c9-bc46-319d2f06b184"
+    }
+  ]
+}

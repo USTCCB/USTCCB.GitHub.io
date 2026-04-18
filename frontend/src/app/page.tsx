@@ -10,14 +10,14 @@ import {
 
 export default function Home() {
   return (
-    <div className="page-shell space-y-24 pb-24 pt-10 sm:pt-16">
-      <section className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+    <div className="page-shell space-y-6 pb-24">
+      <section className="hero-panel">
         <div className="space-y-8">
-          <p className="text-sm uppercase tracking-[0.35em] text-[var(--accent-strong)]">
+          <p className="hero-eyebrow">
             Personal Hub / Full Stack Site
           </p>
           <div className="space-y-5">
-            <h1 className="max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.04em] text-[var(--ink)] sm:text-6xl lg:text-7xl">
+            <h1 className="max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.04em] text-white sm:text-6xl lg:text-7xl">
               把博客、相册、日记和个人工具收进同一个真正可生长的网站。
             </h1>
             <p className="max-w-2xl text-lg leading-8 text-[var(--muted)] sm:text-xl">
@@ -28,13 +28,40 @@ export default function Home() {
             <Link href="/login" className="button-primary">
               直接登录
             </Link>
-            <Link href="/register" className="button-secondary">
-              创建预览账号
+            <Link href="/blog" className="button-secondary">
+              浏览内容
             </Link>
           </div>
         </div>
 
-        <div className="panel overflow-hidden p-0">
+        <div className="space-y-4">
+          <article className="panel p-6">
+            <div className="flex items-center justify-between gap-4">
+              <span className="section-chip !mb-0">Live Status</span>
+              <span className="inline-flex items-center gap-2 text-sm text-[var(--muted)]">
+                <span className="h-2.5 w-2.5 rounded-full bg-[var(--success)]" />
+                Online
+              </span>
+            </div>
+            <div className="mt-5 space-y-3">
+              <p className="font-[var(--font-mono)] text-4xl font-bold tracking-[-0.06em] text-white">
+                24 / 7
+              </p>
+              <p className="text-sm leading-6 text-[var(--muted)]">
+                页面、认证接口和内容结构已经被整理进同一个 Next.js 全栈项目里。
+              </p>
+            </div>
+          </article>
+
+          <div className="stats-grid">
+            {siteStats.map((item) => (
+              <article key={item.label} className="metric-panel">
+                <span>{item.label}</span>
+                <strong>{item.value}</strong>
+              </article>
+            ))}
+          </div>
+
           <div className="hero-grid">
             <div className="hero-card hero-card-main">
               <span className="hero-label">System</span>
@@ -60,17 +87,60 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {siteStats.map((item) => (
-          <div key={item.label} className="panel p-6">
-            <p className="text-sm uppercase tracking-[0.24em] text-[var(--muted)]">
-              {item.label}
-            </p>
-            <p className="mt-5 text-4xl font-semibold tracking-tight text-[var(--ink)]">
-              {item.value}
-            </p>
+      <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <article className="panel p-8">
+          <p className="section-chip">Featured Flow</p>
+          <h2 className="text-4xl font-semibold tracking-[-0.04em] text-white">
+            保留原来“个人空间”的感觉，但把登录和全栈能力藏得更自然。
+          </h2>
+          <p className="mt-4 max-w-3xl text-base leading-8 text-[var(--muted)]">
+            这次首页不再做成产品后台，而是继续维持个人主页的叙事感。你可以从这里直接进入登录、内容模块和工作台，但整体看上去仍然像你的网站，而不是一个通用模板。
+          </p>
+          <div className="mt-8 grid gap-4">
+            <Link href="/login" className="panel flex items-center justify-between gap-4 p-5 transition hover:-translate-y-1">
+              <div>
+                <p className="font-semibold text-white">进入站内账号</p>
+                <p className="mt-1 text-sm text-[var(--muted)]">直接登录，进入全栈工作台。</p>
+              </div>
+              <span className="text-[var(--accent-strong)]">01</span>
+            </Link>
+            <Link href="/blog" className="panel flex items-center justify-between gap-4 p-5 transition hover:-translate-y-1">
+              <div>
+                <p className="font-semibold text-white">阅读博客与项目记录</p>
+                <p className="mt-1 text-sm text-[var(--muted)]">继续保留原站里“写东西”的主线。</p>
+              </div>
+              <span className="text-[var(--accent-strong)]">02</span>
+            </Link>
+            <Link href="/studio" className="panel flex items-center justify-between gap-4 p-5 transition hover:-translate-y-1">
+              <div>
+                <p className="font-semibold text-white">打开工作台</p>
+                <p className="mt-1 text-sm text-[var(--muted)]">把登录后能力收进更私人的入口里。</p>
+              </div>
+              <span className="text-[var(--accent-strong)]">03</span>
+            </Link>
           </div>
-        ))}
+        </article>
+
+        <article className="panel p-8">
+          <p className="section-chip">Today Mood</p>
+          <h2 className="text-3xl font-semibold text-white">现在最值得继续打磨的三个方向</h2>
+          <div className="mt-6 space-y-4">
+            {capabilityCards.map((card, index) => (
+              <article key={card.title} className="panel p-5">
+                <div className="flex items-start gap-4">
+                  <span className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[14px] bg-[rgba(34,211,238,0.12)] text-sm font-bold text-[var(--accent-strong)]">
+                    0{index + 1}
+                  </span>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.26em] text-[var(--muted)]">{card.eyebrow}</p>
+                    <h3 className="mt-2 text-xl font-semibold text-white">{card.title}</h3>
+                    <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{card.description}</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </article>
       </section>
 
       <section className="space-y-10">
@@ -86,7 +156,7 @@ export default function Home() {
               <p className="text-sm uppercase tracking-[0.28em] text-[var(--accent-strong)]">
                 {card.eyebrow}
               </p>
-              <h3 className="mt-4 text-2xl font-semibold text-[var(--ink)]">
+              <h3 className="mt-4 text-2xl font-semibold text-white">
                 {card.title}
               </h3>
               <p className="mt-4 text-base leading-7 text-[var(--muted)]">
@@ -104,7 +174,7 @@ export default function Home() {
               <p className="text-sm uppercase tracking-[0.3em] text-[var(--accent-strong)]">
                 Latest Writing
               </p>
-              <h2 className="mt-3 text-3xl font-semibold text-[var(--ink)]">
+              <h2 className="mt-3 text-3xl font-semibold text-white">
                 最近的文章与思考
               </h2>
             </div>
@@ -120,7 +190,7 @@ export default function Home() {
                   <span>{post.readTime}</span>
                   <span>{post.publishedAt}</span>
                 </div>
-                <h3 className="mt-3 text-2xl font-semibold text-[var(--ink)]">
+                <h3 className="mt-3 text-2xl font-semibold text-white">
                   {post.title}
                 </h3>
                 <p className="mt-3 text-base leading-7 text-[var(--muted)]">
@@ -137,7 +207,7 @@ export default function Home() {
               <p className="text-sm uppercase tracking-[0.3em] text-[var(--accent-strong)]">
                 Memory Board
               </p>
-              <h2 className="mt-3 text-3xl font-semibold text-[var(--ink)]">
+              <h2 className="mt-3 text-3xl font-semibold text-white">
                 更有氛围感的相册模块
               </h2>
             </div>
@@ -147,13 +217,13 @@ export default function Home() {
           </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             {albumShots.map((shot) => (
-              <article key={shot.id} className="overflow-hidden rounded-[24px] border border-[var(--line)] bg-white">
+              <article key={shot.id} className="overflow-hidden rounded-[24px] border border-[var(--line)] bg-[rgba(255,255,255,0.03)]">
                 <div className={`h-40 bg-gradient-to-br ${shot.accent}`} />
                 <div className="space-y-3 p-5">
                   <p className="text-sm text-[var(--muted)]">
                     {shot.location} / {shot.season}
                   </p>
-                  <h3 className="text-xl font-semibold text-[var(--ink)]">{shot.title}</h3>
+                  <h3 className="text-xl font-semibold text-white">{shot.title}</h3>
                   <p className="text-sm leading-6 text-[var(--muted)]">{shot.description}</p>
                 </div>
               </article>
@@ -167,7 +237,7 @@ export default function Home() {
           <p className="text-sm uppercase tracking-[0.3em] text-[var(--accent-strong)]">
             Journal
           </p>
-          <h2 className="mt-4 text-3xl font-semibold text-[var(--ink)]">
+          <h2 className="mt-4 text-3xl font-semibold text-white">
             日记区域保留个人感，不做成冷冰冰的信息流。
           </h2>
           <p className="mt-4 text-base leading-7 text-[var(--muted)]">
@@ -186,7 +256,7 @@ export default function Home() {
                 <span>{entry.weather}</span>
                 <span>{entry.mood}</span>
               </div>
-              <h3 className="mt-3 text-2xl font-semibold text-[var(--ink)]">
+              <h3 className="mt-3 text-2xl font-semibold text-white">
                 {entry.title}
               </h3>
               <p className="mt-3 text-base leading-7 text-[var(--muted)]">
@@ -195,41 +265,6 @@ export default function Home() {
             </article>
           ))}
         </div>
-      </section>
-
-      <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-        <article className="panel p-8">
-          <p className="text-sm uppercase tracking-[0.3em] text-[var(--accent-strong)]">
-            Access
-          </p>
-          <h2 className="mt-4 text-4xl font-semibold text-[var(--ink)]">
-            主域名切到 Vercel 后，这里就会成为可以直接登录的站点首页。
-          </h2>
-          <p className="mt-4 max-w-3xl text-base leading-7 text-[var(--muted)]">
-            现在新版前端已经把登录入口、工作台和接口整理进同一个 Next.js 项目。只要把 `ustc.chat` 的 DNS 从 GitHub Pages 切到 Vercel，主域名就能直接承载这套全栈版本。
-          </p>
-          <div className="mt-8 flex flex-wrap gap-4">
-            <Link href="/studio" className="button-primary">
-              打开工作台
-            </Link>
-            <Link href="/api/health" className="button-secondary">
-              查看健康检查
-            </Link>
-          </div>
-        </article>
-
-        <article className="panel p-8">
-          <p className="text-sm uppercase tracking-[0.3em] text-[var(--accent-strong)]">
-            Ready Now
-          </p>
-          <ul className="mt-5 space-y-4 text-sm leading-6 text-[var(--muted)]">
-            <li>登录页：`/login`</li>
-            <li>注册页：`/register`</li>
-            <li>工作台：`/studio`</li>
-            <li>登录接口：`/api/auth/login`</li>
-            <li>会话接口：`/api/auth/me`</li>
-          </ul>
-        </article>
       </section>
     </div>
   );

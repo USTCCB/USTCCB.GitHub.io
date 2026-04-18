@@ -1,17 +1,16 @@
 import type { Metadata } from 'next'
-import { Noto_Serif_SC, Space_Grotesk } from 'next/font/google'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { Navbar } from '@/components/Navbar'
 
-const display = Space_Grotesk({
+const sans = Inter({
   subsets: ['latin'],
-  variable: '--font-display',
+  variable: '--font-sans',
 })
 
-const serif = Noto_Serif_SC({
+const mono = JetBrains_Mono({
   subsets: ['latin'],
-  variable: '--font-serif',
-  weight: ['400', '500', '600', '700'],
+  variable: '--font-mono',
 })
 
 export const metadata: Metadata = {
@@ -26,17 +25,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN">
-      <body className={`${display.variable} ${serif.variable}`}>
-        <Navbar />
-        <main className="min-h-screen">
-          {children}
-        </main>
-        <footer className="mt-20 border-t border-[var(--line)] bg-[rgba(17,24,39,0.98)] py-10 text-white">
-          <div className="page-shell flex flex-col gap-4 text-sm text-white/72 sm:flex-row sm:items-center sm:justify-between">
-            <p>&copy; 2026 USTCCB Personal Hub</p>
-            <p>Built with Next.js, route handlers, and a cleaner deployment path.</p>
+      <body className={`${sans.variable} ${mono.variable}`}>
+        <div className="background-glow" />
+        <div className="site-shell">
+          <Navbar />
+          <div className="content-shell">
+            <main className="site-main">{children}</main>
+            <footer className="site-footer">
+              <div className="site-footer__inner">
+                <p>&copy; 2026 USTCCB Personal Hub</p>
+                <p>Learning, building, writing, and shipping from one personal space.</p>
+              </div>
+            </footer>
           </div>
-        </footer>
+        </div>
       </body>
     </html>
   )

@@ -67,7 +67,7 @@ export function AuthPanel({
         <p className="text-sm uppercase tracking-[0.3em] text-[var(--accent-strong)]">
           {mode === 'login' ? 'Sign In' : 'Create Account'}
         </p>
-        <h1 className="mt-3 text-4xl font-semibold text-[var(--ink)]">
+        <h1 className="mt-3 text-4xl font-semibold text-white">
           {mode === 'login' ? '登录进入新版个人站。' : '创建一个预览账号。'}
         </h1>
         <p className="mt-4 text-base leading-7 text-[var(--muted)]">
@@ -125,8 +125,8 @@ export function AuthPanel({
       </button>
 
       {mode === 'login' ? (
-        <div className="rounded-[24px] border border-[var(--line)] bg-white/70 p-5 text-sm text-[var(--muted)]">
-          <p className="font-semibold text-[var(--ink)]">预览账号</p>
+        <div className="rounded-[24px] border border-[var(--line)] bg-[rgba(255,255,255,0.04)] p-5 text-sm text-[var(--muted)]">
+          <p className="font-semibold text-white">预览账号</p>
           <p className="mt-2">邮箱：{demoEmail}</p>
           <p>密码：{demoPasswordHint}</p>
         </div>

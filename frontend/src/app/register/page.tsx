@@ -6,12 +6,10 @@ export default function RegisterPage() {
   const demo = getDemoCredentials();
 
   return (
-    <div className="page-shell grid gap-8 py-16 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+    <div className="page-shell grid gap-8 pb-20 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
       <div className="panel p-8">
-        <p className="text-sm uppercase tracking-[0.3em] text-[var(--accent-strong)]">
-          Preview Access
-        </p>
-        <h1 className="mt-4 text-4xl font-semibold text-[var(--ink)]">
+        <p className="hero-eyebrow">Preview Access</p>
+        <h1 className="mt-4 text-4xl font-semibold text-white">
           先把站点体验跑通，再逐步接正式账号系统。
         </h1>
         <p className="mt-4 text-base leading-7 text-[var(--muted)]">

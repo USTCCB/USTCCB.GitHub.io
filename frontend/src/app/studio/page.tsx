@@ -37,13 +37,11 @@ export default function StudioPage() {
   }
 
   return (
-    <div className="page-shell space-y-10 py-16">
+    <div className="page-shell space-y-8 pb-20">
       <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="panel p-8">
-          <p className="text-sm uppercase tracking-[0.3em] text-[var(--accent-strong)]">
-            Studio
-          </p>
-          <h1 className="mt-4 text-5xl font-semibold tracking-[-0.04em] text-[var(--ink)]">
+          <p className="hero-eyebrow">Studio / Signed In</p>
+          <h1 className="mt-4 text-5xl font-semibold tracking-[-0.04em] text-white">
             {loading
               ? '正在加载你的工作台...'
               : `欢迎回来，${viewer?.name || 'Visitor'}`}
@@ -62,9 +60,7 @@ export default function StudioPage() {
         </div>
 
         <div className="panel p-8">
-          <p className="text-sm uppercase tracking-[0.3em] text-[var(--accent-strong)]">
-            Session
-          </p>
+          <p className="section-chip">Session</p>
           <div className="mt-5 space-y-4 text-sm text-[var(--muted)]">
             <p>姓名：{viewer?.name || '未登录'}</p>
             <p>邮箱：{viewer?.email || '未登录'}</p>
@@ -76,28 +72,22 @@ export default function StudioPage() {
 
       <section className="grid gap-6 md:grid-cols-3">
         <article className="panel p-6">
-          <p className="text-sm uppercase tracking-[0.26em] text-[var(--accent-strong)]">
-            Content
-          </p>
-          <h2 className="mt-3 text-2xl font-semibold text-[var(--ink)]">博客</h2>
+          <p className="section-chip">Content</p>
+          <h2 className="mt-3 text-2xl font-semibold text-white">博客</h2>
           <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
             结构和视觉已经到位，下一步可以接真正的文章发布与标签过滤。
           </p>
         </article>
         <article className="panel p-6">
-          <p className="text-sm uppercase tracking-[0.26em] text-[var(--accent-strong)]">
-            Memory
-          </p>
-          <h2 className="mt-3 text-2xl font-semibold text-[var(--ink)]">相册</h2>
+          <p className="section-chip">Memory</p>
+          <h2 className="mt-3 text-2xl font-semibold text-white">相册</h2>
           <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
             目前是展示型相册，后面可以切入真实上传和相册管理。
           </p>
         </article>
         <article className="panel p-6">
-          <p className="text-sm uppercase tracking-[0.26em] text-[var(--accent-strong)]">
-            System
-          </p>
-          <h2 className="mt-3 text-2xl font-semibold text-[var(--ink)]">接口状态</h2>
+          <p className="section-chip">System</p>
+          <h2 className="mt-3 text-2xl font-semibold text-white">接口状态</h2>
           <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
             当前站点接口和页面已经在同一个 Next.js 运行时中统一部署。
           </p>

@@ -6,17 +6,23 @@
     <title>USTCCB's Space</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="home-page">
     <div class="background-glow"></div>
-    
+
     <div class="app-container">
-        <!-- Sidebar Navigation -->
-        <nav class="sidebar">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="打开导航">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <nav class="sidebar" id="sidebar">
             <div class="logo">
                 <i class="fa-solid fa-code-branch"></i>
                 <span>USTCCB</span>
+                <button class="close-sidebar-btn" id="closeSidebarBtn" aria-label="关闭导航">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
             <ul class="nav-links">
                 <li class="active"><a href="index.html"><i class="fa-solid fa-house"></i> 首页</a></li>
@@ -28,280 +34,196 @@
                 <li><a href="myDairy.html"><i class="fa-solid fa-book"></i> 日记</a></li>
             </ul>
             <div class="sidebar-footer">
-                <button class="theme-toggle" id="themeToggle" title="切换主题">
-                    <i class="fa-solid fa-moon"></i>
-                </button>
-                <!-- 动态用户区域 by auth-sidebar.js -->
+                <div class="user-profile">
+                    <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
+                    <div class="user-info">
+                        <span class="name">AnranWu</span>
+                        <span class="status">Digital Builder</span>
+                    </div>
+                </div>
             </div>
         </nav>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <header class="top-header">
-                <h1>欢迎来到我的数字空间</h1>
-                <p>探索、记录、创造，持续把想法变成作品。</p>
-                <div class="header-actions">
-                    <a href="myBlogs.html" class="action-pill"><i class="fa-solid fa-pen-nib"></i> 最新博客</a>
-                    <a href="myAlbum.html" class="action-pill"><i class="fa-solid fa-camera"></i> 今日相册</a>
-                </div>
-            </header>
-
-            <div class="dashboard-grid">
-                <!-- Stats Overview -->
-                <div class="stats-card">
-                    <div class="stat-item">
-                        <i class="fa-solid fa-eye"></i>
-                        <div>
-                            <h4 id="visitCount">0</h4>
-                            <p>访问量</p>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <i class="fa-solid fa-fire"></i>
-                        <div>
-                            <h4 id="streakDays">0</h4>
-                            <p>连续天数</p>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <i class="fa-solid fa-heart"></i>
-                        <div>
-                            <h4 id="likeCount">0</h4>
-                            <p>获赞数</p>
-                        </div>
+            <section class="hero-panel">
+                <div class="hero-copy">
+                    <span class="hero-eyebrow">PERSONAL HUB / PORTFOLIO / PLAYGROUND</span>
+                    <h1>把学习、创作、AI 工具和日常记录，收进同一个更好用的数字空间。</h1>
+                    <p class="hero-lead">
+                        这里不是单纯的导航页，而是一个可长期使用的个人主页中枢。
+                        你可以在这里继续写、继续学、继续玩，也能快速进入最常用的功能页面。
+                    </p>
+                    <div class="hero-actions">
+                        <a href="ai-chat.html" class="hero-btn hero-btn-primary">
+                            <i class="fa-solid fa-sparkles"></i> 进入 AI 助手
+                        </a>
+                        <a href="myBlogs.html" class="hero-btn hero-btn-secondary">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> 阅读最新内容
+                        </a>
                     </div>
                 </div>
 
-                <!-- AI Chat Card -->
-                <a href="ai-chat.html" class="card card-primary">
-                    <div class="card-icon"><i class="fa-solid fa-robot"></i></div>
-                    <div class="card-info">
-                        <h3>AI 助手</h3>
-                        <p>基于 GPT 的智能对话助手</p>
-                    </div>
-                    <div class="card-arrow"><i class="fa-solid fa-arrow-right"></i></div>
-                </a>
-
-                <!-- Games Card -->
-                <a href="games.html" class="card card-accent">
-                    <div class="card-icon"><i class="fa-solid fa-gamepad"></i></div>
-                    <div class="card-info">
-                        <h3>游戏实验室</h3>
-                        <p>贪吃蛇、井字棋等休闲小游戏</p>
-                    </div>
-                    <div class="card-arrow"><i class="fa-solid fa-arrow-right"></i></div>
-                </a>
-
-                <!-- Blogs Card -->
-                <a href="myBlogs.html" class="card">
-                    <div class="card-icon"><i class="fa-solid fa-pen-nib"></i></div>
-                    <div class="card-info">
-                        <h3>我的博客</h3>
-                        <p>记录学习与生活的点滴</p>
-                    </div>
-                </a>
-
-                <!-- Album Card -->
-                <a href="myAlbum.html" class="card">
-                    <div class="card-icon"><i class="fa-solid fa-images"></i></div>
-                    <div class="card-info">
-                        <h3>我的相册</h3>
-                        <p>美好瞬间的定格</p>
-                    </div>
-                </a>
-
-                <!-- Timetable Card -->
-                <a href="myTimetable.html" class="card">
-                    <div class="card-icon"><i class="fa-solid fa-calendar-days"></i></div>
-                    <div class="card-info">
-                        <h3>课程表</h3>
-                        <p>日程安排与规划</p>
-                    </div>
-                </a>
-            </div>
-
-            <!-- Recent Updates / Widget Section -->
-            <section class="widgets-section">
-                <div class="widget">
-                    <h3 id="greeting-title"><i class="fa-solid fa-sun"></i> 早安</h3>
-                    <p id="daily-quote" class="quote-text">加载中...</p>
-                </div>
-                
-                <div class="widget">
-                    <h3><i class="fa-solid fa-list-check"></i> 待办事项</h3>
-                    <div class="todo-widget">
-                        <div class="todo-input-row">
-                            <input type="text" id="todoInput" class="todo-input" placeholder="添加新任务...">
-                            <button onclick="addTodo()" class="todo-add-btn"><i class="fa-solid fa-plus"></i></button>
+                <div class="hero-aside">
+                    <div class="signal-card">
+                        <div class="signal-head">
+                            <span class="signal-label">Live Status</span>
+                            <span class="signal-dot"></span>
                         </div>
-                        <ul id="todoList" class="todo-list">
-                            <!-- Todo Items injected by JS -->
+                        <div class="signal-time" id="heroClock">--:--</div>
+                        <p class="signal-date" id="heroDate">加载中...</p>
+                        <div class="signal-tags">
+                            <span>Static / GitHub Pages</span>
+                            <span>Local-first widgets</span>
+                            <span>AI ready</span>
+                        </div>
+                    </div>
+
+                    <div class="mini-metrics">
+                        <article class="metric-box">
+                            <span>入口页面</span>
+                            <strong>6+</strong>
+                        </article>
+                        <article class="metric-box">
+                            <span>本地待办</span>
+                            <strong id="todoCount">0</strong>
+                        </article>
+                        <article class="metric-box">
+                            <span>访问次数</span>
+                            <strong id="visitCount">0</strong>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="spotlight-grid">
+                <article class="spotlight-primary">
+                    <div class="section-chip">Featured Flow</div>
+                    <h2>现在最值得打开的三个模块</h2>
+                    <p>
+                        这次首页不再只做“卡片堆叠”，而是把最重要的行动路径做成更清楚的内容层级：
+                        问问题、写东西、休息一下。
+                    </p>
+                    <div class="spotlight-actions">
+                        <a href="ai-chat.html" class="tool-link">
+                            <span><i class="fa-solid fa-robot"></i> AI 助手</span>
+                            <small>本地配置多模型，适合问答和代码</small>
+                        </a>
+                        <a href="myBlogs.html" class="tool-link">
+                            <span><i class="fa-solid fa-pen-nib"></i> 博客</span>
+                            <small>沉淀学习笔记、项目记录与想法</small>
+                        </a>
+                        <a href="games.html" class="tool-link">
+                            <span><i class="fa-solid fa-gamepad"></i> 游戏实验室</span>
+                            <small>切换节奏，短暂放松和测试交互</small>
+                        </a>
+                    </div>
+                </article>
+
+                <div class="spotlight-stack">
+                    <article class="spotlight-panel">
+                        <span class="section-chip">Quick Access</span>
+                        <h3>今天想做什么</h3>
+                        <ul class="spotlight-list">
+                            <li><a href="myTimetable.html">看课表并安排今天的节奏</a></li>
+                            <li><a href="myAlbum.html">翻一下最近的相册内容</a></li>
+                            <li><a href="myDairy.html">写几句当天记录</a></li>
                         </ul>
-                    </div>
-                </div>
+                    </article>
 
-                <div class="widget">
-                    <h3><i class="fa-regular fa-clock"></i> 现在时间</h3>
-                    <div class="time-widget-row">
+                    <article class="spotlight-panel">
+                        <span class="section-chip">Today Mood</span>
+                        <h3 id="greeting-title">你好，欢迎回来</h3>
+                        <p id="daily-quote" class="quote-text">加载中...</p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="utility-grid">
+                <article class="utility-card">
+                    <div class="utility-head">
                         <div>
-                            <p id="clock" class="clock-text">--:--:--</p>
-                            <p id="date-text" class="date-text">YYYY-MM-DD</p>
+                            <span class="section-chip">Local Widget</span>
+                            <h3>待办清单</h3>
                         </div>
-                        <i class="fa-solid fa-clock time-widget-icon"></i>
+                        <span class="utility-meta" id="todayLabel">今天</span>
                     </div>
+                    <div class="todo-entry">
+                        <input type="text" id="todoInput" placeholder="输入一个今天要完成的小目标">
+                        <button id="todoAddBtn" aria-label="添加待办">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                    <ul id="todoList" class="todo-list"></ul>
+                </article>
+
+                <article class="utility-card">
+                    <div class="utility-head">
+                        <div>
+                            <span class="section-chip">Focus Widget</span>
+                            <h3>专注计时</h3>
+                        </div>
+                        <span class="utility-meta" id="focusModeLabel">Focus</span>
+                    </div>
+                    <div class="focus-ring">
+                        <strong id="focusTimer">25:00</strong>
+                        <span>25 分钟专注节奏</span>
+                    </div>
+                    <div class="focus-actions">
+                        <button class="hero-btn hero-btn-primary small" id="focusToggleBtn">开始</button>
+                        <button class="hero-btn hero-btn-secondary small" id="focusResetBtn">重置</button>
+                    </div>
+                </article>
+
+                <article class="utility-card utility-card-wide">
+                    <div class="utility-head">
+                        <div>
+                            <span class="section-chip">Scratchpad</span>
+                            <h3>快速便签</h3>
+                        </div>
+                        <span class="utility-meta">自动保存在浏览器</span>
+                    </div>
+                    <textarea id="quickNote" class="quick-note" placeholder="把灵感、提醒或临时想法先记在这里..."></textarea>
+                </article>
+            </section>
+
+            <section class="activity-section">
+                <div class="activity-copy">
+                    <span class="section-chip">Recent Direction</span>
+                    <h2>这版首页更接近近年高质量个人站的做法</h2>
+                    <p>
+                        大首屏、清晰分层、较少但更精致的动效，再加上本地可用的小工具，
+                        比“全站都是同样的玻璃卡片”更耐看，也更适合长期使用。
+                    </p>
+                </div>
+                <div class="activity-feed">
+                    <article>
+                        <span>01</span>
+                        <div>
+                            <h4>更强的首屏识别度</h4>
+                            <p>先看到“这是谁的空间、有什么内容、下一步能做什么”。</p>
+                        </div>
+                    </article>
+                    <article>
+                        <span>02</span>
+                        <div>
+                            <h4>更像作品站，而不是后台卡片墙</h4>
+                            <p>用版式和主次关系代替机械卡片堆叠，让内容更有节奏。</p>
+                        </div>
+                    </article>
+                    <article>
+                        <span>03</span>
+                        <div>
+                            <h4>更实用的本地功能</h4>
+                            <p>待办、专注计时和便签都走本地存储，不需要后端就能立即可用。</p>
+                        </div>
+                    </article>
                 </div>
             </section>
         </main>
     </div>
 
+    <div class="overlay" id="overlay"></div>
+
     <script src="script.js"></script>
-    <script src="auth-sidebar.js"></script>
-    <script>
-        // Inline script for simple clock and quote (specific to index)
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString();
-            document.getElementById('date-text').innerText = now.toLocaleDateString('zh-CN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            
-            // Update Greeting based on hour
-            const hour = now.getHours();
-            const greetingTitle = document.getElementById('greeting-title');
-            if(greetingTitle) {
-                let greeting = '你好';
-                let icon = 'fa-sun';
-                
-                if (hour < 6) { greeting = '夜深了'; icon = 'fa-moon'; }
-                else if (hour < 11) { greeting = '早安'; icon = 'fa-coffee'; }
-                else if (hour < 14) { greeting = '中午好'; icon = 'fa-sun'; }
-                else if (hour < 19) { greeting = '下午好'; icon = 'fa-mug-hot'; }
-                else { greeting = '晚上好'; icon = 'fa-moon'; }
-                
-                greetingTitle.innerHTML = `<i class="fa-solid ${icon}"></i> ${greeting}`;
-            }
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        const quotes = [
-            "明日之我，胸中有丘壑，立马振山河。",
-            "能够让你后悔的，从来不是你做过的事，而是你想做却没有去做的事。",
-            "聚是一团火，散是满天星。",
-            "你来人间一趟，你要看看太阳。",
-            "埋骨何须桑梓地，人生无处不青山。",
-            "星光不问赶路人，时光不负有心人。"
-        ];
-        document.getElementById('daily-quote').innerText = quotes[Math.floor(Math.random() * quotes.length)];
-
-        // Simple Todo Logic
-        function loadTodos() {
-            const saved = localStorage.getItem('mini_todos');
-            const list = document.getElementById('todoList');
-            list.innerHTML = '';
-            const todos = saved ? JSON.parse(saved) : ['完善个人网站', '学习 AI 知识'];
-            todos.forEach((todo, index) => {
-                const li = document.createElement('li');
-                li.className = 'todo-item';
-                li.innerHTML = `
-                    <span class="todo-item-text">${todo}</span>
-                    <button class="todo-item-done" onclick="removeTodo(${index})" aria-label="完成任务">
-                        <i class="fa-solid fa-check"></i>
-                    </button>
-                `;
-                list.appendChild(li);
-            });
-        }
-        
-        function addTodo() {
-            const input = document.getElementById('todoInput');
-            const val = input.value.trim();
-            if(!val) return;
-            const saved = localStorage.getItem('mini_todos');
-            const todos = saved ? JSON.parse(saved) : ['完善个人网站', '学习 AI 知识'];
-            todos.push(val);
-            localStorage.setItem('mini_todos', JSON.stringify(todos));
-            input.value = '';
-            loadTodos();
-        }
-
-        function removeTodo(index) {
-            const saved = localStorage.getItem('mini_todos');
-            if(!saved) return;
-            const todos = JSON.parse(saved);
-            todos.splice(index, 1);
-            localStorage.setItem('mini_todos', JSON.stringify(todos));
-            loadTodos();
-        }
-
-        // Handle Enter key for Todo
-        document.getElementById('todoInput').addEventListener('keydown', (e) => {
-            if(e.key === 'Enter') addTodo();
-        });
-
-        loadTodos();
-
-        // Theme Toggle
-        const themeToggle = document.getElementById('themeToggle');
-        const currentTheme = localStorage.getItem('theme') || 'dark';
-
-        if (currentTheme === 'light') {
-            document.body.classList.add('light-theme');
-            themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
-        }
-
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('light-theme');
-            const isLight = document.body.classList.contains('light-theme');
-            localStorage.setItem('theme', isLight ? 'light' : 'dark');
-            themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
-        });
-
-        // Animated Counter
-        function animateCounter(id, target, duration = 2000) {
-            const element = document.getElementById(id);
-            const start = 0;
-            const increment = target / (duration / 16);
-            let current = start;
-
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= target) {
-                    element.textContent = target;
-                    clearInterval(timer);
-                } else {
-                    element.textContent = Math.floor(current);
-                }
-            }, 16);
-        }
-
-        // Initialize stats
-        const stats = {
-            visits: parseInt(localStorage.getItem('visit_count') || '0'),
-            streak: parseInt(localStorage.getItem('streak_days') || '0'),
-            likes: parseInt(localStorage.getItem('like_count') || '0')
-        };
-
-        stats.visits++;
-        localStorage.setItem('visit_count', stats.visits);
-
-        // Check streak
-        const lastVisit = localStorage.getItem('last_visit');
-        const today = new Date().toDateString();
-        if (lastVisit !== today) {
-            const yesterday = new Date(Date.now() - 86400000).toDateString();
-            if (lastVisit === yesterday) {
-                stats.streak++;
-            } else if (!lastVisit) {
-                stats.streak = 1;
-            } else {
-                stats.streak = 1;
-            }
-            localStorage.setItem('streak_days', stats.streak);
-            localStorage.setItem('last_visit', today);
-        }
-
-        animateCounter('visitCount', stats.visits);
-        animateCounter('streakDays', stats.streak);
-        animateCounter('likeCount', stats.likes);
-    </script>
 </body>
 </html>

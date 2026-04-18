@@ -338,6 +338,48 @@ a {
     font-size: 0.78rem;
   }
 
+  .compose-panel {
+    position: sticky;
+    top: 34px;
+  }
+
+  .compose-label {
+    display: block;
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .upload-dropzone {
+    display: flex;
+    min-height: 280px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 28px;
+    border: 1px dashed rgba(255, 255, 255, 0.16);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
+      radial-gradient(circle at top right, rgba(34, 211, 238, 0.08), transparent 35%);
+    padding: 18px;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .upload-preview {
+    min-height: 244px;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 20px;
+  }
+
+  .upload-preview__image {
+    width: 100%;
+    height: 244px;
+    object-fit: cover;
+    display: block;
+  }
+
   .hero-eyebrow,
   .section-chip {
     display: inline-flex;
@@ -389,6 +431,10 @@ a {
 @media (max-width: 1100px) {
   .hero-panel {
     grid-template-columns: 1fr;
+  }
+
+  .compose-panel {
+    position: static;
   }
 }
 

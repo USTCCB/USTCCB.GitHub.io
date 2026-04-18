@@ -71,3 +71,12 @@ export const diaryApi = {
   updateDiary: (id: number, data: any) => api.put(`/diary/${id}`, data),
   deleteDiary: (id: number) => api.delete(`/diary/${id}`),
 }
+
+export const fileApi = {
+  uploadImage: (formData: FormData) =>
+    api.post('/files/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+}
